@@ -189,7 +189,6 @@ function handleGlobalClick(e) {
         return;
     }
 }
-}
 
 export function setupEventListeners() {
     // Standard inputs (change and input handlers)
