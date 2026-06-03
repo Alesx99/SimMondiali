@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 1. Fetch core database
     let fetchedTeams = null;
     try {
-        const res = await fetch('/data/teams.json');
+        const res = await fetch('data/teams.json');
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
         }
@@ -44,10 +44,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // 2. Fetch stats datasets robustly via safe helper
     const [svRes, h2hRes, recRes, sbRes] = await Promise.all([
-        safeFetchJson('/data/stats/squad_values.json', {}),
-        safeFetchJson('/data/stats/h2h_stats.json', {}),
-        safeFetchJson('/data/stats/recurrences.json', { avg_goals_wc: 2.65, knockout_draw_rate: 0.28, exact_scores: [] }),
-        safeFetchJson('/data/stats/statsbomb_aggregated.json', {})
+        safeFetchJson('data/stats/squad_values.json', {}),
+        safeFetchJson('data/stats/h2h_stats.json', {}),
+        safeFetchJson('data/stats/recurrences.json', { avg_goals_wc: 2.65, knockout_draw_rate: 0.28, exact_scores: [] }),
+        safeFetchJson('data/stats/statsbomb_aggregated.json', {})
     ]);
 
     state.squadValuesStats = svRes;
