@@ -360,9 +360,23 @@ export function generateSchedule() {
             { a: groupTeams[1], b: groupTeams[2], round: 3, dateOffset: 10 }
         ];
 
-        pairings.forEach(pair => {
-            const baseDateIndex = (grpIdx % 4) + pair.dateOffset;
-            const dateStr = GROUP_STAGE_DATES[baseDateIndex];
+        pairings.forEach((pair, pairIdx) => {
+            // Calcola data reale staccata e distribuita per la fase a gironi
+            let dayIndex = 0;
+            if (pair.round === 1) {
+                // Primo incontro il giorno X, secondo incontro il giorno X+1 per scaglionare
+                dayIndex = Math.floor(grpIdx / 2) + (pairIdx % 2);
+            } else if (pair.round === 2) {
+                // Round 2 scaglionata
+                dayIndex = 6 + Math.floor(grpIdx / 2.4) + (pairIdx % 2);
+            } else {
+                // Round 3 giocata in contemporanea per lo stesso girone per correttezza sportiva
+                dayIndex = 12 + Math.floor(grpIdx / 2.4);
+            }
+            
+            // Protezione out of bounds per l'array delle date
+            dayIndex = Math.min(GROUP_STAGE_DATES.length - 1, dayIndex);
+            const dateStr = GROUP_STAGE_DATES[dayIndex];
 
             // Simulated fairplay penalties
             const fpA = -Math.floor(Math.random() * 3);
