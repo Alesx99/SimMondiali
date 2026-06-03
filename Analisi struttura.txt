@@ -1,0 +1,691 @@
+# 🏆 Analisi Completa — Progetto Mondiali 2026
+
+> **Betaland — World Cup 2026 Betting Advisor & Simulator**
+> Analisi eseguita il 3 Giugno 2026 da una squadra di 3 agenti specializzati.
+
+---
+
+## Panoramica del Progetto
+
+Un'applicazione web client-side che simula i Mondiali FIFA 2026, calcola quote tramite modello di Poisson, e offre analytics avanzate (H2H, xG, valutazioni rosa, metriche StatsBomb). Interamente in italiano.
+
+| File Principale | Dimensione | Ruolo |
+|---|---|---|
+| [index.html](file:///c:/Users/betaland%20operatore/Documents/Mondiali/index.html) | 25 KB (465 righe) | Shell SPA con 5 tab |
+| [app.js](file:///c:/Users/betaland%20operatore/Documents/Mondiali/app.js) | 162 KB (5.787 righe) | **Monolitico** — dati + logica + UI |
+| [style.css](file:///c:/Users/betaland%20operatore/Documents/Mondiali/style.css) | 41 KB (2.079 righe) | Styling completo |
+| [server.js](file:///c:/Users/betaland%20operatore/Documents/Mondiali/server.js) | 1,9 KB | Server HTTP statico Node.js (porta 8080) |
+| [crunch_archives.py](file:///c:/Users/betaland%20operatore/Documents/Mondiali/scratch/crunch_archives.py) | 26 KB (658 righe) | Pipeline ETL per generare i JSON |
+
+---
+
+## 📊 Mappa delle Criticità
+
+```mermaid
+graph TD
+    A["🔴 CRITICHE (5)"] --> A1["Nessun version control"]
+    A --> A2["app.js monolitico 162KB"]
+    A --> A3["Accessibilità zero ARIA"]
+    A --> A4["~655MB di CSV inutilizzati"]
+    A --> A5["Sidebar scompare su tablet"]
+    
+    B["🟡 ALTE (6)"] --> B1["No package.json/README"]
+    B --> B2["Nessuna modularizzazione JS"]
+    B --> B3["DOM ricreato ad ogni render"]
+    B --> B4["CSS duplicato ~120 righe"]
+    B --> B5["Font non ottimizzati"]
+    B --> B6["Nomi cartelle con spazi"]
+    
+    C["🟠 MEDIE (5)"] --> C1["Magic numbers sparsi"]
+    C --> C2["No SEO meta tags"]
+    C --> C3["No debounce sulla ricerca"]
+    C --> C4["Inline onclick handlers"]
+    C --> C5["Path hardcoded in Python"]
+    
+    D["🔵 BASSE (4)"] --> D1["No mobile-first CSS"]
+    D --> D2["No prefers-reduced-motion"]
+    D --> D3["Mixed line endings"]
+    D --> D4["No CSS @layer/nesting"]
+```
+
+---
+
+## 1. 🏗️ Architettura e Struttura del Progetto
+
+### Struttura attuale delle cartelle
+
+```
+Mondiali/
+├── index.html                          ← Shell SPA
+├── app.js                              ← 162KB MONOLITICO ⚠️
+├── app.js.bak                          ← Backup manuale ⚠️
+├── style.css                           ← 41KB styling
+├── server.js                           ← HTTP statico
+├── data/stats/                         ← JSON pre-calcolati (1.4MB totale)
+│   ├── h2h_stats.json        (1.4MB)
+│   ├── squad_values.json     (23KB)
+│   ├── statsbomb_aggregated.json (10KB)
+│   └── recurrences.json      (900B)
+├── archive/                            ← Risultati storici (~7MB) ✅ USATO
+├── archive (1)/                        ← Transfermarkt (~738MB) ⚠️ QUASI TUTTO INUTILIZZATO
+├── archive (2)/                        ← StatsBomb Open Data ✅ USATO
+├── archive (3)/                        ← Dati giocatori stagione ⚠️
+├── downloaded_files/                   ← Solo un .lock file ⚠️ RESIDUO
+├── scratch/crunch_archives.py          ← Pipeline ETL Python
+├── gruppi.odt                          ← Documento riferimento
+├── Mondiali 2026_...docx               ← Documento riferimento
+└── tabellone-...pdf                    ← Tabellone PDF
+```
+
+### Problemi critici
+
+> [!CAUTION]
+> **Nessun version control.** Non c'è `.git`, `.gitignore`, né `package.json`. L'unica forma di "versioning" è il file `app.js.bak` — un backup manuale senza timestamp. Con 738MB+ di CSV, serve Git + `.gitignore` + eventualmente Git LFS.
+
+> [!WARNING]
+> **~655MB di CSV non utilizzati.** La pipeline `crunch_archives.py` usa SOLO `archive/results.csv`, `archive/shootouts.csv`, `archive (1)/players.csv`, e `archive (2)/data/`. I restanti file in `archive (1)/` (**351MB** `game_lineups.csv`, **156MB** `game_events.csv`, **148MB** `appearances.csv`) non sono referenziati da nessun codice.
+
+> [!WARNING]
+> **Nomi cartelle con spazi e parentesi.** `archive (1)`, `archive (2)`, `archive (3)` causano problemi con molti tool CLI e path handling. Il `server.js` ha dovuto aggiungere URI decoding apposta per gestirli.
+
+### Cosa farei
+
+| # | Azione | Impatto |
+|---|--------|---------|
+| 1 | Inizializzare Git con `.gitignore` che esclude `archive*/`, `*.bak`, `downloaded_files/` | Versioning sicuro |
+| 2 | Rinominare le cartelle: `archive-transfermarkt/`, `archive-statsbomb/`, `archive-season/` | Chiarezza e compatibilità |
+| 3 | Rimuovere i 655MB di CSV non usati, oppure spostarli fuori dal progetto | -655MB |
+| 4 | Eliminare `app.js.bak` e `downloaded_files/driver_fixing.lock` | Pulizia residui |
+| 5 | Creare `package.json` con script `dev`, `build`, `etl` | Gestione dipendenze |
+| 6 | Aggiungere un `README.md` di progetto | Documentazione |
+
+---
+
+## 2. 📜 JavaScript — app.js (5.787 righe)
+
+### Composizione del file
+
+````carousel
+```mermaid
+pie title Distribuzione righe in app.js
+    "TEAMS_DB (dati inline)" : 4081
+    "Modello Poisson + Odds" : 180
+    "Rendering Partite" : 158
+    "Rendering Tabellone" : 151
+    "Stats Dashboard" : 260
+    "Bet Slip" : 104
+    "Lineup Manager" : 120
+    "Classifiche" : 80
+    "Schedule Generator" : 54
+    "State + Init + Events" : 120
+    "Gestione Giocatori" : 44
+    "Altre funzioni" : 435
+```
+<!-- slide -->
+| Sezione | Righe | % del file | Note |
+|---|---|---|---|
+| **TEAMS_DB** (database inline) | L8–L4089 | **70.5%** | 48 squadre × ~10 giocatori in JSON hardcoded |
+| State Management | L4095–L4108 | 0.2% | 8 variabili globali `let` |
+| Team Departments Engine | L4166–L4228 | 1.1% | Calcolo ATT/MID/DEF |
+| **Modello Poisson / Odds** | L4230–L4419 | **3.1%** | xG + Bayesian H2H blending |
+| Schedule Generator | L4467–L4521 | 0.9% | Generazione calendario gruppi |
+| Knockout Bracket Logic | L4568–L4781 | 3.7% | Logica torneo a eliminazione |
+| Bracket Rendering | L5003–L5155 | 2.6% | HTML tabellone |
+| Match Rendering | L4784–L4942 | 2.7% | HTML match cards |
+| Bet Slip | L5360–L5464 | 1.8% | Pianificatore scommesse |
+| Stats Dashboard | L5520–L5787 | 4.6% | Visualizzazione archivi |
+````
+
+> [!IMPORTANT]
+> **Il 70.5% del file è un JSON inline.** Il database `TEAMS_DB` con ~350 giocatori occupa 4.081 righe. Estraendolo in `/data/teams.json` il file scenderebbe a **~1.700 righe** — immediatamente gestibile.
+
+### Problemi di qualità del codice
+
+**Funzioni troppo lunghe:**
+- [calculateMatchOdds()](file:///c:/Users/betaland%20operatore/Documents/Mondiali/app.js#L4239-L4419) — **180 righe**, mescola 5+ responsabilità (rating, Poisson, H2H, valutazione rosa, raccomandazioni)
+- [renderMatches()](file:///c:/Users/betaland%20operatore/Documents/Mondiali/app.js#L4784-L4942) — **158 righe** di template HTML via string concatenation
+- [renderBracket()](file:///c:/Users/betaland%20operatore/Documents/Mondiali/app.js#L5004-L5155) — **151 righe**
+- [renderH2HAndStatsBomb()](file:///c:/Users/betaland%20operatore/Documents/Mondiali/app.js#L5628-L5780) — **152 righe**
+
+**Pattern duplicati:**
+```javascript
+// Questo pattern appare 4+ volte (L4425, L5209, L5245, L5414):
+matches.concat(knockoutMatches).find(m => m.id === someId)
+
+// Questo cascade appare 5+ volte:
+renderMatches(); renderBracket(); updateBetSlipUI();
+
+// Controllo scommessa ripetuto 7 volte (L4826-L4832):
+betSlip.find(b => b.matchId === m.id && b.choice === "...")
+```
+
+**Variabili globali senza encapsulation:**
+```javascript
+let matches = [];
+let standings = {};
+let betSlip = [];
+let activeModalMatchId = null;
+let knockoutMatches = [];
+let squadValuesStats = {};     // Nuove in app.js (assenti in .bak)
+let h2hStats = {};
+let recurrencesStats = {};
+let statsbombStats = {};
+```
+
+**Anti-pattern: funzioni su `window`** per gestire `onclick` inline:
+- `window.addNewPlayerFromForm`, `window.changePlayerStatus`, `window.toggleBet`, `window.openLineupManager`, `window.removeBetFromSlip`, `window.renderStatsTab`, `window.renderH2HAndStatsBomb`
+
+**Magic numbers sparsi ovunque:**
+- `1.08` bonus host (L4247), `0.40/0.60` blend ratio (L4254), `1.4/0.9/2.2` esponenti (L4258-L4265), `0.18` fattore valore (L4271), `48/55` soglie percentuali (L4374-L4390), `100.00` max odds, `10` max gol
+
+### Problemi di performance
+
+> [!WARNING]
+> **Odds ricalcolate ad ogni render.** `calculateMatchOdds()` viene chiamata per ogni match card durante `renderMatches()` (72 partite gironi) e `renderBracket()`. Quando si cambia un punteggio, si scatena: `recalculateStandings()` → `populateRoundOf32()` → `recalculateKnockoutProgression()` → `renderMatches()` + `renderStandings()` + `renderBracket()` + `updateBetSlipUI()`.
+
+- **DOM completamente ricreato** ad ogni render: `container.innerHTML = ""` + ricostruzione totale. Nessun diffing, nessun aggiornamento selettivo.
+- **Ricerca senza debounce** (L5159): ad ogni keystroke, itera tutti i giocatori di tutte le squadre per tutte le partite.
+- Calcoli `teamA.players.reduce(...)` eseguiti inline in ogni chiamata a `calculateMatchOdds()`.
+
+### Error handling minimo
+
+- Fallback silenzioso: `if (!team) return { att: 50, mid: 50, def: 50 }` — nessun warning.
+- Recovery NaN silenzioso: `if (isNaN(lambdaA)) lambdaA = 1.3`.
+- Nessuna validazione sugli input score dell'utente.
+- Nessun null-check prima di accedere a `TEAMS_DB[match.teamA]` nelle funzioni di render.
+
+### Differenza app.js vs app.js.bak
+
+| Metrica | .bak | app.js | Delta |
+|---|---|---|---|
+| Righe | 4.832 | 5.787 | **+955** |
+| Dimensione | 132 KB | 162 KB | **+30 KB (+22.6%)** |
+| TEAMS_DB | fino a L3473 | fino a L4089 | +616 righe dati |
+
+**Cosa è stato aggiunto:**
+- Campi `value` (valore di mercato) e `age` per ogni giocatore (~700 righe di dati)
+- Sistema di caricamento asincrono dei 4 JSON da `/data/stats/`
+- Sezione Stats Dashboard completa (`renderStatsTab()`, `renderH2HAndStatsBomb()`)
+- Fattore valore rosa e blending H2H Bayesiano nel modello Poisson
+- Visualizzazione valore e età nel modal lineup
+
+### Cosa farei
+
+| # | Azione | Impatto |
+|---|--------|---------|
+| 1 | Estrarre `TEAMS_DB` in `/data/teams.json`, caricare via `fetch()` | -4.081 righe, file gestibile |
+| 2 | Dividere in moduli ES: `data.js`, `engine.js`, `ui-matches.js`, `ui-bracket.js`, `ui-betslip.js`, `ui-stats.js` | Separazione responsabilità |
+| 3 | Creare helper `findMatchById(id)` | Elimina 4+ duplicazioni |
+| 4 | Memoizzare `calculateMatchOdds()` — invalidare solo al cambio lineup | Performance 10x |
+| 5 | Aggiungere debounce (300ms) all'input di ricerca | UX + performance |
+| 6 | Estrarre magic numbers in oggetto `CONFIG` | Manutenibilità |
+| 7 | Sostituire `onclick` inline con `addEventListener` delegato | Best practice, rimuove `window.*` |
+| 8 | Aggiornamenti DOM selettivi invece di `innerHTML = ""` | Performance rendering |
+| 9 | Validazione input score con controlli NaN/min/max | Robustezza |
+
+---
+
+## 3. 🎨 HTML & CSS
+
+### HTML — Punti di forza
+
+- ✅ Buon uso di HTML semantico: `<header>`, `<main>`, `<nav>`, `<section>`, `<aside>`
+- ✅ Gerarchia heading corretta: `<h1>` → `<h2>` → `<h3>` → `<h4>`/`<h5>`
+- ✅ Tabelle strutturate: `<thead>`, `<tbody>`, `<th>`
+- ✅ `lang="it"` e viewport meta tag presenti
+- ✅ Architettura SPA-shell pulita con container JS-populated
+- ✅ Font preconnect per Google Fonts
+
+### HTML — Problemi
+
+> [!CAUTION]
+> **Zero attributi ARIA in tutto il file.** Nessun `role`, `aria-label`, `aria-selected`, `aria-expanded`, `aria-live`, `aria-modal`. Questo rende l'app **completamente inaccessibile** a screen reader.
+
+| Problema | Dettaglio |
+|---|---|
+| **Tab senza ARIA** | Mancano `role="tab"`, `role="tablist"`, `role="tabpanel"`, `aria-selected` |
+| **Modal senza ARIA** | Manca `role="dialog"`, `aria-modal="true"`, focus trapping |
+| **Label mancanti** | Search input (L33), Group filter (L37), Date filter (L56) senza `<label>` |
+| **No meta description** | Nessun tag SEO `<meta name="description">` |
+| **No Open Graph** | Nessun meta per condivisione social |
+| **No favicon** | Nessun `<link rel="icon">` |
+| **No skip navigation** | Nessun link "salta al contenuto" |
+| **H1 non descrittivo** | `<h1>` contiene solo "betaland", non descrive il contenuto |
+| **Dati hardcoded** | Valori statici `2.65` e `28.0%` in HTML (L228, L232) |
+
+### CSS — Punti di forza
+
+- ✅ **22 CSS Custom Properties** in `:root` usate consistentemente
+- ✅ **CSS Grid** usato estensivamente con `auto-fill` + `minmax()` per griglie responsive
+- ✅ **Glassmorphism** con `backdrop-filter: blur()` per estetica moderna
+- ✅ **Naming BEM-ish** — classi descrittive e namespaced
+- ✅ Sezioni ben commentate e ordinate logicamente
+- ✅ Transizioni smooth su elementi interattivi
+
+### CSS — Pattern duplicati da estrarre
+
+```css
+/* Questo pattern "glass card" è ripetuto 4+ volte: */
+/* .match-card, .group-card, .analytics-card, .stats-card */
+background: var(--bg-secondary);
+border: 1px solid var(--border-color);
+border-radius: var(--radius-md);
+padding: 20px;
+backdrop-filter: blur(8px);
+-webkit-backdrop-filter: blur(8px);
+box-shadow: var(--shadow-main);
+
+/* → Dovrebbe diventare una classe .glass-card condivisa */
+
+/* Styling input ripetuto per 6+ selettori: */
+/* .search-box input, .score-inp, .br-score-inp, .stake-row input, 
+   .form-group input, .stats-select */
+background: ...; border: ...; color: ...; outline: none;
+
+/* → Dovrebbe diventare una classe .form-control */
+```
+
+**Risparmio stimato:** ~120+ righe eliminando le duplicazioni.
+
+### CSS — Responsive Design
+
+````carousel
+**3 breakpoint definiti:**
+
+| Breakpoint | Effetto |
+|---|---|
+| `≤1200px` | Griglia a colonna singola, **sidebar scompare** ⚠️ |
+| `≤900px` | Griglia stats collassa |
+| `≤768px` | Header, form, analytics stackati |
+
+<!-- slide -->
+**Problemi responsive critici:**
+
+1. **Sidebar `display: none` a ≤1200px** — il bet slip scompare completamente senza modo di riaprirlo
+2. **Non è mobile-first** — CSS desktop-first con `max-width`, best practice è `min-width`
+3. **Tabellone da 2200px** — richiede scroll orizzontale enorme anche su mobile
+4. **5 tab buttons troppo stretti** su mobile — nessun overflow/scroll handling
+5. **Nessun font-size responsive** — base 14px fisso a ogni viewport
+6. **Modal da 980px** — poco adattabile a schermi piccoli
+````
+
+### CSS — Performance
+
+- **10 font weights caricati** (Inter 300-800 + Outfit 400-800) — probabilmente molti inutilizzati
+- **FontAwesome completo** da CDN — potrebbe bastare un subset
+- **`backdrop-filter: blur()` su 6+ elementi** simultaneamente — pesante per la GPU, specialmente con decine di card visibili
+- **Nessuna minificazione CSS** — file in formato development
+
+### Cosa farei per HTML/CSS
+
+| # | Azione | Impatto |
+|---|--------|---------|
+| 1 | **Aggiungere ARIA completo** — `role="tab/tablist/tabpanel"`, `role="dialog"`, `aria-label`, focus trapping | Accessibilità |
+| 2 | **Aggiungere toggle button** per sidebar su ≤1200px | UX tablet/mobile |
+| 3 | **Estrarre `.glass-card` e `.form-control`** come classi condivise | -120 righe CSS |
+| 4 | **Audit font weights** — probabilmente bastano Inter 400/500/600/700 + Outfit 500/700 | Performance |
+| 5 | **Tab scrollabili** su mobile con `overflow-x: auto` | UX mobile |
+| 6 | **Aggiungere meta SEO** — description, Open Graph, favicon | SEO |
+| 7 | **Aggiungere `prefers-reduced-motion`** | Accessibilità |
+| 8 | **Limitare `backdrop-filter`** solo a header/sidebar/modal overlay | Performance GPU |
+| 9 | **Usare `:focus-visible`** invece di `:focus` | UX tastiera vs mouse |
+| 10 | **Tipografia responsive** con `clamp()` | Leggibilità multi-device |
+
+---
+
+## 4. 🐍 Pipeline ETL — crunch_archives.py
+
+> [!WARNING]
+> **Path hardcoded verso un'altra conversazione Gemini:**
+> ```python
+> c:\Users\betaland operatore\.gemini\antigravity\brain\71001de4-...\scratch\teams_db.json
+> ```
+> Questo non funzionerà su un'altra macchina e si romperà se la conversazione viene eliminata.
+
+La pipeline è ben strutturata in 3 parti (H2H, Valutazioni Rosa, StatsBomb) e produce i 4 JSON finali da ~1.4MB totali. Dipendenze: `pandas`, `orjson` (opzionale).
+
+---
+
+## 5. 🎯 Piano d'Azione Prioritizzato
+
+### 🔴 Fase 1 — Critiche (fare subito)
+
+| # | Intervento | Effort | Impatto |
+|---|-----------|--------|---------|
+| 1 | Inizializzare Git + `.gitignore` | 10 min | Versioning sicuro |
+| 2 | Estrarre `TEAMS_DB` → `/data/teams.json` | 30 min | -70% righe app.js |
+| 3 | Rimuovere/spostare 655MB di CSV inutilizzati | 5 min | -655MB di peso |
+| 4 | Eliminare `app.js.bak` e residui | 2 min | Pulizia |
+| 5 | Aggiungere toggle sidebar ≤1200px | 30 min | UX tablet |
+
+### 🟡 Fase 2 — Alte (settimana successiva)
+
+| # | Intervento | Effort | Impatto |
+|---|-----------|--------|---------|
+| 6 | Modularizzare `app.js` in 6+ moduli ES | 2-3 ore | Manutenibilità |
+| 7 | Creare `package.json` + `README.md` | 30 min | Professionalità progetto |
+| 8 | Estrarre `.glass-card` + `.form-control` in CSS | 1 ora | -120 righe, coerenza |
+| 9 | Memoizzare odds + debounce ricerca | 1 ora | Performance 10x |
+| 10 | Rinominare cartelle archive | 10 min | Compatibilità |
+
+### 🟠 Fase 3 — Medie (sprint successivo)
+
+| # | Intervento | Effort | Impatto |
+|---|-----------|--------|---------|
+| 11 | ARIA attributes + focus trapping modal | 2-3 ore | Accessibilità |
+| 12 | Meta SEO + Open Graph + favicon | 30 min | SEO |
+| 13 | Estrarre magic numbers in `CONFIG` | 1 ora | Manutenibilità |
+| 14 | Sostituire `onclick` inline → `addEventListener` | 1-2 ore | Best practice |
+| 15 | Audit font weights + subset FontAwesome | 30 min | Performance caricamento |
+
+### 🔵 Fase 4 — Basse (quando possibile)
+
+| # | Intervento | Effort | Impatto |
+|---|-----------|--------|---------|
+| 16 | Refactor CSS mobile-first | 2-3 ore | Best practice |
+| 17 | Aggiungere `prefers-reduced-motion` | 15 min | Accessibilità |
+| 18 | Tipografia responsive con `clamp()` | 30 min | UX multi-device |
+| 19 | DOM updates selettivi | 3-4 ore | Performance rendering |
+| 20 | CSS `@layer` + nesting | 1-2 ore | Organizzazione moderna |
+
+---
+
+## 📈 Impatto Stimato Complessivo
+
+| Metrica | Prima | Dopo Fase 1-2 |
+|---|---|---|
+| Dimensione progetto | ~850 MB | ~195 MB (-77%) |
+| Righe app.js | 5.787 | ~1.700 (-71%) |
+| Righe style.css | 2.079 | ~1.950 (-6%) |
+| Version control | ❌ Nessuno | ✅ Git |
+| Documentazione | ❌ Nessuna | ✅ README + package.json |
+| Modularità | 1 file monolitico | 6+ moduli ES |
+
+> [!TIP]
+> Il **singolo intervento con il miglior rapporto effort/impatto** è l'estrazione di `TEAMS_DB` in un file JSON separato: 30 minuti di lavoro per eliminare 4.081 righe (70.5%) dal file principale.
+
+Agente	Focus
+🔍 JavaScript Code Analyst	Analisi del codice app.js (162KB!), qualità, performance, struttura
+🎨 HTML/CSS Analyst	Struttura HTML, organizzazione CSS, responsive design, accessibilità
+🏗️ Architecture & Data Analyst	Architettura progetto, gestione dati, cartelle archive, server, dipendenze
+Sto attendendo i loro report. Nel frattempo, alcune osservazioni immediate dalla struttura:
+
+4 cartelle "archive" con nomi generici (archive, archive (1), ecc.) — spazi e parentesi nei nomi sono problematici
+app.js da 162KB — un singolo file JS enorme
+app.js.bak — backup manuale, indice di assenza di version control
+~700MB+ di CSV in archive (1) — dati enormi nella cartella del progetto
+File misti (.docx, .odt, .pdf) — documentazione non strutturata
+Appena gli agenti completano l'analisi, consoliderò tutto in un report dettagliato. 🔄
+
+Message from Architecture Data Analyst (research)
+Ottimo, il primo agente (Architecture & Data) ha completato con un report molto dettagliato. Attendo i risultati degli altri due agenti prima di compilare il report finale.
+
+Message from JavaScript Code Analyst (research)
+Eccellente, anche il JavaScript Analyst ha completato. Manca solo il report dell'HTML/CSS Analyst, poi compilo tutto.
+
+Message from HTML CSS Analyst (research)
+L'analisi è completa. Ho pubblicato il report dettagliato — ecco i punti chiave:
+
+🔴 Le 5 criticità più importanti
+app.js è un monolite da 162KB — il 70.5% (4.081 righe) è un database JSON inline. Estraendolo in un file separato, passeresti a ~1.700 righe
+Nessun version control — niente Git, niente .gitignore, solo un app.js.bak manuale
+~655MB di CSV inutilizzati — game_lineups.csv (351MB), game_events.csv (156MB), appearances.csv (148MB) non sono referenziati da nessun codice
+Zero accessibilità — nessun attributo ARIA in tutto l'HTML (tab, modal, form)
+Sidebar bet slip scompare su schermi ≤1200px senza modo di riaprirla
+💡 L'intervento con il miglior ROI
+Estrarre TEAMS_DB in /data/teams.json: 30 minuti di lavoro → -70.5% delle righe del file principale.
+
+# Rapporto di Audit di Gruppo: World Cup 2026 Simulator & Betting Advisor
+
+Il team di agenti ha analizzato approfonditamente l'intera cartella di progetto `c:\Users\betaland operatore\Documents\Mondiali`. Di seguito viene presentata l'analisi strutturata divisa per aree di competenza, indicando dettagliatamente cosa può essere migliorato e come risolverlo (senza aver modificato alcun file originale, come richiesto).
+
+---
+
+## 1. Sicurezza e Backend (`server.js`)
+
+Il server HTTP in Node.js è leggero e funzionale, ma presenta alcune vulnerabilità e limitazioni tecniche importanti:
+
+### A. Vulnerabilità di Directory Traversal (Parziale Folder Name Traversal)
+*   **Problema**: Alla riga 29 di `server.js`, la condizione `if (!filePath.startsWith(__dirname))` è debole. Se la cartella del progetto si chiama `/Mondiali` e sullo stesso livello esiste una cartella chiamata `/Mondiali-segreti`, una richiesta HTTP verso `../Mondiali-segreti/file.txt` supererà il controllo perché il percorso risultante inizia con la stessa stringa di `__dirname`.
+*   **Miglioramento**: Risolvere i percorsi in modo assoluto e verificare che il percorso richiesto si trovi effettivamente all'interno della directory del progetto aggiungendo il separatore di sistema.
+*   **Soluzione**:
+    ```javascript
+    const safePath = path.resolve(filePath);
+    const baseDirectory = path.resolve(__dirname);
+    if (!safePath.startsWith(baseDirectory + path.sep) && safePath !== baseDirectory) {
+        res.writeHead(403, { 'Content-Type': 'text/html' });
+        res.end('<h1>403 Forbidden</h1>');
+        return;
+    }
+    ```
+
+### B. Gestione dei Parametri di Query
+*   **Problema**: Il server non rimuove i parametri di query (es. `?v=1.0`) o le ancore hash dall'URL prima di cercare i file sul disco. Una richiesta come `/style.css?v=1` fallisce con un errore `404 File Not Found` perché cerca sul file system un file chiamato letteralmente `style.css?v=1`.
+*   **Miglioramento**: Estrarre solo il `pathname` dall'URL prima di comporre `filePath`.
+*   **Soluzione**:
+    ```javascript
+    const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    let urlPath = decodeURIComponent(parsedUrl.pathname);
+    let filePath = path.join(__dirname, urlPath === '/' ? 'index.html' : urlPath);
+    ```
+
+### C. Encoding dei File Binari
+*   **Problema**: Il metodo `fs.readFile` invia tutti i contenuti forzando l'encoding `'utf-8'` (`res.end(content, 'utf-8')`). Questo corrompe i file binari, rendendo illegibili immagini (`.png`, `.jpg`) o documenti PDF (come `tabellone-fase-eliminazione-mondiali-2026.pdf`).
+*   **Miglioramento**: Rimuovere l'argomento `'utf-8'` per inviare i file binari come `Buffer` nativo e aggiornare la lista `MIME_TYPES` inserendo le estensioni `.docx` e `.odt` presenti nella cartella.
+
+---
+
+## 2. Qualità del Codice e Architettura (`app.js`)
+
+Il codice di `app.js` contiene l'intera logica di simulazione ma soffre di problemi di accoppiamento e scalabilità:
+
+### A. Esternalizzazione del Database (`TEAMS_DB`)
+*   **Problema**: `TEAMS_DB` occupa circa **4.000 righe** di codice cablato direttamente all'interno di `app.js`. Questo rende il caricamento del file JavaScript pesante per il browser ed ostacola modifiche esterne ai dati delle squadre o ai rating dei giocatori.
+*   **Miglioramento**: Spostare l'intero database in un file JSON esterno (es. `/data/teams_db.json`) e caricarlo asincronamente all'avvio dell'applicazione.
+*   **Soluzione**:
+    ```javascript
+    // All'avvio dell'applicazione
+    const teamsRes = await fetch('/data/teams_db.json');
+    const TEAMS_DB = await teamsRes.json();
+    ```
+
+### B. Tolleranza ai Guasti durante l'Inizializzazione
+*   **Problema**: L'app utilizza `Promise.all` per caricare le statistiche asincrone. Se uno solo dei file JSON (`squad_values.json`, `h2h_stats.json`, ecc.) restituisce un errore 404 o non è formattato correttamente, l'intero blocco fallisce e blocca l'inizializzazione di tutta l'applicazione (partite, classifiche e tabellone non vengono mostrati).
+*   **Miglioramento**: Utilizzare `Promise.allSettled` o blocchi `try/catch` individuali per evitare che il fallimento di un archivio storico blocchi il simulatore principale.
+
+### C. Persistenza dello Stato
+*   **Problema**: Punteggi simulati, modifiche alle formazioni (lineup) e nuovi giocatori creati vengono persi al rinfresco della pagina.
+*   **Miglioramento**: Salvare le variabili di stato (`matches`, `knockoutMatches`, `TEAMS_DB` modificato) su `localStorage` in modo da ripristinare la sessione di simulazione dell'utente.
+
+---
+
+## 3. Logica Matematica e Algoritmi (Bug Critici in `app.js`)
+
+L'analisi dell'algoritmo di quote e probabilità ha evidenziato due bug che possono compromettere i calcoli matematici:
+
+### Bug 1: Valori NaN nelle Quote per Underflow Floating-Point
+*   **Problema**: Se c'è una differenza estrema di valore/rating tra le due squadre, il calcolo dei gol attesi (`lambdaA` o `lambdaB`) può salire molto. Nel modello di Poisson, se `lambda` è alto (es. > 150), `Math.exp(-lambda)` restituisce esattamente `0` (underflow). Questo azzera tutti gli elementi della distribuzione, portando `sumA` a `0`. Successivamente, la riga `distA[g] /= sumA` causa una divisione `0/0` che riempie l'array di valori `NaN`. Questo errore si propaga a cascata a tutte le quote del match.
+*   **Miglioramento**: Limitare il valore massimo di `lambda` ad un livello realistico per una partita di calcio (es. massimo 8.0 gol attesi) e validare che la somma sia maggiore di zero prima di dividere.
+*   **Soluzione**:
+    ```javascript
+    let lambdaA = ...;
+    lambdaA = Math.min(8.0, Math.max(0.1, lambdaA)); // Tetto massimo protettivo
+    ```
+
+### Bug 2: Percentuali di Pareggio Negative ed Anomalia Quota `1.01`
+*   **Problema**: Il calcolo di `pctX` (probabilità del pareggio) è calcolato per sottrazione: `const pctX = 100 - pctA - pctB`. A causa di arrotondamenti o dell'aggiunta del fattore Bayesiano per lo storico H2H, la somma di `pctA` e `pctB` può superare 100% (es. `51` e `51`), facendo sì che `pctX` diventi negativo (es. `-2%`). Questo genera due problemi:
+    1.  La UI mostra scritte incoerenti come "Pareggio -2%".
+    2.  Nel calcolo della quota `oddX`, la divisione per un valore negativo restituisce un numero negativo che viene poi corretto da `Math.max(1.01, valore_negativo)` a `1.01`. Questo fa sì che per una partita equilibrata il sistema consigli una quota di pareggio di `1.01` (considerandolo quasi certo), che è un grave errore per un betting advisor.
+*   **Miglioramento**: Assicurare che `pctX` non scenda mai sotto lo zero e normalizzare le tre probabilità affinché la somma sia sempre esattamente 100%.
+*   **Soluzione**:
+    ```javascript
+    let pctA = Math.round(winA * 100);
+    let pctB = Math.round(winB * 100);
+    let pctX = Math.max(0, 100 - pctA - pctB);
+    
+    // Ricalibrazione per assicurare somma = 100%
+    const totale = pctA + pctB + pctX;
+    if (totale !== 100) {
+        // Aggiusta la differenza sulla quota più alta o sul pareggio
+    }
+    ```
+
+---
+
+## 4. Esperienza Utente, CSS e Grafica (`index.html` e `style.css`)
+
+### A. Il Bug della Schedina Invisibile su Dispositivi Mobili (CRITICO)
+*   **Problema**: Nelle media query per schermi con larghezza inferiore a 1200px, la sidebar `.bet-slip-sidebar` (la schedina combinata) riceve la regola `display: none;`. Tuttavia, non è presente alcun pulsante o menu nell'interfaccia per aprirla. Questo significa che **gli utenti su smartphone o tablet non possono visualizzare la schedina, modificare l'importo da scommettere, né salvare la simulazione**, rendendo di fatto l'app inutilizzabile su mobile.
+*   **Miglioramento**: Aggiungere un pulsante fluttuante (Floating Action Button) in basso a destra visibile solo su mobile che apre la schedina come un pannello a scorrimento (drawer) dal basso o da destra.
+*   **Soluzione CSS**:
+    ```css
+    @media (max-width: 1200px) {
+        .mobile-slip-trigger { display: flex; } /* Pulsante fluttuante */
+        .bet-slip-sidebar {
+            display: flex;
+            transform: translateX(110%);
+            transition: transform 0.3s ease;
+            position: fixed;
+            bottom: 0; right: 0;
+            width: 100%; max-width: 380px; height: 80vh;
+            z-index: 999;
+        }
+        .bet-slip-sidebar.active { transform: translateX(0); }
+    }
+    ```
+
+### B. Compressione dei Tab su Schermi Piccoli
+*   **Problema**: La barra `.tab-navigation` forza tutte le 5 schede su una singola riga senza andare a capo. Su schermi piccoli (< 480px), i testi dei pulsanti si sovrappongono o vengono troncati orrendamente (es. "Tabellone Fasi Finali").
+*   **Miglioramento**: Abilitare lo scorrimento orizzontale della barra di navigazione su mobile, permettendo all'utente di scorrere le schede con il dito mantenendo intatta la leggibilità del testo.
+*   **Soluzione CSS**:
+    ```css
+    @media (max-width: 768px) {
+        .tab-navigation {
+            overflow-x: auto;
+            white-space: nowrap;
+            display: flex;
+            gap: 10px;
+        }
+        .tab-btn { flex: 0 0 auto; }
+    }
+    ```
+
+### C. Accessibilità (WCAG AA) e Contrasto cromatico
+*   **Contrasto del testo**: Il colore del testo `--text-muted: #64748b` usato su sfondo grigio scuro ha un rapporto di contrasto di **2.44:1**, ben al sotto del limite di accessibilità WCAG AA (**4.5:1**). Questo rende le date dei match e le descrizioni secondarie difficili da leggere. Si consiglia di cambiarlo in `#8b9bb4`.
+*   **Associazione delle Label nel Form**: Nel modulo di creazione del giocatore nella modale, i tag `<label>` non sono associati agli input tramite l'attributo `for="..."`, impedendo agli screen reader di associare correttamente i campi.
+*   **Pulsanti Iconografici**: Il pulsante di chiusura della modale contiene solo l'icona `xmark` di FontAwesome. Va aggiunto un attributo `aria-label="Chiudi"` per renderlo comprensibile agli ipovedenti.
+
+### D. Connessioni Grafiche del Tabellone (Bracket)
+*   **Problema**: Le schede del tabellone ad eliminazione diretta fluttuano all'interno delle rispettive colonne senza alcuna linea visiva di collegamento. È difficile per l'utente capire graficamente quale partita generi il turno successivo.
+*   **Miglioramento**: Aggiungere linee di collegamento orizzontali e verticali utilizzando pseudo-elementi CSS (`::after`/`::before`) o un livello SVG di sfondo.
+
+---
+
+## 5. Manutenzione dei File del Progetto
+
+*   **File duplicati/backup**: Rimuovere `app.js.bak` per mantenere la pulizia del workspace (lo storico è gestito da Git).
+*   **Organizzazione degli archivi**: Le cartelle `archive`, `archive (1)`, `archive (2)` e `archive (3)` contengono molti file CSV di grandi dimensioni. Dovrebbero essere riorganizzate all'interno di una cartella strutturata `data/raw/` e aggiunte al file `.gitignore` per evitare di caricare gigabyte di dati grezzi non utilizzati direttamente dall'applicazione web.
+*   **Percorsi Hardcoded**: Nel file `scratch/crunch_archives.py` (riga 28), c'è un percorso assoluto che punta ad un ID di conversazione temporaneo (`71001de4-5f52-44ab-a44c-475ec33db532`). Questo rende lo script inutilizzabile all'infuori di quella specifica cartella temporanea. Dovrebbe essere sostituito con un percorso dinamico relativo alla cartella di esecuzione.
+
+---
+
+## Tabella Riassuntiva delle Priorità di Intervento
+
+| Area | Descrizione del Problema | Impatto | Priorità | Azione Consigliata |
+| :--- | :--- | :--- | :--- | :--- |
+| **UI/UX Mobile** | Schedina (`.bet-slip-sidebar`) completamente invisibile su mobile. | Bloccante per utenti smartphone. | **CRITICA** | Aggiungere Floating Button e drawer CSS. |
+| **Algoritmo** | Arrotondamento probabilità che genera pareggio negativo e quote a `1.01`. | Genera quote errate e visualizzazione corrotta. | **ALTA** | Normalizzare le percentuali a 100% e proteggere da valori negativi. |
+| **Algoritmo** | Possibile divisione `0/0` e valori `NaN` per underflow di Poisson. | Rompe l'intera visualizzazione delle quote. | **ALTA** | Impostare un limite massimo (cap) per i gol attesi (`lambda`). |
+| **Sicurezza** | Directory Traversal debole su `server.js`. | Rischio di lettura file esterni al progetto. | **ALTA** | Usare `path.resolve` e controllare il percorso assoluto. |
+| **Struttura** | Database di 4.000 righe incorporato in `app.js`. | Difficile manutenzione dei dati e pesantezza del codice. | **MEDIA** | Spostare `TEAMS_DB` in un file JSON esterno caricato tramite `fetch`. |
+| **Accessibilità** | Contrasto insufficiente (2.44:1) per testi secondari. | Bassa leggibilità per ipovedenti. | **MEDIA** | Modificare il colore `--text-muted` a `#8b9bb4`. |
+| **Organizzazione** | Molteplici cartelle `archive` duplicate e file `.bak`. | Disordine nel workspace. | **BASSA** | Raggruppare i file in sotto-cartelle ordinate ed eliminare i backup temporanei. |
+
+
+I have initiated two specialized agents to perform a detailed analysis of your workspace folder without modifying any files:
+
+Architectural Auditor Agent: Focused on analyzing the Node.js server (server.js), core application logic and algorithms (app.js, including the Poisson-based probability modeling and H2H statistics), state management, and file system hygiene (redundant backup files, temporary folder structure, and data management).
+UI/UX & CSS Auditor Agent: Focused on auditing the interface's markup structure (index.html), the style sheet (style.css), responsiveness across screens, CSS modularity, typography, accessibility, and visual aesthetics.
+I am waiting for their detailed reports and will summarize their findings as soon as they complete their evaluation.
+
+Message from Frontend & Design Auditor (UI_UX_Auditor)
+I have received the UI/UX & CSS Audit Report from the first agent.
+
+The audit highlights some minor semantic structure opportunities and a critical bug where the betting slip sidebar is completely hidden (display: none) on screen widths below 1200px without any button to toggle it back, rendering the simulator unusable for mobile users. It also covers contrast adjustments to comply with WCAG AA accessibility standards, text overflow solutions for the mobile tab bar, and adding visual connecting lines between bracket nodes.
+
+I am now waiting for the Codebase & Architecture Auditor to complete its analysis of the JavaScript algorithms, Poisson modeling, database structure, and server file layout. I will provide both reports together once they are fully ready.
+
+Message from Codebase & Algorithm Auditor (Architectural_Auditor)
+Ho analizzato la cartella di progetto insieme a una squadra di agenti specializzati (uno per l'architettura/algoritmi e uno per la UI/UX e il design). Come richiesto, non è stato modificato o toccato alcun file.
+
+Ho raccolto tutti i dettagli emersi in un report completo che puoi consultare direttamente qui: 👉 
+analysis_report.md
+
+Di seguito ti riassumo i punti più importanti e urgenti su cui potremmo intervenire in futuro:
+
+1. 🛑 Bug Critico in 
+style.css
+ (Mobile)
+Problema: Sotto i 1200px di larghezza, la schedina (.bet-slip-sidebar) viene nascosta con display: none;, ma nell'HTML non esiste alcun pulsante o menu mobile per riaprirla. Chi usa lo smartphone non può scommettere o simulare combinazioni.
+Miglioramento: Aggiungere un pulsante fluttuante mobile per aprire la schedina come pannello scorrevole (drawer).
+2. 🧮 Bug Matematici in 
+app.js
+Underflow di Poisson (NaN): Quando la differenza tra le squadre è estrema, il valore di lambda sale troppo, mandando in underflow il calcolo di Poisson. La somma delle probabilità diventa 0 e la divisione successiva genera valori NaN in tutte le quote.
+Percentuali negative (Quota a 1.01): Per via di arrotondamenti o blending con i testa a testa storici, la probabilità di pareggio (pctX) può diventare negativa. Questo fa sì che l'applicazione calcoli per il pareggio una quota errata che viene forzata a 1.01 (indicandolo erroneamente come vincita sicura).
+3. 🔒 Sicurezza e Routing in 
+server.js
+Directory Traversal: Il controllo startsWith(__dirname) è debole e potrebbe esporre cartelle esterne con prefissi simili (es. /Mondiali-segreti).
+Parametri Query: Il server non rimuove i parametri dagli URL (es. style.css?v=1), restituendo un errore 404 per le richieste del browser che includono parametri di caching.
+Corruzione file binari: Il server forza l'encoding utf-8 su tutte le risposte, corrompendo le immagini e i file PDF.
+4. 📂 Organizzazione e Pulizia
+È presente un file duplicato 
+app.js.bak
+ che andrebbe rimosso.
+Le cartelle archive, archive (1), archive (2) e archive (3) contengono molti gigabyte di CSV grezzi. Andrebbero riorganizzate e gitignorate, conservando solo i file aggregati in data/stats/.
+Fammi sapere se desideri approfondire uno di questi punti o procedere con le modifiche risolutive per uno o più aspetti!
+
+Ho avviato una squadra di agenti specializzati per analizzare in modo approfondito il tuo progetto, come da te richiesto, senza toccare né modificare nulla.
+
+Ecco come ci siamo divisi il lavoro:
+
+Analista Frontend: Sta esaminando index.html e style.css per valutare la UI/UX, il responsive design, l'accessibilità e la struttura generale dei fogli di stile.
+Analista JavaScript: Sta ispezionando app.js e server.js per giudicare la qualità del codice, la modularità e le performance.
+Analista Strutturale: Sta valutando la struttura complessiva della cartella (inclusi i file .bak, le varie cartelle archive e i documenti), per proporre best practices sulla gestione del progetto e dei file temporanei.
+Non appena gli agenti avranno terminato la loro esplorazione, raccoglierò i loro report e ti fornirò un'analisi dettagliata e completa su cosa e come migliorerei il progetto. Ci vorrà solo qualche momento.
+
+Message from Frontend Analyst (research)
+Sto raccogliendo i risultati. Finora ho ricevuto il report dall'analista Frontend e sono in attesa degli altri due. Ti aggiorno appena il quadro è completo.
+
+Message from Project Structure Analyst (research)
+Schedule wait timer: Timer Cancelled
+Perfetto, è arrivato anche il report dell'analista strutturale. Ora manca solo il resoconto sul JavaScript, dopodiché ti scriverò il piano dei miglioramenti. A tra pochissimo!
+
+Message from JavaScript Analyst (research)
+Schedule wait timer: Timer Cancelled
+Ho ricevuto tutti i report dalla mia squadra di agenti virtuali! Abbiamo esaminato ogni angolo della cartella Mondiali senza toccare né modificare nulla.
+
+Il progetto ha già un'ottima base, in particolare a livello di interfaccia visiva, ma ci sono ampi margini di miglioramento strutturale e di performance. Ecco un riassunto di cosa miglioreremmo, diviso per aree di competenza:
+
+🗂️ 1. Struttura del Progetto (Agente Strutturale)
+Attualmente la cartella principale è un po' caotica e ospita codice, documenti (.docx, .pdf) e file di backup in un unico calderone.
+
+Controllo Versione: Non stiamo usando Git. Ci sono file come app.js.bak, che indicano backup manuali. Miglioramento: Inizializzare un repository Git (git init) per tenere traccia della cronologia delle modifiche ed eliminare la necessità di duplicare file a mano.
+Riorganizzazione Cartelle: Molti dati sono sparsi in cartelle anonime come archive, archive (1), ecc. Miglioramento: Creare una struttura netta:
+src/ per il codice frontend (index.html, CSS e JS).
+server/ per il backend.
+docs/ per raccogliere tutti i documenti Word/PDF.
+data/ o datasets/ rinominando le cartelle "archive" in modo descrittivo (es. dati di Transfermarkt o StatsBomb).
+Gestione Dipendenze: Manca un package.json. Miglioramento: Usare npm init per poter integrare librerie e, in futuro, tool di build moderni come Vite o Webpack.
+⚙️ 2. Logica Codebase & Backend (Agente JavaScript)
+Il codice funziona, ma è diventato difficile da scalare e da manutenere.
+
+Il Monolite app.js: Questo file conta oltre 5.700 righe! Mescola il database enorme (TEAMS_DB), la gestione dello stato, la logica statistica (algoritmi di Poisson) e la manipolazione dell'interfaccia UI. Miglioramento: Spezzare il file in Moduli ES6 (es. data.js, stats.js, ui.js) ed esportare i dati hardcoded in un file teams.json separato, caricandolo in modo asincrono (es. con fetch).
+Performance Frontend: Attualmente il rendering avviene iniettando massicciamente stringhe HTML in cicli (tramite innerHTML). Miglioramento: Usare la Event Delegation per migliorare la memoria e valutare un approccio a template o una libreria ultraleggera (come Alpine.js o Vue) per reattività pura.
+Ottimizzazioni Server Node.js: Il server.js carica interi file in RAM prima di inviarli al client (usando fs.readFile). Con file voluminosi come i PDF o i file docx presenti, la memoria può saturarsi. Miglioramento: Sostituire con i File Streams (fs.createReadStream().pipe(res)). Inoltre, andrebbero abilitati il caching dei file statici e la compressione (Gzip) per ridurre il peso in download.
+🎨 3. UI/UX e Accessibilità (Agente Frontend)
+L'estetica è il punto forte del progetto: l'uso della "dark mode", del "glassmorphism" e di font moderni lo rende un prodotto premium. Tuttavia, ci sono alcuni dettagli da raffinare:
+
+Miglioramento Accessibilità (A11y): Aggiungere i ruoli ARIA corretti alle tab di navigazione, garantire etichette (label) per tutti gli input di testo e impostare visivamente gli stati :focus-visible in modo che il sito sia navigabile agevolmente tramite tastiera.
+UX su Mobile: Su schermi piccoli (<1200px) il pannello laterale della "Schedina/Bet Slip" si nasconde in background. Miglioramento: Introdurre un bottone d'azione fluttuante (FAB) ben visibile su mobile che permetta all'utente di richiamare o nascondere la schedina in modo intuitivo.
+Vuoi che procediamo a implementare alcuni di questi miglioramenti? Se sì, dimmi pure da quale area preferisci che io parta (struttura, refactoring JS o UI)!
+

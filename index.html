@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betaland - World Cup 2026 Betting Advisor & Simulator</title>
+    <meta name="description" content="Simulatore dei Mondiali di Calcio 2026 con quote scommesse calcolate in tempo reale tramite modello di Poisson, metriche StatsBomb e storico testa a testa dal 1872.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="header-logo">
+                <div class="logo-badge">B</div>
+                <div class="logo-text">
+                    <h1>betaland</h1>
+                    <span>World Cup 2026 Simulator & Advisor</span>
+                </div>
+            </div>
+            
+            <div class="header-controls">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="match-search" placeholder="Cerca squadra o giocatore..." aria-label="Cerca squadra o giocatore">
+                </div>
+                
+                <div class="filter-box">
+                    <label for="group-filter" class="sr-only" style="display:none;">Filtra per Gruppo</label>
+                    <select id="group-filter" aria-label="Filtra per Gruppo">
+                        <option value="all">Tutti i Gruppi</option>
+                        <option value="A">Gruppo A</option>
+                        <option value="B">Gruppo B</option>
+                        <option value="C">Gruppo C</option>
+                        <option value="D">Gruppo D</option>
+                        <option value="E">Gruppo E</option>
+                        <option value="F">Gruppo F</option>
+                        <option value="G">Gruppo G</option>
+                        <option value="H">Gruppo H</option>
+                        <option value="I">Gruppo I</option>
+                        <option value="J">Gruppo J</option>
+                        <option value="K">Gruppo K</option>
+                        <option value="L">Gruppo L</option>
+                    </select>
+                </div>
+
+                <div class="date-simulator">
+                    <span class="sim-label"><i class="fa-solid fa-calendar-day"></i> Simulatore Giorno:</span>
+                    <label for="date-filter" class="sr-only" style="display:none;">Filtra per Data</label>
+                    <select id="date-filter" aria-label="Filtra per Giorno di Simulazione">
+                        <option value="all">Tutti i Giorni</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- Workspace Layout -->
+        <div class="app-body">
+            
+            <!-- Main Content Area -->
+            <main class="main-content">
+                
+                <!-- Navigation Tabs (ARIA Compliant) -->
+                <nav class="tab-navigation" role="tablist" aria-label="Navigazione principale dell'applicazione">
+                    <button class="tab-btn active" data-tab="matches" role="tab" aria-selected="true" aria-controls="tab-matches" id="tab-btn-matches">
+                        <i class="fa-solid fa-circle-play"></i> Partite e Quote
+                    </button>
+                    <button class="tab-btn" data-tab="bracket" role="tab" aria-selected="false" aria-controls="tab-bracket" id="tab-btn-bracket">
+                        <i class="fa-solid fa-sitemap"></i> Tabellone Fasi Finali
+                    </button>
+                    <button class="tab-btn" data-tab="standings" role="tab" aria-selected="false" aria-controls="tab-standings" id="tab-btn-standings">
+                        <i class="fa-solid fa-table-list"></i> Classifiche Live
+                    </button>
+                    <button class="tab-btn" data-tab="analytics" role="tab" aria-selected="false" aria-controls="tab-analytics" id="tab-btn-analytics">
+                        <i class="fa-solid fa-chart-line"></i> Analisi e Infortuni
+                    </button>
+                    <button class="tab-btn" data-tab="stats" role="tab" aria-selected="false" aria-controls="tab-stats" id="tab-btn-stats">
+                        <i class="fa-solid fa-database"></i> Archivio & Statistiche
+                    </button>
+                </nav>
+
+                <!-- Tab: Matches -->
+                <section class="tab-content active" id="tab-matches" role="tabpanel" aria-labelledby="tab-btn-matches">
+                    <div class="matches-list-header">
+                        <h2>Calendario Gare e Algoritmo Betting</h2>
+                        <p class="section-desc">Inserisci i punteggi per aggiornare le classifiche o clicca su "Gestisci Lineup" per modificare i titolari e ricalcolare le probabilità basandoti sugli xG.</p>
+                    </div>
+                    <div class="simulation-controls" style="display: flex; gap: 12px; margin-bottom: 20px;">
+                        <button class="btn-action primary-btn" id="btn-simulate-groups" style="padding: 10px 20px; font-size: 13px; font-weight: 600;">
+                            <i class="fa-solid fa-play"></i> Simula Tutti i Gironi
+                        </button>
+                        <button class="btn-action secondary-btn" id="btn-reset-tournament" style="padding: 10px 20px; font-size: 13px; font-weight: 600;">
+                            <i class="fa-solid fa-rotate"></i> Resetta Tutto
+                        </button>
+                    </div>
+                    <div class="matches-grid" id="matches-container">
+                        <!-- Matches injected via JS -->
+                    </div>
+                </section>
+
+                <!-- Tab: Bracket -->
+                <section class="tab-content" id="tab-bracket" role="tabpanel" aria-labelledby="tab-btn-bracket">
+                    <div class="bracket-tab-header">
+                        <h2>Tabellone Fasi Finali (Eliminazione Diretta)</h2>
+                        <p class="section-desc">I Sedicesimi di finale si popolano automaticamente completando i gironi della fase iniziale. Inserisci i punteggi per decretare il vincitore (segna i gol totali compresi i supplementari o spunta i rigori in caso di parità) per far avanzare le squadre.</p>
+                    </div>
+                    <div class="simulation-controls" style="display: flex; gap: 12px; margin-bottom: 20px; padding: 0 10px;">
+                        <button class="btn-action primary-btn" id="btn-simulate-bracket" style="padding: 10px 20px; font-size: 13px; font-weight: 600;">
+                            <i class="fa-solid fa-trophy"></i> Simula Fasi Finali
+                        </button>
+                    </div>
+                    <div class="bracket-scroll-container">
+                        <div class="bracket-tree" id="bracket-container">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab: Standings -->
+                <section class="tab-content" id="tab-standings" role="tabpanel" aria-labelledby="tab-btn-standings">
+                    <div class="standings-header">
+                        <h2>Classifiche Live dei Gironi (A-L)</h2>
+                        <div class="fairplay-legend">
+                            <span class="badge yellow-card"><i class="fa-solid fa-square"></i> Giallo: -1</span>
+                            <span class="badge double-yellow"><i class="fa-solid fa-square"></i><i class="fa-solid fa-square"></i> Doppio Giallo: -3</span>
+                            <span class="badge red-card"><i class="fa-solid fa-square"></i> Rosso: -4</span>
+                        </div>
+                    </div>
+                    <div class="groups-grid" id="groups-container">
+                        <!-- Groups injected via JS -->
+                    </div>
+                </section>
+
+                <!-- Tab: Analytics & Injuries -->
+                <section class="tab-content" id="tab-analytics" role="tabpanel" aria-labelledby="tab-btn-analytics">
+                    <div class="analytics-layout">
+                        <!-- Left: Star Players -->
+                        <div class="analytics-card star-players-card">
+                            <h3><i class="fa-solid fa-star"></i> Statistiche Giocatori d'Élite (Club 25/26)</h3>
+                            <div class="players-table-wrapper">
+                                <table class="analytics-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Giocatore</th>
+                                            <th>Nazione</th>
+                                            <th>Gol</th>
+                                            <th>Assist</th>
+                                            <th>Tiri</th>
+                                            <th>Minuti</th>
+                                            <th>Rating</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="stars-table-body">
+                                        <!-- Injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Right: Injury Report -->
+                        <div class="analytics-card injuries-card">
+                            <h3><i class="fa-solid fa-house-medical"></i> Bollettino Medico & Variabili Cliniche</h3>
+                            <p class="sub-alert"><i class="fa-solid fa-triangle-exclamation"></i> Gli infortuni influenzano pesantemente il rendimento e le quote simulate.</p>
+                            <div class="injuries-table-wrapper">
+                                <table class="analytics-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Giocatore</th>
+                                            <th>Nazione</th>
+                                            <th>Infortunio</th>
+                                            <th>Stato Disponibilità</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="injuries-table-body">
+                                        <!-- Injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Top Scorers Leaderboard -->
+                    <div class="analytics-layout-bottom" style="margin-top: 20px;">
+                        <div class="analytics-card scorers-card-full">
+                            <h3><i class="fa-solid fa-shoe-prints"></i> Classifica Marcatori Mondiali 2026</h3>
+                            <p class="sub-alert"><i class="fa-solid fa-fire-flame-simple"></i> Classifica marcatori aggiornata in tempo reale in base ai gol simulati.</p>
+                            <div class="players-table-wrapper">
+                                <table class="analytics-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Pos</th>
+                                            <th>Giocatore</th>
+                                            <th>Nazione</th>
+                                            <th>Gol</th>
+                                            <th>Assist</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scorers-table-body">
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                                Nessun gol segnato finora. Simula delle partite per popolare la classifica!
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab: Archivio & Statistiche -->
+                <section class="tab-content" id="tab-stats" role="tabpanel" aria-labelledby="tab-btn-stats">
+                    <div class="matches-list-header">
+                        <h2>Archivio Storico & Statistiche StatsBomb</h2>
+                        <p class="section-desc">Confronta i testa a testa storici dal 1872 o analizza il valore economico delle rose qualificate e i match-events estratti da 15GB di archivi di gioco.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <!-- Upper section: H2H Analisi -->
+                        <div class="stats-card h2h-card-full">
+                            <h3><i class="fa-solid fa-people-arrows"></i> Analisi Testa a Testa Storica (H2H)</h3>
+                            <div class="h2h-selectors">
+                                <div class="selector-box">
+                                    <label for="h2h-team-a">Squadra A:</label>
+                                    <select id="h2h-team-a" class="stats-select"></select>
+                                </div>
+                                <div class="h2h-vs-badge">VS</div>
+                                <div class="selector-box">
+                                    <label for="h2h-team-b">Squadra B:</label>
+                                    <select id="h2h-team-b" class="stats-select"></select>
+                                </div>
+                            </div>
+                                                        <div id="h2h-results-area" class="h2h-results-wrapper">
+                                <!-- Dynamic H2H data injected here -->
+                            </div>
+                            
+                            <!-- SVG Radar Chart Container -->
+                            <div id="h2h-radar-container" class="h2h-radar-wrapper" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+                                <!-- SVG radar chart injected dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Lower Left: Squad Value Classification -->
+                        <div class="stats-card squad-value-card">
+                            <h3><i class="fa-solid fa-money-bill-trend-up"></i> Classifica Valore Finanziario Rose</h3>
+                            <p class="sub-alert"><i class="fa-solid fa-coins"></i> Valori basati sui dati Transfermarkt aggregati per la rosa dei convocati.</p>
+                            <div class="squad-values-list" id="squad-values-chart">
+                                <!-- Dynamic horizontal bars injected here -->
+                            </div>
+                        </div>
+
+                        <!-- Lower Right: StatsBomb Match Events & WC Recurrences -->
+                        <div class="stats-right-column">
+                            <div class="stats-card statsbomb-averages-card">
+                                <h3><i class="fa-solid fa-brain"></i> Metriche di Gioco Avanzate (StatsBomb)</h3>
+                                <p class="sub-alert"><i class="fa-solid fa-chart-bar"></i> Medie ricavate dal tracciamento dei micro-eventi di gioco (passaggi, tiri, xG).</p>
+                                <div id="statsbomb-data-area">
+                                    <!-- Injected via JS -->
+                                </div>
+                            </div>
+
+                            <div class="stats-card wc-recurrences-card">
+                                <h3><i class="fa-solid fa-rotate-left"></i> Frequenza Risultati Esatti & Trend Mondiali</h3>
+                                <div class="recurrences-wrapper">
+                                    <div class="rec-metric-row">
+                                        <span>Media Gol Storica nei Mondiali:</span>
+                                        <strong id="rec-avg-goals">2.65</strong>
+                                    </div>
+                                    <div class="rec-metric-row">
+                                        <span>Frequenza Supplementari/Rigori nei Knockout:</span>
+                                        <strong id="rec-draw-rate">28.0%</strong>
+                                    </div>
+                                    <table class="analytics-table small-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Risultato Esatto</th>
+                                                <th>Frequenza</th>
+                                                <th>Percentuale</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="rec-scores-body">
+                                            <!-- Injected via JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+            </main>
+
+            <!-- Sidebar: Bet Slip (ARIA roles + Close button added for mobile drawer integration) -->
+            <aside class="bet-slip-sidebar" id="mobile-slip-drawer" role="complementary" aria-label="Schedina Scommesse Combinata">
+                <div class="slip-header">
+                    <h2><i class="fa-solid fa-chart-pie"></i> Simulatore Combinato</h2>
+                    <button class="btn-close-slip" id="btn-close-slip" aria-label="Chiudi Schedina"><i class="fa-solid fa-xmark"></i></button>
+                    <span class="slip-count" id="slip-count">0</span>
+                </div>
+                
+                <div class="slip-bets-container" id="slip-bets-container">
+                    <div class="empty-slip-msg">
+                        <i class="fa-solid fa-calculator"></i>
+                        <p>Nessun esito selezionato. Seleziona un esito (1, X, 2, U/O, GG/NG) per iniziare.</p>
+                    </div>
+                </div>
+
+                <div class="slip-summary">
+                    <div class="summary-row">
+                        <span>Quota Equa Combinata:</span>
+                        <span class="summary-value" id="slip-multiplier">1.00</span>
+                    </div>
+                    <div class="summary-row stake-row">
+                        <label for="slip-stake">Budget Simulato (€):</label>
+                        <input type="number" id="slip-stake" value="10" min="2" step="1">
+                    </div>
+                    <div class="summary-row potential-win-row">
+                        <span>Rendimento Equo Atteso:</span>
+                        <span class="summary-value highlight" id="slip-payout">€ 10.00</span>
+                    </div>
+                    <div class="confidence-indicator" id="slip-confidence">
+                        <span class="conf-label">Probabilità Combinata:</span>
+                        <span class="conf-value badge" id="slip-confidence-badge">N/A</span>
+                    </div>
+                    
+                    <button class="btn-action primary-btn btn-block" id="btn-submit-bet">
+                        <i class="fa-solid fa-circle-check"></i> Salva Simulazione
+                    </button>
+                    <button class="btn-action secondary-btn btn-block" id="btn-clear-slip">
+                        <i class="fa-solid fa-trash-can"></i> Resetta
+                    </button>
+                </div>
+            </aside>
+
+        </div>
+
+    </div>
+
+    <!-- Lineup Manager Modal (ARIA compliant + title attributes) -->
+    <div class="modal-overlay" id="lineup-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modal-title">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title-box">
+                    <h3 id="modal-title"><i class="fa-solid fa-users-gear"></i> Gestione Formazioni e Calcolatore Reparti</h3>
+                    <p id="modal-match-details">Partita | Data</p>
+                </div>
+                <button class="modal-close" id="btn-close-modal" aria-label="Chiudi Gestione Formazioni"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="modal-body">
+                
+                <!-- Dynamic Squad Comparer (ATT, MID, DEF gauges) -->
+                <div class="squad-power-bars-detailed">
+                    <!-- Team A Gauges -->
+                    <div class="team-gauges" id="team-a-gauges">
+                        <h4 id="gauge-team-a-name">Team A</h4>
+                        <div class="gauge-row">
+                            <span class="g-lbl">ATT</span>
+                            <div class="bar-container"><div class="bar att-bar" id="team-a-att-bar"></div></div>
+                            <span class="g-val" id="team-a-att-val">0</span>
+                        </div>
+                        <div class="gauge-row">
+                            <span class="g-lbl">MID</span>
+                            <div class="bar-container"><div class="bar mid-bar" id="team-a-mid-bar"></div></div>
+                            <span class="g-val" id="team-a-mid-val">0</span>
+                        </div>
+                        <div class="gauge-row">
+                            <span class="g-lbl">DEF</span>
+                            <div class="bar-container"><div class="bar def-bar" id="team-a-def-bar"></div></div>
+                            <span class="g-val" id="team-a-def-val">0</span>
+                        </div>
+                    </div>
+
+                    <div class="pwr-vs-icon" aria-hidden="true"><i class="fa-solid fa-shield-halved"></i></div>
+
+                    <!-- Team B Gauges -->
+                    <div class="team-gauges text-right" id="team-b-gauges">
+                        <h4 id="gauge-team-b-name">Team B</h4>
+                        <div class="gauge-row reverse">
+                            <span class="g-lbl">ATT</span>
+                            <div class="bar-container"><div class="bar att-bar" id="team-b-att-bar"></div></div>
+                            <span class="g-val" id="team-b-att-val">0</span>
+                        </div>
+                        <div class="gauge-row reverse">
+                            <span class="g-lbl">MID</span>
+                            <div class="bar-container"><div class="bar mid-bar" id="team-b-mid-bar"></div></div>
+                            <span class="g-val" id="team-b-mid-val">0</span>
+                        </div>
+                        <div class="gauge-row reverse">
+                            <span class="g-lbl">DEF</span>
+                            <div class="bar-container"><div class="bar def-bar" id="team-b-def-bar"></div></div>
+                            <span class="g-val" id="team-b-def-val">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Squad Managers -->
+                <div class="squads-columns-wrapper">
+                    
+                    <!-- Team A Column -->
+                    <div class="team-column" id="modal-team-a-column">
+                        <h4 class="team-header-title" id="team-a-header-title">Giocatori Team A</h4>
+                        <div class="lineup-lists-container">
+                            <div class="lineup-group">
+                                <h5>Titolari (Giocanti) <span class="badge-count" id="count-a-starting">0</span></h5>
+                                <div class="player-list" id="list-a-starting"></div>
+                            </div>
+                            <div class="lineup-group">
+                                <h5>In Panchina <span class="badge-count" id="count-a-bench">0</span></h5>
+                                <div class="player-list" id="list-a-bench"></div>
+                            </div>
+                            <div class="lineup-group">
+                                <h5>Assenti / Squalificati <span class="badge-count" id="count-a-absent">0</span></h5>
+                                <div class="player-list danger-list" id="list-a-absent"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Team B Column -->
+                    <div class="team-column" id="modal-team-b-column">
+                        <h4 class="team-header-title" id="team-b-header-title">Giocatori Team B</h4>
+                        <div class="lineup-lists-container">
+                            <div class="lineup-group">
+                                <h5>Titolari (Giocanti) <span class="badge-count" id="count-b-starting">0</span></h5>
+                                <div class="player-list" id="list-b-starting"></div>
+                            </div>
+                            <div class="lineup-group">
+                                <h5>In Panchina <span class="badge-count" id="count-b-bench">0</span></h5>
+                                <div class="player-list" id="list-b-bench"></div>
+                            </div>
+                            <div class="lineup-group">
+                                <h5>Assenti / Squalificati <span class="badge-count" id="count-b-absent">0</span></h5>
+                                <div class="player-list danger-list" id="list-b-absent"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Add Player Form (Associated labels added) -->
+                <div class="add-player-card">
+                    <h4><i class="fa-solid fa-user-plus"></i> Convocazione Straordinaria (Aggiungi Giocatore)</h4>
+                    <div class="add-player-form-row">
+                        <div class="form-group">
+                            <label for="new-player-team">Squadra</label>
+                            <select id="new-player-team">
+                                <option value="A" id="opt-team-a">Team A</option>
+                                <option value="B" id="opt-team-b">Team B</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-player-name">Nome Giocatore</label>
+                            <input type="text" id="new-player-name" placeholder="Es. Mario Rossi">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-player-pos">Ruolo</label>
+                            <select id="new-player-pos">
+                                <option value="P">Portiere (P)</option>
+                                <option value="D">Difensore (D)</option>
+                                <option value="C">Centrocampista (C)</option>
+                                <option value="A">Attaccante (A)</option>
+                            </select>
+                        </div>
+                        <div class="form-group size-sm">
+                            <label for="new-player-rating">Rating (50-99)</label>
+                            <input type="number" id="new-player-rating" min="50" max="99" value="80">
+                        </div>
+                        <div class="form-group size-sm">
+                            <label for="new-player-club">Club</label>
+                            <input type="text" id="new-player-club" placeholder="Es. Milan">
+                        </div>
+                        <div class="form-group size-xs">
+                            <label for="new-player-goals">Gol</label>
+                            <input type="number" id="new-player-goals" min="0" value="0">
+                        </div>
+                        <div class="form-group size-xs">
+                            <label for="new-player-assists">Assist</label>
+                            <input type="number" id="new-player-assists" min="0" value="0">
+                        </div>
+                        <div class="form-group size-xs">
+                            <label for="new-player-cards">Cartellini</label>
+                            <input type="number" id="new-player-cards" min="0" value="0" placeholder="Gialli">
+                        </div>
+                        <div class="form-group btn-align">
+                            <button class="btn-action primary-btn" id="btn-add-player-submit">
+                                <i class="fa-solid fa-plus"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <p class="modal-tip"><i class="fa-solid fa-circle-info"></i> La forza dei reparti ATT, MID e DEF incide sul calcolo dei gol attesi (xG), rimodulando le probabilità 1X2, U/O e Goal/No Goal.</p>
+                <button class="btn-action primary-btn" id="btn-save-lineup">Applica e Calcola Quote</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button for Mobile Bet Slip -->
+    <button class="mobile-slip-trigger" id="mobile-slip-trigger" aria-label="Apri Schedina Combinata" aria-expanded="false" aria-controls="mobile-slip-drawer">
+        <i class="fa-solid fa-receipt"></i>
+        <span class="mobile-slip-count" id="mobile-slip-count" role="status">0</span>
+    </button>
+
+    <!-- Script connection (referenced to module bootstrap main.js) -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

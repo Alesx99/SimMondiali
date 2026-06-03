@@ -1,0 +1,29 @@
+# Large raw datasets (StatsBomb / Transfermarkt / Season)
+archive/
+archive (1)/
+archive (2)/
+archive (3)/
+archive-transfermarkt/
+archive-statsbomb/
+archive-season/
+
+# Python cache & data exports
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node environment & local servers
+node_modules/
+package-lock.json
+
+# Temporary / backup files
+*.bak
+app.js.bak
+*.lock
+downloaded_files/
+
+# IDE and OS configurations
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
