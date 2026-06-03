@@ -4,7 +4,9 @@ import {
     recalculateStandings, 
     simulateMatch, 
     simulateAllGroups, 
-    simulateAllKnockouts 
+    simulateAllKnockouts,
+    generateSchedule,
+    initializeKnockoutMatches
 } from './engine.js';
 import { 
     renderMatches, 
@@ -285,9 +287,11 @@ export function setupEventListeners() {
     const resetBtn = document.getElementById("btn-reset-tournament");
     if (resetBtn) {
         resetBtn.addEventListener("click", () => {
-            state.matches.forEach(m => { m.scoreA = null; m.scoreB = null; });
-            state.knockoutMatches.forEach(m => { m.scoreA = null; m.scoreB = null; m.penaltiesWinner = null; });
+            // Rigenera il calendario e il tabellone da zero per riflettere le nuove date ed algoritmi
+            generateSchedule();
+            initializeKnockoutMatches();
             state.tournamentEvents = [];
+            state.betSlip = [];
             recalculateStandings();
             renderMatches();
             renderStandings();
