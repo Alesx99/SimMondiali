@@ -1,9 +1,9 @@
 {
   "Messico": {
     "code": "MEX",
-    "total_value": 176800000.0,
-    "avg_age": 29.6,
-    "player_count": 23,
+    "total_value": 138000000.0,
+    "avg_age": 27.9,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Santiago Giménez",
@@ -24,41 +24,41 @@
   },
   "Sudafrica": {
     "code": "RSA",
-    "total_value": 64450000.0,
-    "avg_age": 28.4,
-    "player_count": 23,
+    "total_value": 50500000.0,
+    "avg_age": 26.7,
+    "player_count": 26,
     "top_players": [
-      {
-        "name": "Ronwen Williams",
-        "value_str": "€18.0M",
-        "age": 34.4
-      },
       {
         "name": "Lyle Foster",
         "value_str": "€13.0M",
         "age": 25.8
       },
       {
-        "name": "Teboho Mokoena",
-        "value_str": "€6.0M",
-        "age": 29.4
+        "name": "Ronwen Williams",
+        "value_str": "€1.5M",
+        "age": 34.4
+      },
+      {
+        "name": "Thabang Matuludi",
+        "value_str": "€1.5M",
+        "age": 27.4
       }
     ]
   },
   "Corea del Sud": {
     "code": "KOR",
-    "total_value": 285000000,
+    "total_value": 202500000,
     "avg_age": 26.5,
-    "player_count": 23,
+    "player_count": 26,
     "top_players": [
       {
-        "name": "Son Heung-min",
-        "value_str": "€70.0M",
+        "name": "Kim Min-jae",
+        "value_str": "€40.0M",
         "age": 26.5
       },
       {
-        "name": "Kim Min-jae",
-        "value_str": "€70.0M",
+        "name": "Son Heung-min",
+        "value_str": "€40.0M",
         "age": 26.5
       },
       {
@@ -70,32 +70,32 @@
   },
   "Repubblica Ceca": {
     "code": "CZE",
-    "total_value": 266000000,
+    "total_value": 264000000,
     "avg_age": 26.5,
-    "player_count": 23,
+    "player_count": 26,
     "top_players": [
+      {
+        "name": "Ladislav Krejčí",
+        "value_str": "€40.0M",
+        "age": 26.5
+      },
+      {
+        "name": "Adam Hložek",
+        "value_str": "€40.0M",
+        "age": 26.5
+      },
       {
         "name": "Patrik Schick",
         "value_str": "€40.0M",
-        "age": 26.5
-      },
-      {
-        "name": "Antonín Kinský",
-        "value_str": "€40.0M",
-        "age": 26.5
-      },
-      {
-        "name": "Tomáš Souček",
-        "value_str": "€18.0M",
         "age": 26.5
       }
     ]
   },
   "Canada": {
     "code": "CAN",
-    "total_value": 180000000.0,
-    "avg_age": 27.8,
-    "player_count": 23,
+    "total_value": 175650000.0,
+    "avg_age": 27.1,
+    "player_count": 25,
     "top_players": [
       {
         "name": "Alphonso Davies",
@@ -116,9 +116,9 @@
   },
   "Bosnia Erzegovina": {
     "code": "BIH",
-    "total_value": 119200000.0,
-    "avg_age": 28.2,
-    "player_count": 23,
+    "total_value": 89350000.0,
+    "avg_age": 26.7,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Ermedin Demirović",
@@ -126,45 +126,45 @@
         "age": 28.2
       },
       {
-        "name": "Anel Ahmedhodzic",
-        "value_str": "€18.0M",
-        "age": 27.2
-      },
-      {
         "name": "Sead Kolašinac",
         "value_str": "€10.0M",
         "age": 33.0
+      },
+      {
+        "name": "Kerim Alajbegović",
+        "value_str": "€8.0M",
+        "age": 18.7
       }
     ]
   },
   "Qatar": {
     "code": "QAT",
-    "total_value": 43325000.0,
-    "avg_age": 32.8,
-    "player_count": 23,
+    "total_value": 41300000.0,
+    "avg_age": 29.0,
+    "player_count": 26,
     "top_players": [
-      {
-        "name": "Almoez Ali",
-        "value_str": "€6.0M",
-        "age": 29.8
-      },
-      {
-        "name": "Hassan Al-Haydos",
-        "value_str": "€6.0M",
-        "age": 35.5
-      },
       {
         "name": "Akram Afif",
         "value_str": "€4.5M",
         "age": 29.5
+      },
+      {
+        "name": "Edmilson Junior",
+        "value_str": "€3.0M",
+        "age": 31.8
+      },
+      {
+        "name": "Mahmud Abunada",
+        "value_str": "€1.5M",
+        "age": 26.5
       }
     ]
   },
   "Svizzera": {
     "code": "SUI",
-    "total_value": 318500000.0,
-    "avg_age": 28.2,
-    "player_count": 23,
+    "total_value": 314800000.0,
+    "avg_age": 28.3,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Gregor Kobel",
@@ -185,9 +185,9 @@
   },
   "Brasile": {
     "code": "BRA",
-    "total_value": 1193000000.0,
-    "avg_age": 27.7,
-    "player_count": 23,
+    "total_value": 892200000.0,
+    "avg_age": 28.8,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Vinícius Júnior",
@@ -195,9 +195,9 @@
         "age": 25.9
       },
       {
-        "name": "Rodrygo Goes",
-        "value_str": "€110.0M",
-        "age": 25.4
+        "name": "Gabriel Magalhães",
+        "value_str": "€75.0M",
+        "age": 28.5
       },
       {
         "name": "Bruno Guimarães",
@@ -208,9 +208,9 @@
   },
   "Marocco": {
     "code": "MAR",
-    "total_value": 479800000.0,
-    "avg_age": 26.6,
-    "player_count": 23,
+    "total_value": 426600000.0,
+    "avg_age": 25.8,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Achraf Hakimi",
@@ -218,22 +218,22 @@
         "age": 27.6
       },
       {
-        "name": "Brahim Díaz",
-        "value_str": "€40.0M",
-        "age": 26.8
-      },
-      {
         "name": "Ayyoub Bouaddi",
         "value_str": "€40.0M",
         "age": 18.7
+      },
+      {
+        "name": "Brahim Díaz",
+        "value_str": "€40.0M",
+        "age": 26.8
       }
     ]
   },
   "Haiti": {
     "code": "HAI",
-    "total_value": 63900000.0,
-    "avg_age": 27.6,
-    "player_count": 22,
+    "total_value": 72650000.0,
+    "avg_age": 27.4,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Wilson Isidor",
@@ -254,9 +254,9 @@
   },
   "Scozia": {
     "code": "SCO",
-    "total_value": 299400000.0,
-    "avg_age": 27.6,
-    "player_count": 23,
+    "total_value": 235600000.0,
+    "avg_age": 29.3,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Scott McTominay",
@@ -269,17 +269,17 @@
         "age": 32.2
       },
       {
-        "name": "Andrew Robertson",
-        "value_str": "€30.0M",
-        "age": 32.2
+        "name": "Aaron Hickey",
+        "value_str": "€28.0M",
+        "age": 24.0
       }
     ]
   },
   "Stati Uniti": {
     "code": "USA",
-    "total_value": 421500000.0,
-    "avg_age": 25.4,
-    "player_count": 23,
+    "total_value": 334800000.0,
+    "avg_age": 26.9,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Christian Pulisic",
@@ -300,9 +300,9 @@
   },
   "Paraguay": {
     "code": "PAR",
-    "total_value": 146200000.0,
-    "avg_age": 28.7,
-    "player_count": 23,
+    "total_value": 133000000.0,
+    "avg_age": 27.8,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Diego Gómez",
@@ -323,9 +323,9 @@
   },
   "Australia": {
     "code": "AUS",
-    "total_value": 46700000.0,
-    "avg_age": 27.6,
-    "player_count": 23,
+    "total_value": 49050000.0,
+    "avg_age": 27.3,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Nestory Irankunda",
@@ -346,32 +346,32 @@
   },
   "Turchia": {
     "code": "TUR",
-    "total_value": 652000000,
+    "total_value": 644500000,
     "avg_age": 26.5,
-    "player_count": 23,
+    "player_count": 26,
     "top_players": [
       {
-        "name": "Can Uzun",
+        "name": "Arda Güler",
         "value_str": "€70.0M",
         "age": 26.5
       },
       {
-        "name": "Arda Güler",
-        "value_str": "€40.0M",
+        "name": "Kenan Yıldız",
+        "value_str": "€70.0M",
         "age": 26.5
       },
       {
-        "name": "Hakan Çalhanoğlu",
-        "value_str": "€40.0M",
+        "name": "Can Uzun",
+        "value_str": "€70.0M",
         "age": 26.5
       }
     ]
   },
   "Germania": {
     "code": "GER",
-    "total_value": 1078000000.0,
-    "avg_age": 25.5,
-    "player_count": 23,
+    "total_value": 927000000.0,
+    "avg_age": 28.0,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Jamal Musiala",
@@ -392,9 +392,9 @@
   },
   "Curaçao": {
     "code": "CUW",
-    "total_value": 30700000.0,
-    "avg_age": 28.2,
-    "player_count": 22,
+    "total_value": 35625000.0,
+    "avg_age": 27.8,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Juninho Bacuna",
@@ -407,17 +407,17 @@
         "age": 32.2
       },
       {
-        "name": "Armando Obispo",
+        "name": "Sontje Hansen",
         "value_str": "€3.0M",
-        "age": 27.3
+        "age": 24.1
       }
     ]
   },
   "Costa d'Avorio": {
     "code": "CIV",
-    "total_value": 443300000.0,
-    "avg_age": 24.9,
-    "player_count": 23,
+    "total_value": 422800000.0,
+    "avg_age": 25.8,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Amad Diallo",
@@ -438,9 +438,9 @@
   },
   "Ecuador": {
     "code": "ECU",
-    "total_value": 335800000.0,
-    "avg_age": 26.4,
-    "player_count": 23,
+    "total_value": 311100000.0,
+    "avg_age": 25.9,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Moisés Caicedo",
@@ -461,9 +461,9 @@
   },
   "Paesi Bassi": {
     "code": "NED",
-    "total_value": 949000000.0,
-    "avg_age": 27.4,
-    "player_count": 23,
+    "total_value": 835100000.0,
+    "avg_age": 27.7,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Ryan Gravenberch",
@@ -471,22 +471,22 @@
         "age": 24.1
       },
       {
-        "name": "Xavi Simons",
-        "value_str": "€80.0M",
-        "age": 23.1
+        "name": "Jurriën Timber",
+        "value_str": "€70.0M",
+        "age": 25.0
       },
       {
-        "name": "Frenkie de Jong",
+        "name": "Cody Gakpo",
         "value_str": "€70.0M",
-        "age": 29.1
+        "age": 27.1
       }
     ]
   },
   "Giappone": {
     "code": "JPN",
-    "total_value": 295500000.0,
-    "avg_age": 28.0,
-    "player_count": 23,
+    "total_value": 231100000.0,
+    "avg_age": 27.7,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Takefusa Kubo",
@@ -494,22 +494,22 @@
         "age": 25.0
       },
       {
-        "name": "Kaoru Mitoma",
-        "value_str": "€30.0M",
-        "age": 29.0
-      },
-      {
-        "name": "Kaishu Sano",
+        "name": "Kaishū Sano",
         "value_str": "€25.0M",
         "age": 25.4
+      },
+      {
+        "name": "Zion Suzuki",
+        "value_str": "€20.0M",
+        "age": 23.8
       }
     ]
   },
   "Svezia": {
     "code": "SWE",
-    "total_value": 562000000.0,
-    "avg_age": 26.0,
-    "player_count": 23,
+    "total_value": 448800000.0,
+    "avg_age": 27.5,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Alexander Isak",
@@ -530,9 +530,9 @@
   },
   "Tunisia": {
     "code": "TUN",
-    "total_value": 65900000.0,
-    "avg_age": 29.1,
-    "player_count": 23,
+    "total_value": 63450000.0,
+    "avg_age": 27.0,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Hannibal Mejbri",
@@ -553,9 +553,9 @@
   },
   "Belgio": {
     "code": "BEL",
-    "total_value": 621000000.0,
-    "avg_age": 26.4,
-    "player_count": 23,
+    "total_value": 453800000.0,
+    "avg_age": 27.6,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Jérémy Doku",
@@ -563,22 +563,22 @@
         "age": 24.0
       },
       {
-        "name": "Loïs Openda",
-        "value_str": "€60.0M",
-        "age": 26.3
-      },
-      {
         "name": "Amadou Onana",
         "value_str": "€42.0M",
         "age": 24.8
+      },
+      {
+        "name": "Youri Tielemans",
+        "value_str": "€35.0M",
+        "age": 29.1
       }
     ]
   },
   "Egitto": {
     "code": "EGY",
-    "total_value": 134050000.0,
-    "avg_age": 31.9,
-    "player_count": 23,
+    "total_value": 137500000.0,
+    "avg_age": 28.5,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Omar Marmoush",
@@ -591,23 +591,18 @@
         "age": 34.0
       },
       {
-        "name": "Mohamed El Shenawy",
-        "value_str": "€6.0M",
-        "age": 37.5
+        "name": "Zizo",
+        "value_str": "€5.0M",
+        "age": 30.4
       }
     ]
   },
   "Iran": {
     "code": "IRN",
-    "total_value": 37725000.0,
-    "avg_age": 29.8,
-    "player_count": 22,
+    "total_value": 38375000.0,
+    "avg_age": 29.1,
+    "player_count": 26,
     "top_players": [
-      {
-        "name": "Sardar Azmoun",
-        "value_str": "€8.0M",
-        "age": 31.4
-      },
       {
         "name": "Mohammad Mohebi",
         "value_str": "€3.5M",
@@ -617,14 +612,19 @@
         "name": "Alireza Jahanbakhsh",
         "value_str": "€3.0M",
         "age": 32.8
+      },
+      {
+        "name": "Mehdi Taremi",
+        "value_str": "€2.5M",
+        "age": 33.9
       }
     ]
   },
   "Nuova Zelanda": {
     "code": "NZL",
-    "total_value": 30275000.0,
-    "avg_age": 27.7,
-    "player_count": 23,
+    "total_value": 39375000.0,
+    "avg_age": 28.1,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Chris Wood",
@@ -645,9 +645,9 @@
   },
   "Spagna": {
     "code": "ESP",
-    "total_value": 1170000000.0,
-    "avg_age": 25.9,
-    "player_count": 23,
+    "total_value": 1007500000.0,
+    "avg_age": 26.6,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Lamine Yamal",
@@ -668,9 +668,9 @@
   },
   "Capo Verde": {
     "code": "CPV",
-    "total_value": 59125000.0,
-    "avg_age": 28.7,
-    "player_count": 23,
+    "total_value": 52075000.0,
+    "avg_age": 28.8,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Logan Costa",
@@ -683,17 +683,17 @@
         "age": 23.6
       },
       {
-        "name": "Kevin Lenini",
-        "value_str": "€4.5M",
-        "age": 29.4
+        "name": "Telmo Arcanjo",
+        "value_str": "€3.0M",
+        "age": 25.0
       }
     ]
   },
   "Arabia Saudita": {
     "code": "KSA",
-    "total_value": 28725000.0,
-    "avg_age": 26.8,
-    "player_count": 23,
+    "total_value": 33750000.0,
+    "avg_age": 29.9,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Saud Abdulhamid",
@@ -701,22 +701,22 @@
         "age": 26.9
       },
       {
-        "name": "Salem Al-Dawsari",
+        "name": "Nasser Al-Dawsari",
         "value_str": "€2.0M",
         "age": 34.8
       },
       {
-        "name": "Mohamed Al-Owais",
-        "value_str": "€1.5M",
-        "age": 34.7
+        "name": "Salem Al-Dawsari",
+        "value_str": "€2.0M",
+        "age": 34.8
       }
     ]
   },
   "Uruguay": {
     "code": "URU",
-    "total_value": 515300000.0,
-    "avg_age": 27.6,
-    "player_count": 23,
+    "total_value": 448750000.0,
+    "avg_age": 28.7,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Federico Valverde",
@@ -737,9 +737,9 @@
   },
   "Francia": {
     "code": "FRA",
-    "total_value": 1583000000.0,
-    "avg_age": 25.5,
-    "player_count": 23,
+    "total_value": 1463000000.0,
+    "avg_age": 27.0,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Kylian Mbappé",
@@ -760,9 +760,9 @@
   },
   "Senegal": {
     "code": "SEN",
-    "total_value": 428300000.0,
-    "avg_age": 26.6,
-    "player_count": 23,
+    "total_value": 393800000.0,
+    "avg_age": 27.1,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Nicolas Jackson",
@@ -783,9 +783,9 @@
   },
   "Iraq": {
     "code": "IRQ",
-    "total_value": 27750000.0,
-    "avg_age": 28.6,
-    "player_count": 23,
+    "total_value": 36000000.0,
+    "avg_age": 27.1,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Zidane Iqbal",
@@ -798,17 +798,17 @@
         "age": 24.3
       },
       {
-        "name": "Aymen Hussein",
+        "name": "Fahad Talib",
         "value_str": "€1.5M",
-        "age": 30.2
+        "age": 31.6
       }
     ]
   },
   "Norvegia": {
     "code": "NOR",
-    "total_value": 539700000.0,
-    "avg_age": 27.2,
-    "player_count": 23,
+    "total_value": 531500000.0,
+    "avg_age": 26.8,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Erling Haaland",
@@ -829,32 +829,32 @@
   },
   "Argentina": {
     "code": "ARG",
-    "total_value": 931000000.0,
-    "avg_age": 27.8,
-    "player_count": 23,
+    "total_value": 873000000.0,
+    "avg_age": 29.0,
+    "player_count": 26,
     "top_players": [
       {
-        "name": "Julián Álvarez",
+        "name": "Julián Alvarez",
         "value_str": "€100.0M",
         "age": 26.3
-      },
-      {
-        "name": "Lautaro Martínez",
-        "value_str": "€85.0M",
-        "age": 28.8
       },
       {
         "name": "Alexis Mac Allister",
         "value_str": "€85.0M",
         "age": 27.4
+      },
+      {
+        "name": "Lautaro Martínez",
+        "value_str": "€85.0M",
+        "age": 28.8
       }
     ]
   },
   "Algeria": {
     "code": "ALG",
-    "total_value": 248800000.0,
-    "avg_age": 27.8,
-    "player_count": 23,
+    "total_value": 205200000.0,
+    "avg_age": 27.2,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Rayan Aït-Nouri",
@@ -875,9 +875,9 @@
   },
   "Austria": {
     "code": "AUT",
-    "total_value": 306350000.0,
-    "avg_age": 27.9,
-    "player_count": 23,
+    "total_value": 257900000.0,
+    "avg_age": 28.6,
+    "player_count": 25,
     "top_players": [
       {
         "name": "Konrad Laimer",
@@ -898,42 +898,42 @@
   },
   "Giordania": {
     "code": "JOR",
-    "total_value": 42250000.0,
-    "avg_age": 29.6,
-    "player_count": 23,
+    "total_value": 37500000,
+    "avg_age": 28.4,
+    "player_count": 25,
     "top_players": [
       {
-        "name": "Musa Al-Taamari",
-        "value_str": "€6.0M",
-        "age": 26.5
-      },
-      {
-        "name": "Mousa Tamari",
-        "value_str": "€6.0M",
-        "age": 29.0
-      },
-      {
-        "name": "Yazan Al-Naimat",
+        "name": "Yazeed Abulaila",
         "value_str": "€1.5M",
-        "age": 30.3
+        "age": 33.4
+      },
+      {
+        "name": "Mohammad Abu Hashish",
+        "value_str": "€1.5M",
+        "age": 31.1
+      },
+      {
+        "name": "Abdallah Nasib",
+        "value_str": "€1.5M",
+        "age": 32.3
       }
     ]
   },
   "Portogallo": {
     "code": "POR",
-    "total_value": 1045000000.0,
-    "avg_age": 27.3,
-    "player_count": 23,
+    "total_value": 1022500000.0,
+    "avg_age": 28.0,
+    "player_count": 26,
     "top_players": [
-      {
-        "name": "Vitinha",
-        "value_str": "€110.0M",
-        "age": 26.3
-      },
       {
         "name": "João Neves",
         "value_str": "€110.0M",
         "age": 21.7
+      },
+      {
+        "name": "Vitinha",
+        "value_str": "€110.0M",
+        "age": 26.3
       },
       {
         "name": "Rafael Leão",
@@ -944,9 +944,9 @@
   },
   "RD Congo": {
     "code": "COD",
-    "total_value": 141900000.0,
-    "avg_age": 27.4,
-    "player_count": 23,
+    "total_value": 122750000.0,
+    "avg_age": 28.7,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Yoane Wissa",
@@ -967,9 +967,9 @@
   },
   "Uzbekistan": {
     "code": "UZB",
-    "total_value": 69550000.0,
-    "avg_age": 28.9,
-    "player_count": 23,
+    "total_value": 79850000.0,
+    "avg_age": 28.4,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Abdukodir Khusanov",
@@ -990,9 +990,9 @@
   },
   "Colombia": {
     "code": "COL",
-    "total_value": 312000000.0,
-    "avg_age": 29.7,
-    "player_count": 23,
+    "total_value": 226800000.0,
+    "avg_age": 30.1,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Luis Díaz",
@@ -1000,22 +1000,22 @@
         "age": 29.4
       },
       {
-        "name": "Jhon Durán",
-        "value_str": "€32.0M",
-        "age": 22.5
-      },
-      {
         "name": "Daniel Muñoz",
         "value_str": "€27.0M",
         "age": 30.0
+      },
+      {
+        "name": "Cucho Hernández",
+        "value_str": "€18.0M",
+        "age": 27.1
       }
     ]
   },
   "Inghilterra": {
     "code": "ENG",
-    "total_value": 1542000000.0,
-    "avg_age": 26.6,
-    "player_count": 23,
+    "total_value": 1294000000.0,
+    "avg_age": 27.1,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Jude Bellingham",
@@ -1023,22 +1023,22 @@
         "age": 22.9
       },
       {
-        "name": "Phil Foden",
-        "value_str": "€150.0M",
-        "age": 26.0
-      },
-      {
         "name": "Bukayo Saka",
         "value_str": "€130.0M",
         "age": 24.8
+      },
+      {
+        "name": "Declan Rice",
+        "value_str": "€120.0M",
+        "age": 27.4
       }
     ]
   },
   "Croazia": {
     "code": "CRO",
-    "total_value": 358000000.0,
+    "total_value": 310650000.0,
     "avg_age": 28.3,
-    "player_count": 23,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Joško Gvardiol",
@@ -1046,12 +1046,12 @@
         "age": 24.4
       },
       {
-        "name": "Luka Vuskovic",
+        "name": "Luka Vušković",
         "value_str": "€40.0M",
         "age": 19.3
       },
       {
-        "name": "Josip Stanisic",
+        "name": "Josip Stanišić",
         "value_str": "€32.0M",
         "age": 26.2
       }
@@ -1059,9 +1059,9 @@
   },
   "Ghana": {
     "code": "GHA",
-    "total_value": 295150000.0,
-    "avg_age": 26.9,
-    "player_count": 23,
+    "total_value": 190400000.0,
+    "avg_age": 26.2,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Antoine Semenyo",
@@ -1069,22 +1069,22 @@
         "age": 26.4
       },
       {
-        "name": "Mohammed Kudus",
-        "value_str": "€55.0M",
-        "age": 25.8
-      },
-      {
         "name": "Iñaki Williams",
         "value_str": "€25.0M",
         "age": 32.0
+      },
+      {
+        "name": "Abdul Fatawu",
+        "value_str": "€20.0M",
+        "age": 22.2
       }
     ]
   },
   "Panama": {
     "code": "PAN",
-    "total_value": 46850000.0,
-    "avg_age": 29.9,
-    "player_count": 23,
+    "total_value": 45200000.0,
+    "avg_age": 29.3,
+    "player_count": 26,
     "top_players": [
       {
         "name": "Michael Amir Murillo",
@@ -1092,14 +1092,14 @@
         "age": 30.3
       },
       {
-        "name": "Adalberto Carrasquilla",
-        "value_str": "€6.0M",
-        "age": 27.5
+        "name": "José Luis Rodríguez",
+        "value_str": "€2.0M",
+        "age": 28.0
       },
       {
-        "name": "Eduardo Guerrero",
-        "value_str": "€3.0M",
-        "age": 26.3
+        "name": "Luis Mejía",
+        "value_str": "€1.5M",
+        "age": 26.5
       }
     ]
   }
