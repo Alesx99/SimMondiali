@@ -1,22 +1,32 @@
 {
-  "Turchia": {
+  "Repubblica Ceca": {
     "match_count": 8,
-    "possession": 49.5,
-    "pass_accuracy": 82.9,
-    "xg": 1.15,
-    "shots": 14.1,
-    "shots_on_target": 4.1,
-    "fouls": 13.4,
+    "possession": 45.4,
+    "pass_accuracy": 74.4,
+    "xg": 1.27,
+    "shots": 12.5,
+    "shots_on_target": 4.6,
+    "fouls": 13.6,
     "is_estimate": false
   },
-  "Sudafrica": {
-    "match_count": 14,
-    "possession": 44.0,
-    "pass_accuracy": 71.4,
-    "xg": 1.82,
-    "shots": 11.2,
-    "shots_on_target": 5.1,
-    "fouls": 12.4,
+  "Nuova Zelanda": {
+    "match_count": 6,
+    "possession": 47.7,
+    "pass_accuracy": 66.8,
+    "xg": 0.88,
+    "shots": 9.8,
+    "shots_on_target": 2.3,
+    "fouls": 7.7,
+    "is_estimate": false
+  },
+  "Croazia": {
+    "match_count": 21,
+    "possession": 54.5,
+    "pass_accuracy": 82.4,
+    "xg": 2.07,
+    "shots": 14.0,
+    "shots_on_target": 5.0,
+    "fouls": 16.0,
     "is_estimate": false
   },
   "Giappone": {
@@ -29,314 +39,14 @@
     "fouls": 10.2,
     "is_estimate": false
   },
-  "Algeria": {
-    "match_count": 3,
-    "possession": 68.4,
-    "pass_accuracy": 84.3,
-    "xg": 1.29,
-    "shots": 15.7,
-    "shots_on_target": 4.3,
-    "fouls": 13.7,
-    "is_estimate": false
-  },
-  "Uzbekistan": {
-    "match_count": 0,
-    "possession": 46.8,
-    "pass_accuracy": 74.0,
-    "xg": 0.88,
-    "shots": 9.9,
-    "shots_on_target": 3.5,
-    "fouls": 12.0,
-    "is_estimate": true
-  },
-  "Canada": {
-    "match_count": 16,
-    "possession": 55.2,
-    "pass_accuracy": 79.0,
-    "xg": 1.87,
-    "shots": 13.4,
-    "shots_on_target": 3.7,
-    "fouls": 10.9,
-    "is_estimate": false
-  },
-  "Arabia Saudita": {
-    "match_count": 6,
-    "possession": 51.8,
-    "pass_accuracy": 77.7,
-    "xg": 1.04,
-    "shots": 10.8,
-    "shots_on_target": 3.0,
-    "fouls": 15.3,
-    "is_estimate": false
-  },
-  "Corea del Sud": {
-    "match_count": 13,
-    "possession": 46.1,
-    "pass_accuracy": 75.0,
-    "xg": 0.97,
-    "shots": 11.8,
-    "shots_on_target": 3.6,
-    "fouls": 14.0,
-    "is_estimate": false
-  },
-  "Scozia": {
-    "match_count": 9,
-    "possession": 45.0,
-    "pass_accuracy": 77.1,
-    "xg": 0.84,
-    "shots": 10.0,
-    "shots_on_target": 2.7,
-    "fouls": 11.8,
-    "is_estimate": false
-  },
-  "Iraq": {
-    "match_count": 0,
-    "possession": 46.4,
-    "pass_accuracy": 73.5,
-    "xg": 0.84,
-    "shots": 9.7,
-    "shots_on_target": 3.4,
-    "fouls": 12.0,
-    "is_estimate": true
-  },
-  "Repubblica Ceca": {
-    "match_count": 8,
-    "possession": 45.4,
-    "pass_accuracy": 74.4,
-    "xg": 1.27,
-    "shots": 12.5,
-    "shots_on_target": 4.6,
-    "fouls": 13.6,
-    "is_estimate": false
-  },
-  "Giordania": {
-    "match_count": 0,
-    "possession": 45.6,
-    "pass_accuracy": 72.5,
-    "xg": 0.76,
-    "shots": 9.3,
-    "shots_on_target": 3.3,
-    "fouls": 12.0,
-    "is_estimate": true
-  },
-  "Curaçao": {
-    "match_count": 0,
-    "possession": 44.8,
-    "pass_accuracy": 71.5,
-    "xg": 0.68,
-    "shots": 8.9,
-    "shots_on_target": 3.1,
-    "fouls": 12.0,
-    "is_estimate": true
-  },
-  "Egitto": {
+  "Costa d'Avorio": {
     "match_count": 7,
-    "possession": 51.1,
-    "pass_accuracy": 80.4,
-    "xg": 2.33,
-    "shots": 15.9,
-    "shots_on_target": 4.9,
-    "fouls": 13.9,
-    "is_estimate": false
-  },
-  "Inghilterra": {
-    "match_count": 58,
-    "possession": 56.1,
-    "pass_accuracy": 81.9,
-    "xg": 2.03,
-    "shots": 13.7,
-    "shots_on_target": 5.3,
-    "fouls": 11.7,
-    "is_estimate": false
-  },
-  "Senegal": {
-    "match_count": 11,
-    "possession": 46.6,
-    "pass_accuracy": 77.3,
-    "xg": 1.55,
-    "shots": 11.6,
-    "shots_on_target": 3.8,
-    "fouls": 15.4,
-    "is_estimate": false
-  },
-  "Spagna": {
-    "match_count": 42,
-    "possession": 68.1,
-    "pass_accuracy": 85.9,
-    "xg": 2.43,
-    "shots": 20.0,
-    "shots_on_target": 6.9,
-    "fouls": 12.0,
-    "is_estimate": false
-  },
-  "Portogallo": {
-    "match_count": 27,
-    "possession": 56.3,
-    "pass_accuracy": 81.4,
-    "xg": 1.68,
-    "shots": 13.8,
-    "shots_on_target": 4.6,
-    "fouls": 11.3,
-    "is_estimate": false
-  },
-  "Colombia": {
-    "match_count": 15,
-    "possession": 51.0,
-    "pass_accuracy": 76.3,
-    "xg": 1.38,
-    "shots": 12.5,
-    "shots_on_target": 4.1,
-    "fouls": 14.7,
-    "is_estimate": false
-  },
-  "Marocco": {
-    "match_count": 18,
-    "possession": 42.8,
-    "pass_accuracy": 75.6,
-    "xg": 1.28,
-    "shots": 10.4,
-    "shots_on_target": 3.5,
-    "fouls": 16.3,
-    "is_estimate": false
-  },
-  "Iran": {
-    "match_count": 6,
-    "possession": 33.1,
-    "pass_accuracy": 64.2,
-    "xg": 1.09,
-    "shots": 9.3,
-    "shots_on_target": 2.3,
-    "fouls": 16.3,
-    "is_estimate": false
-  },
-  "Francia": {
-    "match_count": 44,
-    "possession": 54.3,
-    "pass_accuracy": 80.9,
-    "xg": 2.3,
-    "shots": 17.0,
-    "shots_on_target": 6.0,
-    "fouls": 12.1,
-    "is_estimate": false
-  },
-  "Panama": {
-    "match_count": 10,
-    "possession": 43.2,
-    "pass_accuracy": 73.6,
-    "xg": 0.77,
-    "shots": 9.9,
-    "shots_on_target": 3.2,
-    "fouls": 15.1,
-    "is_estimate": false
-  },
-  "Tunisia": {
-    "match_count": 9,
-    "possession": 49.4,
-    "pass_accuracy": 77.7,
-    "xg": 1.09,
-    "shots": 10.6,
-    "shots_on_target": 2.9,
-    "fouls": 14.1,
-    "is_estimate": false
-  },
-  "RD Congo": {
-    "match_count": 7,
-    "possession": 45.6,
-    "pass_accuracy": 78.4,
-    "xg": 3.42,
-    "shots": 15.4,
-    "shots_on_target": 5.0,
-    "fouls": 15.0,
-    "is_estimate": false
-  },
-  "Paraguay": {
-    "match_count": 3,
-    "possession": 48.4,
-    "pass_accuracy": 76.7,
-    "xg": 0.99,
-    "shots": 14.3,
-    "shots_on_target": 5.0,
-    "fouls": 18.0,
-    "is_estimate": false
-  },
-  "Brasile": {
-    "match_count": 32,
-    "possession": 56.5,
-    "pass_accuracy": 82.3,
-    "xg": 2.37,
-    "shots": 20.4,
-    "shots_on_target": 7.4,
-    "fouls": 14.6,
-    "is_estimate": false
-  },
-  "Svizzera": {
-    "match_count": 29,
-    "possession": 49.4,
-    "pass_accuracy": 79.9,
-    "xg": 1.44,
-    "shots": 11.7,
-    "shots_on_target": 4.1,
-    "fouls": 13.5,
-    "is_estimate": false
-  },
-  "Capo Verde": {
-    "match_count": 5,
-    "possession": 53.5,
-    "pass_accuracy": 81.2,
-    "xg": 2.15,
-    "shots": 16.0,
-    "shots_on_target": 4.8,
-    "fouls": 15.6,
-    "is_estimate": false
-  },
-  "Ghana": {
-    "match_count": 6,
-    "possession": 42.6,
-    "pass_accuracy": 77.7,
-    "xg": 1.18,
-    "shots": 8.3,
-    "shots_on_target": 3.0,
-    "fouls": 20.2,
-    "is_estimate": false
-  },
-  "Belgio": {
-    "match_count": 27,
-    "possession": 51.3,
-    "pass_accuracy": 81.8,
-    "xg": 1.22,
-    "shots": 11.7,
-    "shots_on_target": 3.9,
-    "fouls": 13.1,
-    "is_estimate": false
-  },
-  "Uruguay": {
-    "match_count": 15,
-    "possession": 48.8,
-    "pass_accuracy": 76.8,
-    "xg": 1.76,
-    "shots": 13.9,
-    "shots_on_target": 4.9,
-    "fouls": 15.7,
-    "is_estimate": false
-  },
-  "Australia": {
-    "match_count": 18,
-    "possession": 50.0,
-    "pass_accuracy": 75.1,
-    "xg": 1.92,
-    "shots": 12.7,
+    "possession": 58.2,
+    "pass_accuracy": 81.7,
+    "xg": 1.65,
+    "shots": 14.6,
     "shots_on_target": 4.4,
-    "fouls": 11.6,
-    "is_estimate": false
-  },
-  "Qatar": {
-    "match_count": 3,
-    "possession": 43.2,
-    "pass_accuracy": 81.1,
-    "xg": 0.47,
-    "shots": 6.7,
-    "shots_on_target": 2.0,
-    "fouls": 12.0,
+    "fouls": 17.6,
     "is_estimate": false
   },
   "Germania": {
@@ -349,6 +59,36 @@
     "fouls": 13.0,
     "is_estimate": false
   },
+  "Austria": {
+    "match_count": 12,
+    "possession": 50.4,
+    "pass_accuracy": 77.2,
+    "xg": 1.19,
+    "shots": 13.6,
+    "shots_on_target": 4.7,
+    "fouls": 14.0,
+    "is_estimate": false
+  },
+  "Sudafrica": {
+    "match_count": 14,
+    "possession": 44.0,
+    "pass_accuracy": 71.4,
+    "xg": 1.82,
+    "shots": 11.2,
+    "shots_on_target": 5.1,
+    "fouls": 12.4,
+    "is_estimate": false
+  },
+  "Uruguay": {
+    "match_count": 15,
+    "possession": 48.8,
+    "pass_accuracy": 76.8,
+    "xg": 1.76,
+    "shots": 13.9,
+    "shots_on_target": 4.9,
+    "fouls": 15.7,
+    "is_estimate": false
+  },
   "Bosnia Erzegovina": {
     "match_count": 0,
     "possession": 48.8,
@@ -356,6 +96,116 @@
     "xg": 1.08,
     "shots": 10.9,
     "shots_on_target": 3.8,
+    "fouls": 12.0,
+    "is_estimate": true
+  },
+  "Scozia": {
+    "match_count": 9,
+    "possession": 45.0,
+    "pass_accuracy": 77.1,
+    "xg": 0.84,
+    "shots": 10.0,
+    "shots_on_target": 2.7,
+    "fouls": 11.8,
+    "is_estimate": false
+  },
+  "Svezia": {
+    "match_count": 34,
+    "possession": 46.0,
+    "pass_accuracy": 71.6,
+    "xg": 1.94,
+    "shots": 13.8,
+    "shots_on_target": 4.9,
+    "fouls": 14.2,
+    "is_estimate": false
+  },
+  "RD Congo": {
+    "match_count": 7,
+    "possession": 45.6,
+    "pass_accuracy": 78.4,
+    "xg": 3.42,
+    "shots": 15.4,
+    "shots_on_target": 5.0,
+    "fouls": 15.0,
+    "is_estimate": false
+  },
+  "Qatar": {
+    "match_count": 3,
+    "possession": 43.2,
+    "pass_accuracy": 81.1,
+    "xg": 0.47,
+    "shots": 6.7,
+    "shots_on_target": 2.0,
+    "fouls": 12.0,
+    "is_estimate": false
+  },
+  "Francia": {
+    "match_count": 44,
+    "possession": 54.3,
+    "pass_accuracy": 80.9,
+    "xg": 2.3,
+    "shots": 17.0,
+    "shots_on_target": 6.0,
+    "fouls": 12.1,
+    "is_estimate": false
+  },
+  "Iraq": {
+    "match_count": 0,
+    "possession": 46.4,
+    "pass_accuracy": 73.5,
+    "xg": 0.84,
+    "shots": 9.7,
+    "shots_on_target": 3.4,
+    "fouls": 12.0,
+    "is_estimate": true
+  },
+  "Stati Uniti": {
+    "match_count": 18,
+    "possession": 52.9,
+    "pass_accuracy": 75.5,
+    "xg": 2.09,
+    "shots": 16.8,
+    "shots_on_target": 6.1,
+    "fouls": 10.9,
+    "is_estimate": false
+  },
+  "Marocco": {
+    "match_count": 18,
+    "possession": 42.8,
+    "pass_accuracy": 75.6,
+    "xg": 1.28,
+    "shots": 10.4,
+    "shots_on_target": 3.5,
+    "fouls": 16.3,
+    "is_estimate": false
+  },
+  "Curaçao": {
+    "match_count": 0,
+    "possession": 44.8,
+    "pass_accuracy": 71.5,
+    "xg": 0.68,
+    "shots": 8.9,
+    "shots_on_target": 3.1,
+    "fouls": 12.0,
+    "is_estimate": true
+  },
+  "Corea del Sud": {
+    "match_count": 13,
+    "possession": 46.1,
+    "pass_accuracy": 75.0,
+    "xg": 0.97,
+    "shots": 11.8,
+    "shots_on_target": 3.6,
+    "fouls": 14.0,
+    "is_estimate": false
+  },
+  "Giordania": {
+    "match_count": 0,
+    "possession": 45.6,
+    "pass_accuracy": 72.5,
+    "xg": 0.76,
+    "shots": 9.3,
+    "shots_on_target": 3.3,
     "fouls": 12.0,
     "is_estimate": true
   },
@@ -369,86 +219,6 @@
     "fouls": 15.7,
     "is_estimate": false
   },
-  "Austria": {
-    "match_count": 12,
-    "possession": 50.4,
-    "pass_accuracy": 77.2,
-    "xg": 1.19,
-    "shots": 13.6,
-    "shots_on_target": 4.7,
-    "fouls": 14.0,
-    "is_estimate": false
-  },
-  "Paesi Bassi": {
-    "match_count": 39,
-    "possession": 55.3,
-    "pass_accuracy": 80.3,
-    "xg": 1.54,
-    "shots": 13.5,
-    "shots_on_target": 4.7,
-    "fouls": 14.6,
-    "is_estimate": false
-  },
-  "Croazia": {
-    "match_count": 21,
-    "possession": 54.5,
-    "pass_accuracy": 82.4,
-    "xg": 2.07,
-    "shots": 14.0,
-    "shots_on_target": 5.0,
-    "fouls": 16.0,
-    "is_estimate": false
-  },
-  "Nuova Zelanda": {
-    "match_count": 6,
-    "possession": 47.7,
-    "pass_accuracy": 66.8,
-    "xg": 0.88,
-    "shots": 9.8,
-    "shots_on_target": 2.3,
-    "fouls": 7.7,
-    "is_estimate": false
-  },
-  "Haiti": {
-    "match_count": 3,
-    "possession": 38.1,
-    "pass_accuracy": 61.4,
-    "xg": 0.65,
-    "shots": 7.7,
-    "shots_on_target": 1.7,
-    "fouls": 6.3,
-    "is_estimate": false
-  },
-  "Ecuador": {
-    "match_count": 7,
-    "possession": 47.1,
-    "pass_accuracy": 76.0,
-    "xg": 1.68,
-    "shots": 12.0,
-    "shots_on_target": 3.9,
-    "fouls": 15.4,
-    "is_estimate": false
-  },
-  "Costa d'Avorio": {
-    "match_count": 7,
-    "possession": 58.2,
-    "pass_accuracy": 81.7,
-    "xg": 1.65,
-    "shots": 14.6,
-    "shots_on_target": 4.4,
-    "fouls": 17.6,
-    "is_estimate": false
-  },
-  "Svezia": {
-    "match_count": 34,
-    "possession": 46.0,
-    "pass_accuracy": 71.6,
-    "xg": 1.94,
-    "shots": 13.8,
-    "shots_on_target": 4.9,
-    "fouls": 14.2,
-    "is_estimate": false
-  },
   "Argentina": {
     "match_count": 29,
     "possession": 53.8,
@@ -457,6 +227,36 @@
     "shots": 12.7,
     "shots_on_target": 5.2,
     "fouls": 14.7,
+    "is_estimate": false
+  },
+  "Spagna": {
+    "match_count": 42,
+    "possession": 68.1,
+    "pass_accuracy": 85.9,
+    "xg": 2.43,
+    "shots": 20.0,
+    "shots_on_target": 6.9,
+    "fouls": 12.0,
+    "is_estimate": false
+  },
+  "Senegal": {
+    "match_count": 11,
+    "possession": 46.6,
+    "pass_accuracy": 77.3,
+    "xg": 1.55,
+    "shots": 11.6,
+    "shots_on_target": 3.8,
+    "fouls": 15.4,
+    "is_estimate": false
+  },
+  "Iran": {
+    "match_count": 6,
+    "possession": 33.1,
+    "pass_accuracy": 64.2,
+    "xg": 1.09,
+    "shots": 9.3,
+    "shots_on_target": 2.3,
+    "fouls": 16.3,
     "is_estimate": false
   },
   "Norvegia": {
@@ -469,14 +269,214 @@
     "fouls": 10.0,
     "is_estimate": false
   },
-  "Stati Uniti": {
-    "match_count": 18,
-    "possession": 52.9,
-    "pass_accuracy": 75.5,
-    "xg": 2.09,
-    "shots": 16.8,
-    "shots_on_target": 6.1,
+  "Canada": {
+    "match_count": 16,
+    "possession": 55.2,
+    "pass_accuracy": 79.0,
+    "xg": 1.87,
+    "shots": 13.4,
+    "shots_on_target": 3.7,
     "fouls": 10.9,
+    "is_estimate": false
+  },
+  "Brasile": {
+    "match_count": 32,
+    "possession": 56.5,
+    "pass_accuracy": 82.3,
+    "xg": 2.37,
+    "shots": 20.4,
+    "shots_on_target": 7.4,
+    "fouls": 14.6,
+    "is_estimate": false
+  },
+  "Paraguay": {
+    "match_count": 3,
+    "possession": 48.4,
+    "pass_accuracy": 76.7,
+    "xg": 0.99,
+    "shots": 14.3,
+    "shots_on_target": 5.0,
+    "fouls": 18.0,
+    "is_estimate": false
+  },
+  "Arabia Saudita": {
+    "match_count": 6,
+    "possession": 51.8,
+    "pass_accuracy": 77.7,
+    "xg": 1.04,
+    "shots": 10.8,
+    "shots_on_target": 3.0,
+    "fouls": 15.3,
+    "is_estimate": false
+  },
+  "Panama": {
+    "match_count": 10,
+    "possession": 43.2,
+    "pass_accuracy": 73.6,
+    "xg": 0.77,
+    "shots": 9.9,
+    "shots_on_target": 3.2,
+    "fouls": 15.1,
+    "is_estimate": false
+  },
+  "Turchia": {
+    "match_count": 8,
+    "possession": 49.5,
+    "pass_accuracy": 82.9,
+    "xg": 1.15,
+    "shots": 14.1,
+    "shots_on_target": 4.1,
+    "fouls": 13.4,
+    "is_estimate": false
+  },
+  "Haiti": {
+    "match_count": 3,
+    "possession": 38.1,
+    "pass_accuracy": 61.4,
+    "xg": 0.65,
+    "shots": 7.7,
+    "shots_on_target": 1.7,
+    "fouls": 6.3,
+    "is_estimate": false
+  },
+  "Australia": {
+    "match_count": 18,
+    "possession": 50.0,
+    "pass_accuracy": 75.1,
+    "xg": 1.92,
+    "shots": 12.7,
+    "shots_on_target": 4.4,
+    "fouls": 11.6,
+    "is_estimate": false
+  },
+  "Algeria": {
+    "match_count": 3,
+    "possession": 68.4,
+    "pass_accuracy": 84.3,
+    "xg": 1.29,
+    "shots": 15.7,
+    "shots_on_target": 4.3,
+    "fouls": 13.7,
+    "is_estimate": false
+  },
+  "Belgio": {
+    "match_count": 27,
+    "possession": 51.3,
+    "pass_accuracy": 81.8,
+    "xg": 1.22,
+    "shots": 11.7,
+    "shots_on_target": 3.9,
+    "fouls": 13.1,
+    "is_estimate": false
+  },
+  "Tunisia": {
+    "match_count": 9,
+    "possession": 49.4,
+    "pass_accuracy": 77.7,
+    "xg": 1.09,
+    "shots": 10.6,
+    "shots_on_target": 2.9,
+    "fouls": 14.1,
+    "is_estimate": false
+  },
+  "Inghilterra": {
+    "match_count": 58,
+    "possession": 56.1,
+    "pass_accuracy": 81.9,
+    "xg": 2.03,
+    "shots": 13.7,
+    "shots_on_target": 5.3,
+    "fouls": 11.7,
+    "is_estimate": false
+  },
+  "Capo Verde": {
+    "match_count": 5,
+    "possession": 53.5,
+    "pass_accuracy": 81.2,
+    "xg": 2.15,
+    "shots": 16.0,
+    "shots_on_target": 4.8,
+    "fouls": 15.6,
+    "is_estimate": false
+  },
+  "Ecuador": {
+    "match_count": 7,
+    "possession": 47.1,
+    "pass_accuracy": 76.0,
+    "xg": 1.68,
+    "shots": 12.0,
+    "shots_on_target": 3.9,
+    "fouls": 15.4,
+    "is_estimate": false
+  },
+  "Uzbekistan": {
+    "match_count": 0,
+    "possession": 46.8,
+    "pass_accuracy": 74.0,
+    "xg": 0.88,
+    "shots": 9.9,
+    "shots_on_target": 3.5,
+    "fouls": 12.0,
+    "is_estimate": true
+  },
+  "Portogallo": {
+    "match_count": 27,
+    "possession": 56.3,
+    "pass_accuracy": 81.4,
+    "xg": 1.68,
+    "shots": 13.8,
+    "shots_on_target": 4.6,
+    "fouls": 11.3,
+    "is_estimate": false
+  },
+  "Ghana": {
+    "match_count": 6,
+    "possession": 42.6,
+    "pass_accuracy": 77.7,
+    "xg": 1.18,
+    "shots": 8.3,
+    "shots_on_target": 3.0,
+    "fouls": 20.2,
+    "is_estimate": false
+  },
+  "Svizzera": {
+    "match_count": 29,
+    "possession": 49.4,
+    "pass_accuracy": 79.9,
+    "xg": 1.44,
+    "shots": 11.7,
+    "shots_on_target": 4.1,
+    "fouls": 13.5,
+    "is_estimate": false
+  },
+  "Egitto": {
+    "match_count": 7,
+    "possession": 51.1,
+    "pass_accuracy": 80.4,
+    "xg": 2.33,
+    "shots": 15.9,
+    "shots_on_target": 4.9,
+    "fouls": 13.9,
+    "is_estimate": false
+  },
+  "Colombia": {
+    "match_count": 15,
+    "possession": 51.0,
+    "pass_accuracy": 76.3,
+    "xg": 1.38,
+    "shots": 12.5,
+    "shots_on_target": 4.1,
+    "fouls": 14.7,
+    "is_estimate": false
+  },
+  "Paesi Bassi": {
+    "match_count": 39,
+    "possession": 55.3,
+    "pass_accuracy": 80.3,
+    "xg": 1.54,
+    "shots": 13.5,
+    "shots_on_target": 4.7,
+    "fouls": 14.6,
     "is_estimate": false
   }
 }
