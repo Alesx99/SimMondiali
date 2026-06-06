@@ -787,7 +787,7 @@ export function runHistoricalBacktest(year, totalSimulations, onProgress, onComp
                 onComplete(null);
                 return;
             }
-            executeBacktest(tournament, totalSimulations, onProgress, onComplete);
+            executeBacktest(year, tournament, totalSimulations, onProgress, onComplete);
         })
         .catch(err => {
             console.error("Errore nel caricamento del database storico:", err);
@@ -795,7 +795,7 @@ export function runHistoricalBacktest(year, totalSimulations, onProgress, onComp
         });
 }
 
-function executeBacktest(tournament, totalSimulations, onProgress, onComplete) {
+function executeBacktest(year, tournament, totalSimulations, onProgress, onComplete) {
     const teams = tournament.teams;
     const teamCodes = Object.keys(teams);
     const actualMatches = tournament.matches;
