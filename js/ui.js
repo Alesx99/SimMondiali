@@ -1082,6 +1082,9 @@ export function createPlayerModalRow(player, teamCode) {
                 <button class="move-btn" title="Segna come Assente" data-team-code="${teamCode}" data-player-name="${player.name.replace(/"/g, '&quot;')}" data-status="absent">
                     <i class="fa-solid fa-user-minus"></i>
                 </button>
+                <button class="move-btn whatif-btn" title="Calcola Impatto Infortunio" data-team-code="${teamCode}" data-player-name="${player.name.replace(/"/g, '&quot;')}" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: var(--accent-emerald);">
+                    <i class="fa-solid fa-calculator"></i>
+                </button>
             </div>
         </div>
     `;
@@ -2216,5 +2219,69 @@ export function openAbmSimulation(matchId, callback) {
     skipBtn.addEventListener("click", closeModal);
 
     loop();
+}
+
+export function renderHistoricalBacktestResults(results) {
+    const resultsArea = document.getElementById("bt-results-area");
+    if (!resultsArea) return;
+    resultsArea.style.display = "block";
+
+    const brierScore = parseFloat(results.brierScore);
+    const brierEl = document.getElementById("bt-res-brier");
+    const ratingEl = document.getElementById("bt-res-brier-rating");
+    
+    if (brierEl) brierEl.textContent = results.brierScore;
+    
+    if (ratingEl) {
+        if (brierScore <= 0.58) {
+            ratingEl.textContent = "Accuratezza Eccellente";
+            ratingEl.style.color = "#10b981";
+        } else if (brierScore <= 0.64) {
+            ratingEl.textContent = "Accuratezza Ottima";
+            ratingEl.style.color = "#34d399";
+        } else if (brierScore <= 0.70) {
+            ratingEl.textContent = "Accuratezza Buona";
+            ratingEl.style.color = "#f59e0b";
+        } else {
+            ratingEl.textContent = "Accuratezza Moderata";
+            ratingEl.style.color = "#f97316";
+        }
+    }
+
+    const champEl = document.getElementById("bt-res-champ");
+    if (champEl) champEl.textContent = results.actualChampion;
+
+    const champStatsEl = document.getElementById("bt-res-champ-stats");
+    if (champStatsEl) {
+        champStatsEl.textContent = `Favorevole (Rank #${results.championRank} - ${results.championPct}%)`;
+    }
+
+    const winnersBody = document.getElementById("bt-winners-body");
+    if (winnersBody) {
+        winnersBody.innerHTML = "";
+        results.winners.slice(0, 5).forEach((t, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>#${idx + 1}</td>
+                <td style="font-weight: 600; color: var(--accent-color);">${t.name}</td>
+                <td style="text-align: right; font-weight: 700;">${parseFloat(t.pct).toFixed(1)}%</td>
+            `;
+            winnersBody.appendChild(tr);
+        });
+    }
+
+    const semisBody = document.getElementById("bt-semis-body");
+    if (semisBody) {
+        semisBody.innerHTML = "";
+        results.semis.slice(0, 5).forEach((t, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>#${idx + 1}</td>
+                <td style="font-weight: 600; color: var(--accent-emerald, #10b981);">${t.name}</td>
+                <td style="text-align: right; font-weight: 700;">${parseFloat(t.pct).toFixed(1)}%</td>
+            `;
+            semisBody.appendChild(tr);
+        });
+    }
 }
 

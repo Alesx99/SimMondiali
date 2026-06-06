@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { calculateMatchOdds } from './engine.js';
+import { calculateMatchOdds, calculatePoissonProbability } from './engine.js';
 
 // Fast Poisson sampler
 function samplePoisson(lambda) {
@@ -225,8 +225,41 @@ export function runMonteCarlo(totalSimulations, modelSelection, onProgress, onCo
                 pairings.forEach(pair => {
                     let scoreA = 0;
                     let scoreB = 0;
+                    let isRealMatchPlayed = false;
 
-                    if (modelType === 0) {
+                    const realMatch = state.matches ? state.matches.find(m => 
+                        (m.teamA === pair.a && m.teamB === pair.b) || 
+                        (m.teamA === pair.b && m.teamB === pair.a)
+                    ) : null;
+
+                    if (realMatch && realMatch.scoreA !== null && realMatch.scoreB !== null) {
+                        isRealMatchPlayed = true;
+                        if (realMatch.teamA === pair.a) {
+                            scoreA = realMatch.scoreA;
+                            scoreB = realMatch.scoreB;
+                        } else {
+                            scoreA = realMatch.scoreB;
+                            scoreB = realMatch.scoreA;
+                        }
+                        
+                        // Bayesian dynamic updates for real matches
+                        if (modelType === 3) {
+                            const sA = dynamicStrengths[pair.a];
+                            const sB = dynamicStrengths[pair.b];
+                            if (sA && sB) {
+                                sA.att_alpha += scoreA; sA.att_beta += 1;
+                                sB.def_alpha += scoreA; sB.def_beta += 1;
+                                sB.att_alpha += scoreB; sB.att_beta += 1;
+                                sA.def_alpha += scoreB; sA.def_beta += 1;
+                                sA.stamina = Math.max(50, sA.stamina - 5);
+                                sB.stamina = Math.max(50, sB.stamina - 5);
+                            }
+                        }
+                    }
+
+                    if (isRealMatchPlayed) {
+                        // Keep these scores
+                    } else if (modelType === 0) {
                         // Model 0: Poisson Dixon-Coles
                         const lams = getMatchLambdas(pair.a, pair.b);
                         scoreA = samplePoisson(lams.xgA);
@@ -433,39 +466,53 @@ export function runMonteCarlo(totalSimulations, modelSelection, onProgress, onCo
                 }
             }
 
+            // Helper for live knockout check
+            function getKnockoutWinner(round, matchNumber, teamA, teamB) {
+                const realM = state.knockoutMatches ? state.knockoutMatches.find(m => m.round === round && m.matchNumber === matchNumber) : null;
+                if (realM && realM.scoreA !== null && realM.scoreB !== null) {
+                    return realM.scoreA > realM.scoreB || (realM.scoreA === realM.scoreB && realM.penaltiesWinner === "A") ? realM.teamA : realM.teamB;
+                }
+                return simulateKnockoutPair(teamA, teamB).winner;
+            }
+
             // Round of 32 results -> Round of 16 slots
             const t16 = [];
             for (let i = 0; i < 16; i += 2) {
-                const w1 = simulateKnockoutPair(t32[i].a, t32[i].b).winner;
-                const w2 = simulateKnockoutPair(t32[i+1].a, t32[i+1].b).winner;
+                const w1 = getKnockoutWinner("32", i + 1, t32[i].a, t32[i].b);
+                const w2 = getKnockoutWinner("32", i + 2, t32[i+1].a, t32[i+1].b);
                 t16.push({ a: w1, b: w2 });
             }
 
             // Round of 16 results -> Quarterfinals
             const t8 = [];
             for (let i = 0; i < 8; i += 2) {
-                const w1 = simulateKnockoutPair(t16[i].a, t16[i].b).winner;
-                const w2 = simulateKnockoutPair(t16[i+1].a, t16[i+1].b).winner;
+                const w1 = getKnockoutWinner("16", i + 1, t16[i].a, t16[i].b);
+                const w2 = getKnockoutWinner("16", i + 2, t16[i+1].a, t16[i+1].b);
                 t8.push({ a: w1, b: w2 });
             }
 
             // Quarterfinals results -> Semifinals
             const t4 = [];
             for (let i = 0; i < 4; i += 2) {
-                const w1 = simulateKnockoutPair(t8[i].a, t8[i].b).winner;
-                const w2 = simulateKnockoutPair(t8[i+1].a, t8[i+1].b).winner;
+                const w1 = getKnockoutWinner("8", i + 1, t8[i].a, t8[i].b);
+                const w2 = getKnockoutWinner("8", i + 2, t8[i+1].a, t8[i+1].b);
                 t4.push({ a: w1, b: w2 });
             }
 
             // Semifinals results -> Final
-            const wFinal1 = simulateKnockoutPair(t4[0].a, t4[0].b).winner;
-            const wFinal2 = simulateKnockoutPair(t4[1].a, t4[1].b).winner;
+            const wFinal1 = getKnockoutWinner("4", 1, t4[0].a, t4[0].b);
+            const wFinal2 = getKnockoutWinner("4", 2, t4[1].a, t4[1].b);
 
             // Grand Final simulation
-            const finalResult = simulateKnockoutPair(wFinal1, wFinal2);
+            let winnerCode;
+            const realFinal = state.knockoutMatches ? state.knockoutMatches.find(m => m.round === "2" && m.matchNumber === 1) : null;
+            if (realFinal && realFinal.scoreA !== null && realFinal.scoreB !== null) {
+                winnerCode = realFinal.scoreA > realFinal.scoreB || (realFinal.scoreA === realFinal.scoreB && realFinal.penaltiesWinner === "A") ? realFinal.teamA : realFinal.teamB;
+            } else {
+                winnerCode = simulateKnockoutPair(wFinal1, wFinal2).winner;
+            }
             
             // --- AGGREGATE FINAL DATA ---
-            const winnerCode = finalResult.winner;
             const runnerUpCode = winnerCode === wFinal1 ? wFinal2 : wFinal1;
 
             const winnerName = state.TEAMS_DB[winnerCode].name;
@@ -728,5 +775,267 @@ export function runMonteCarlo(totalSimulations, modelSelection, onProgress, onCo
     }
 
     // Start simulation loop
-    setTimeout(processChunk, 10);
+    setTimeout(processChunk, 1);
+}
+
+export function runHistoricalBacktest(year, totalSimulations, onProgress, onComplete) {
+    fetch('data/stats/historical_tournaments.json')
+        .then(res => res.json())
+        .then(data => {
+            const tournament = data[year];
+            if (!tournament) {
+                onComplete(null);
+                return;
+            }
+            executeBacktest(tournament, totalSimulations, onProgress, onComplete);
+        })
+        .catch(err => {
+            console.error("Errore nel caricamento del database storico:", err);
+            onComplete(null);
+        });
+}
+
+function executeBacktest(tournament, totalSimulations, onProgress, onComplete) {
+    const teams = tournament.teams;
+    const teamCodes = Object.keys(teams);
+    const actualMatches = tournament.matches;
+
+    // Calculate predicted probabilities for Brier Score
+    const matchOddsList = actualMatches.map(m => {
+        const tA = teams[m.teamA];
+        const tB = teams[m.teamB];
+        if (!tA || !tB) return { pctA: 0.33, pctX: 0.34, pctB: 0.33 };
+
+        const ratingA = tA.baseStrength;
+        const ratingB = tB.baseStrength;
+        const valA = tA.squadValue || 50000000;
+        const valB = tB.squadValue || 50000000;
+
+        // Model 1: Poisson
+        const lambdaA = 1.25 * Math.pow(1.02, ratingA - ratingB) * Math.pow(valA / valB, 0.05);
+        const lambdaB = 1.25 * Math.pow(1.02, ratingB - ratingA) * Math.pow(valB / valA, 0.05);
+        
+        let pPoissonA = 0, pPoissonX = 0, pPoissonB = 0;
+        for (let i = 0; i <= 6; i++) {
+            for (let j = 0; j <= 6; j++) {
+                const prob = calculatePoissonProbability(lambdaA, i) * calculatePoissonProbability(lambdaB, j);
+                if (i > j) pPoissonA += prob;
+                else if (i === j) pPoissonX += prob;
+                else pPoissonB += prob;
+            }
+        }
+        const sumPoisson = pPoissonA + pPoissonX + pPoissonB;
+        const p1 = sumPoisson > 0 ? pPoissonA / sumPoisson : 0.33;
+        const pX = sumPoisson > 0 ? pPoissonX / sumPoisson : 0.34;
+        const p2 = sumPoisson > 0 ? pPoissonB / sumPoisson : 0.33;
+
+        // Model 2: ELO Bradley-Terry
+        const probEloA = Math.pow(ratingA / ratingB, 4.0);
+        const pEloA = (probEloA / (probEloA + 1.0)) * 0.74;
+        const pEloB = 0.74 - pEloA;
+        const pEloX = 0.26;
+
+        // Model 3: Value Bradley-Terry
+        const vA = Math.pow(valA, 0.25);
+        const vB = Math.pow(valB, 0.25);
+        const probValA = Math.pow(vA / vB, 3.5);
+        const pValA = (probValA / (probValA + 1.0)) * 0.74;
+        const pValB = 0.74 - pValA;
+        const pValX = 0.26;
+
+        return {
+            pctA: (p1 + pEloA + pValA) / 3,
+            pctX: (pX + pEloX + pValX) / 3,
+            pctB: (p2 + pEloB + pValB) / 3
+        };
+    });
+
+    // Calculate Brier Score
+    let brierSum = 0;
+    actualMatches.forEach((m, idx) => {
+        const odds = matchOddsList[idx];
+        let oA = 0, oX = 0, oB = 0;
+        if (m.scoreA > m.scoreB) oA = 1;
+        else if (m.scoreA < m.scoreB) oB = 1;
+        else oX = 1;
+
+        brierSum += Math.pow(odds.pctA - oA, 2) + Math.pow(odds.pctX - oX, 2) + Math.pow(odds.pctB - oB, 2);
+    });
+    const brierScore = brierSum / actualMatches.length;
+
+    // Simulation accumulators
+    const winnersCount = {};
+    const semisCount = {};
+    teamCodes.forEach(code => {
+        winnersCount[code] = 0;
+        semisCount[code] = 0;
+    });
+
+    const groupsList = ["A", "B", "C", "D", "E", "F", "G", "H"];
+    const groupTeams = {};
+    groupsList.forEach(g => {
+        groupTeams[g] = teamCodes.filter(c => teams[c].group === g);
+    });
+
+    let simsDone = 0;
+    const chunkSize = 10000;
+    const startTime = performance.now();
+
+    function processChunk() {
+        const limit = Math.min(totalSimulations, simsDone + chunkSize);
+        for (let s = simsDone; s < limit; s++) {
+            const standings = {};
+            groupsList.forEach(g => {
+                standings[g] = groupTeams[g].map(c => ({
+                    code: c, pts: 0, gd: 0, gf: 0, fairplay: Math.random()
+                }));
+            });
+
+            // Simulate group stage
+            groupsList.forEach(g => {
+                const list = standings[g];
+                const pairings = [
+                    { i: 0, j: 1 }, { i: 2, j: 3 },
+                    { i: 0, j: 2 }, { i: 1, j: 3 },
+                    { i: 0, j: 3 }, { i: 1, j: 2 }
+                ];
+                pairings.forEach(p => {
+                    const codeA = list[p.i].code;
+                    const codeB = list[p.j].code;
+                    const ratingA = teams[codeA].baseStrength;
+                    const ratingB = teams[codeB].baseStrength;
+                    const valA = teams[codeA].squadValue || 50000000;
+                    const valB = teams[codeB].squadValue || 50000000;
+
+                    const lambdaA = 1.25 * Math.pow(1.02, ratingA - ratingB) * Math.pow(valA / valB, 0.05);
+                    const lambdaB = 1.25 * Math.pow(1.02, ratingB - ratingA) * Math.pow(valB / valA, 0.05);
+
+                    const scoreA = samplePoisson(lambdaA);
+                    const scoreB = samplePoisson(lambdaB);
+
+                    list[p.i].gf += scoreA;
+                    list[p.i].gs += scoreB;
+                    list[p.j].gf += scoreB;
+                    list[p.j].gs += scoreA;
+                    list[p.i].gd += (scoreA - scoreB);
+                    list[p.j].gd += (scoreB - scoreA);
+
+                    if (scoreA > scoreB) {
+                        list[p.i].pts += 3;
+                    } else if (scoreA < scoreB) {
+                        list[p.j].pts += 3;
+                    } else {
+                        list[p.i].pts += 1;
+                        list[p.j].pts += 1;
+                    }
+                });
+
+                list.sort((x, y) => {
+                    if (y.pts !== x.pts) return y.pts - x.pts;
+                    if (y.gd !== x.gd) return y.gd - x.gd;
+                    if (y.gf !== x.gf) return y.gf - x.gf;
+                    return y.fairplay - x.fairplay;
+                });
+            });
+
+            const get1st = (g) => standings[g][0].code;
+            const get2nd = (g) => standings[g][1].code;
+
+            const t16 = [
+                { a: get1st("A"), b: get2nd("B") },
+                { a: get1st("C"), b: get2nd("D") },
+                { a: get1st("E"), b: get2nd("F") },
+                { a: get1st("G"), b: get2nd("H") },
+                { a: get1st("B"), b: get2nd("A") },
+                { a: get1st("D"), b: get2nd("C") },
+                { a: get1st("F"), b: get2nd("E") },
+                { a: get1st("H"), b: get2nd("G") }
+            ];
+
+            function simulateKo(codeA, codeB) {
+                const ratingA = teams[codeA].baseStrength;
+                const ratingB = teams[codeB].baseStrength;
+                const valA = teams[codeA].squadValue || 50000000;
+                const valB = teams[codeB].squadValue || 50000000;
+
+                const lambdaA = 1.25 * Math.pow(1.02, ratingA - ratingB) * Math.pow(valA / valB, 0.05);
+                const lambdaB = 1.25 * Math.pow(1.02, ratingB - ratingA) * Math.pow(valB / valA, 0.05);
+
+                let scoreA = samplePoisson(lambdaA);
+                let scoreB = samplePoisson(lambdaB);
+                if (scoreA === scoreB) {
+                    scoreA += samplePoisson(lambdaA / 3);
+                    scoreB += samplePoisson(lambdaB / 3);
+                    if (scoreA === scoreB) {
+                        return Math.random() < 0.5 ? codeA : codeB;
+                    }
+                }
+                return scoreA > scoreB ? codeA : codeB;
+            }
+
+            const w16 = [];
+            for (let i = 0; i < 8; i++) {
+                w16.push(simulateKo(t16[i].a, t16[i].b));
+            }
+
+            const w8 = [
+                simulateKo(w16[0], w16[1]),
+                simulateKo(w16[2], w16[3]),
+                simulateKo(w16[4], w16[5]),
+                simulateKo(w16[6], w16[7])
+            ];
+
+            const w4 = [
+                simulateKo(w8[0], w8[1]),
+                simulateKo(w8[2], w8[3])
+            ];
+            
+            semisCount[w8[0]]++;
+            semisCount[w8[1]]++;
+            semisCount[w8[2]]++;
+            semisCount[w8[3]]++;
+
+            const champion = simulateKo(w4[0], w4[1]);
+            winnersCount[champion]++;
+        }
+
+        simsDone = limit;
+        const pct = Math.round((simsDone / totalSimulations) * 100);
+        onProgress(simsDone, pct);
+
+        if (simsDone < totalSimulations) {
+            setTimeout(processChunk, 1);
+        } else {
+            const sortedWinners = Object.keys(winnersCount).map(c => ({
+                code: c,
+                name: teams[c].name,
+                count: winnersCount[c],
+                pct: ((winnersCount[c] / totalSimulations) * 100).toFixed(3)
+            })).sort((a, b) => parseFloat(b.pct) - parseFloat(a.pct));
+
+            const sortedSemis = Object.keys(semisCount).map(c => ({
+                code: c,
+                name: teams[c].name,
+                count: semisCount[c],
+                pct: ((semisCount[c] / totalSimulations) * 100).toFixed(3)
+            })).sort((a, b) => parseFloat(b.pct) - parseFloat(a.pct));
+
+            const actualChampionRank = sortedWinners.findIndex(x => x.code === tournament.champion) + 1;
+            const actualChampionPct = sortedWinners.find(x => x.code === tournament.champion)?.pct || "0.000";
+
+            onComplete({
+                year,
+                brierScore: brierScore.toFixed(4),
+                actualChampion: teams[tournament.champion].name,
+                actualChampionCode: tournament.champion,
+                championRank: actualChampionRank,
+                championPct: actualChampionPct,
+                winners: sortedWinners,
+                semis: sortedSemis,
+                elapsed: ((performance.now() - startTime) / 1000).toFixed(2)
+            });
+        }
+    }
+
+    setTimeout(processChunk, 1);
 }

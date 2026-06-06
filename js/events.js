@@ -25,9 +25,10 @@ import {
     showMonteCarloResults,
     renderConvergenceChart,
     renderSuperAggregator,
+    renderHistoricalBacktestResults,
     openAbmSimulation
 } from './ui.js';
-import { runMonteCarlo } from './simulator.js';
+import { runMonteCarlo, runHistoricalBacktest } from './simulator.js';
 
 // Debounce helper for search performance (reducing CPU/memory usage)
 function debounce(func, wait) {
@@ -175,6 +176,17 @@ function handleGlobalClick(e) {
         return;
     }
 
+    // 5a. What-If player injury analyzer trigger
+    const whatIfBtn = e.target.closest(".whatif-btn");
+    if (whatIfBtn) {
+        const teamCode = whatIfBtn.dataset.teamCode;
+        const playerName = whatIfBtn.dataset.playerName;
+        if (teamCode && playerName) {
+            calculateWhatIfImpact(teamCode, playerName, whatIfBtn);
+        }
+        return;
+    }
+
     // 5. Lineup player move status triggers
     const moveBtn = e.target.closest(".move-btn");
     if (moveBtn) {
@@ -241,6 +253,62 @@ function handleGlobalClick(e) {
         }
         return;
     }
+}
+
+function calculateWhatIfImpact(teamCode, playerName, buttonEl) {
+    const team = state.TEAMS_DB[teamCode];
+    if (!team) return;
+    const player = team.players.find(p => p.name === playerName);
+    if (!player) return;
+
+    if (player.status === "absent") {
+        alert(`Il giocatore ${playerName} è già segnato come assente (infortunato/squalificato). Schieralo come titolare o in panchina prima di calcolare l'impatto.`);
+        return;
+    }
+
+    const originalStatus = player.status;
+    const originalHtml = buttonEl.innerHTML;
+    buttonEl.disabled = true;
+    buttonEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
+    // Step 1: Run baseline simulation
+    runMonteCarlo(15000, "consensus", () => {}, (baselineResults) => {
+        const teamBaselineItem = baselineResults.consensus.find(t => t.name === team.name);
+        const pctBaseline = teamBaselineItem ? parseFloat(teamBaselineItem.pctConsensus) : 0;
+
+        // Step 2: Set player to absent and run simulation
+        player.status = "absent";
+        
+        runMonteCarlo(15000, "consensus", () => {}, (absentResults) => {
+            // Restore original status
+            player.status = originalStatus;
+            buttonEl.disabled = false;
+            buttonEl.innerHTML = originalHtml;
+
+            const teamAbsentItem = absentResults.consensus.find(t => t.name === team.name);
+            const pctAbsent = teamAbsentItem ? parseFloat(teamAbsentItem.pctConsensus) : 0;
+
+            const diff = pctAbsent - pctBaseline;
+            
+            let classification = "Marginale";
+            if (diff <= -2.0) {
+                classification = "Cruciale (Indispensabile)";
+            } else if (diff <= -0.5) {
+                classification = "Rilevante (Chiave)";
+            } else {
+                classification = "Marginale (Sostituibile)";
+            }
+
+            const msg = `Analisi What-If per ${playerName} (${team.name}):\n\n` +
+                        `• Probabilità di vittoria con ${playerName}: ${pctBaseline.toFixed(2)}%\n` +
+                        `• Probabilità di vittoria senza ${playerName}: ${pctAbsent.toFixed(2)}%\n` +
+                        `• Impatto stimato sul Titolo: ${diff.toFixed(2)}%\n\n` +
+                        `Livello Indispensabilità: ${classification}`;
+            
+            alert(msg);
+            updateModalLineupLists();
+        });
+    });
 }
 
 export function setupEventListeners() {
@@ -586,6 +654,52 @@ export function setupEventListeners() {
             reader.readAsText(file);
             // Clear input value to allow importing the same file again
             importInput.value = "";
+        });
+    }
+
+    // Historical Backtesting Button Click
+    const runBacktestBtn = document.getElementById("btn-run-backtest");
+    if (runBacktestBtn) {
+        runBacktestBtn.addEventListener("click", () => {
+            const yearSelect = document.getElementById("bt-year-select");
+            const simsSelect = document.getElementById("bt-sims-select");
+            if (!yearSelect || !simsSelect) return;
+
+            const year = yearSelect.value;
+            const sims = parseInt(simsSelect.value) || 50000;
+
+            runBacktestBtn.disabled = true;
+            runBacktestBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> In corso...`;
+
+            const progressSection = document.getElementById("bt-progress-section");
+            const progressBar = document.getElementById("bt-progress-bar");
+            const progressPct = document.getElementById("bt-progress-pct");
+            const resultsArea = document.getElementById("bt-results-area");
+
+            if (progressSection) progressSection.style.display = "block";
+            if (resultsArea) resultsArea.style.display = "none";
+            if (progressBar) progressBar.style.width = "0%";
+            if (progressPct) progressPct.textContent = "0%";
+
+            runHistoricalBacktest(
+                year,
+                sims,
+                (done, pct) => {
+                    if (progressBar) progressBar.style.width = `${pct}%`;
+                    if (progressPct) progressPct.textContent = `${pct}%`;
+                },
+                (results) => {
+                    runBacktestBtn.disabled = false;
+                    runBacktestBtn.innerHTML = `<i class="fa-solid fa-vial"></i> Avvia Backtest`;
+                    if (progressSection) progressSection.style.display = "none";
+                    
+                    if (results) {
+                        renderHistoricalBacktestResults(results);
+                    } else {
+                        alert("Errore durante l'esecuzione del backtesting.");
+                    }
+                }
+            );
         });
     }
 }

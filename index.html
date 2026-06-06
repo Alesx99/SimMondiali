@@ -264,6 +264,93 @@
                             </div>
                         </div>
 
+                        <!-- Lower Left 2: Historical Backtesting -->
+                        <div class="stats-card backtesting-card" style="margin-top: 20px;">
+                            <h3><i class="fa-solid fa-clock-rotate-left" style="color: #60a5fa;"></i> Backtesting Storico e Validazione</h3>
+                            <p class="sub-alert"><i class="fa-solid fa-square-poll-vertical"></i> Esegui simulazioni massive su tornei del passato per misurare l'accuratezza predittiva dei modelli tramite il Brier Score.</p>
+                            
+                            <div class="backtest-controls" style="display: flex; gap: 12px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
+                                <div style="display: flex; flex-direction: column; flex: 1; min-width: 120px;">
+                                    <label for="bt-year-select" style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">Seleziona Edizione:</label>
+                                    <select id="bt-year-select" style="padding: 6px; border-radius: 4px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); font-family: Inter; font-size: 12px;">
+                                        <option value="2022">Qatar 2022 (Campione: Argentina)</option>
+                                        <option value="2018">Russia 2018 (Campione: Francia)</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex; flex-direction: column; flex: 1; min-width: 120px;">
+                                    <label for="bt-sims-select" style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">Simulazioni (N):</label>
+                                    <select id="bt-sims-select" style="padding: 6px; border-radius: 4px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); font-family: Inter; font-size: 12px;">
+                                        <option value="10000">10.000 simulazioni</option>
+                                        <option value="50000" selected>50.000 simulazioni</option>
+                                        <option value="100000">100.000 simulazioni</option>
+                                    </select>
+                                </div>
+                                <button class="btn-action primary-btn" id="btn-run-backtest" style="align-self: flex-end; padding: 6px 15px; font-size: 12px; font-weight: 600; cursor: pointer; height: 30px;">
+                                    <i class="fa-solid fa-vial"></i> Avvia Backtest
+                                </button>
+                            </div>
+
+                            <!-- Progress bar (Hidden initially) -->
+                            <div id="bt-progress-section" style="display: none; margin-bottom: 15px; padding: 10px; border-radius: 6px; background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.2);">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px; font-weight: 600;">
+                                    <span>Simulazione in corso...</span>
+                                    <span id="bt-progress-pct">0%</span>
+                                </div>
+                                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                                    <div id="bt-progress-bar" style="width: 0%; height: 100%; background: #3b82f6; transition: width 0.1s;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Results Area (Hidden initially) -->
+                            <div id="bt-results-area" style="display: none; border-top: 1px dashed var(--border-color); padding-top: 15px;">
+                                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; text-align: center;">
+                                        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Brier Score (Accuratezza)</span>
+                                        <div id="bt-res-brier" style="font-size: 22px; font-weight: 700; color: #60a5fa; margin-top: 5px;">0.0000</div>
+                                        <span id="bt-res-brier-rating" style="font-size: 10px; color: #10b981; font-weight: 600;">Ottimo Modello</span>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; text-align: center;">
+                                        <span style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Campione Reale</span>
+                                        <div id="bt-res-champ" style="font-size: 18px; font-weight: 700; color: #eab308; margin-top: 8px;">Francia</div>
+                                        <span id="bt-res-champ-stats" style="font-size: 10px; color: var(--text-muted);">Favorevole (Rank #1 - 18.5%)</span>
+                                    </div>
+                                </div>
+
+                                <div class="stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <div>
+                                        <h4 style="margin: 0 0 8px 0; font-size: 12px; font-family: Outfit; color: #eab308;"><i class="fa-solid fa-trophy"></i> Top 5 Favorite</h4>
+                                        <div class="players-table-wrapper" style="max-height: 150px; overflow-y: auto;">
+                                            <table class="analytics-table small-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Pos</th>
+                                                        <th>Squadra</th>
+                                                        <th style="text-align: right;">Prob (%)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="bt-winners-body"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 style="margin: 0 0 8px 0; font-size: 12px; font-family: Outfit; color: #10b981;"><i class="fa-solid fa-people-group"></i> Top 5 Semifinalisti</h4>
+                                        <div class="players-table-wrapper" style="max-height: 150px; overflow-y: auto;">
+                                            <table class="analytics-table small-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Pos</th>
+                                                        <th>Squadra</th>
+                                                        <th style="text-align: right;">Prob (%)</th>
+                                                     </tr>
+                                                 </thead>
+                                                 <tbody id="bt-semis-body"></tbody>
+                                             </table>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+
                         <!-- Lower Right: StatsBomb Match Events & WC Recurrences -->
                         <div class="stats-right-column">
                             <div class="stats-card statsbomb-averages-card">
