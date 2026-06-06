@@ -504,12 +504,20 @@ export function runMonteCarlo(totalSimulations, modelSelection, onProgress, onCo
             const wFinal2 = getKnockoutWinner("4", 2, t4[1].a, t4[1].b);
 
             // Grand Final simulation
+            let finalResult;
             let winnerCode;
             const realFinal = state.knockoutMatches ? state.knockoutMatches.find(m => m.round === "2" && m.matchNumber === 1) : null;
             if (realFinal && realFinal.scoreA !== null && realFinal.scoreB !== null) {
                 winnerCode = realFinal.scoreA > realFinal.scoreB || (realFinal.scoreA === realFinal.scoreB && realFinal.penaltiesWinner === "A") ? realFinal.teamA : realFinal.teamB;
+                finalResult = {
+                    winner: winnerCode,
+                    scoreA: realFinal.scoreA,
+                    scoreB: realFinal.scoreB,
+                    isPenalties: realFinal.scoreA === realFinal.scoreB
+                };
             } else {
-                winnerCode = simulateKnockoutPair(wFinal1, wFinal2).winner;
+                finalResult = simulateKnockoutPair(wFinal1, wFinal2);
+                winnerCode = finalResult.winner;
             }
             
             // --- AGGREGATE FINAL DATA ---
