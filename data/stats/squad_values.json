@@ -1,8 +1,8 @@
 {
   "Messico": {
     "code": "MEX",
-    "total_value": 106800000.0,
-    "avg_age": 29.5,
+    "total_value": 112500000.0,
+    "avg_age": 29.0,
     "player_count": 10,
     "top_players": [
       {
@@ -47,54 +47,54 @@
   },
   "Corea del Sud": {
     "code": "KOR",
-    "total_value": 94350000.0,
-    "avg_age": 31.7,
+    "total_value": 229500000,
+    "avg_age": 26.5,
     "player_count": 10,
     "top_players": [
       {
+        "name": "Son Heung-min",
+        "value_str": "€70.0M",
+        "age": 26.5
+      },
+      {
         "name": "Kim Min-jae",
-        "value_str": "€25.0M",
-        "age": 29.5
+        "value_str": "€70.0M",
+        "age": 26.5
       },
       {
         "name": "Lee Kang-in",
-        "value_str": "€25.0M",
-        "age": 25.3
-      },
-      {
-        "name": "Son Heung-min",
-        "value_str": "€17.0M",
-        "age": 33.9
+        "value_str": "€40.0M",
+        "age": 26.5
       }
     ]
   },
   "Repubblica Ceca": {
     "code": "CZE",
-    "total_value": 98700000.0,
-    "avg_age": 29.3,
+    "total_value": 106000000,
+    "avg_age": 26.5,
     "player_count": 10,
     "top_players": [
       {
         "name": "Patrik Schick",
-        "value_str": "€25.0M",
-        "age": 30.4
+        "value_str": "€40.0M",
+        "age": 26.5
+      },
+      {
+        "name": "Tomáš Souček",
+        "value_str": "€18.0M",
+        "age": 26.5
       },
       {
         "name": "Ladislav Krejčí",
-        "value_str": "€22.0M",
-        "age": 27.1
-      },
-      {
-        "name": "Adam Hložek",
-        "value_str": "€15.0M",
-        "age": 23.9
+        "value_str": "€6.0M",
+        "age": 26.5
       }
     ]
   },
   "Canada": {
     "code": "CAN",
-    "total_value": 127800000.0,
-    "avg_age": 29.2,
+    "total_value": 126800000.0,
+    "avg_age": 27.8,
     "player_count": 11,
     "top_players": [
       {
@@ -110,7 +110,7 @@
       {
         "name": "Stephen Eustáquio",
         "value_str": "€11.0M",
-        "age": 29.4
+        "age": 29.5
       }
     ]
   },
@@ -139,8 +139,8 @@
   },
   "Qatar": {
     "code": "QAT",
-    "total_value": 14300000.0,
-    "avg_age": 32.8,
+    "total_value": 20000000.0,
+    "avg_age": 32.5,
     "player_count": 6,
     "top_players": [
       {
@@ -149,14 +149,14 @@
         "age": 29.8
       },
       {
+        "name": "Hassan Al-Haydos",
+        "value_str": "€6.0M",
+        "age": 35.5
+      },
+      {
         "name": "Akram Afif",
         "value_str": "€4.5M",
         "age": 29.5
-      },
-      {
-        "name": "Boualem Khoukhi",
-        "value_str": "€1.5M",
-        "age": 35.9
       }
     ]
   },
@@ -186,7 +186,7 @@
   "Brasile": {
     "code": "BRA",
     "total_value": 598000000.0,
-    "avg_age": 30.3,
+    "avg_age": 29.1,
     "player_count": 10,
     "top_players": [
       {
@@ -231,8 +231,8 @@
   },
   "Haiti": {
     "code": "HAI",
-    "total_value": 37050000.0,
-    "avg_age": 33.4,
+    "total_value": 38350000.0,
+    "avg_age": 29.5,
     "player_count": 6,
     "top_players": [
       {
@@ -277,8 +277,8 @@
   },
   "Stati Uniti": {
     "code": "USA",
-    "total_value": 184300000.0,
-    "avg_age": 30.2,
+    "total_value": 190000000.0,
+    "avg_age": 27.0,
     "player_count": 8,
     "top_players": [
       {
@@ -346,24 +346,24 @@
   },
   "Turchia": {
     "code": "TUR",
-    "total_value": 170500000.0,
-    "avg_age": 27.7,
+    "total_value": 122000000,
+    "avg_age": 26.5,
     "player_count": 5,
     "top_players": [
       {
-        "name": "Kenan Yıldız",
-        "value_str": "€75.0M",
-        "age": 21.1
-      },
-      {
         "name": "Arda Güler",
-        "value_str": "€45.0M",
-        "age": 21.3
+        "value_str": "€40.0M",
+        "age": 26.5
       },
       {
-        "name": "Ferdi Kadıoğlu",
-        "value_str": "€28.0M",
-        "age": 26.7
+        "name": "Hakan Çalhanoğlu",
+        "value_str": "€40.0M",
+        "age": 26.5
+      },
+      {
+        "name": "Kenan Yıldız",
+        "value_str": "€18.0M",
+        "age": 26.5
       }
     ]
   },
@@ -553,8 +553,8 @@
   },
   "Belgio": {
     "code": "BEL",
-    "total_value": 163000000.0,
-    "avg_age": 28.6,
+    "total_value": 148000000.0,
+    "avg_age": 30.5,
     "player_count": 6,
     "top_players": [
       {
@@ -569,8 +569,8 @@
       },
       {
         "name": "Kevin De Bruyne",
-        "value_str": "€30.0M",
-        "age": 23.4
+        "value_str": "€15.0M",
+        "age": 34.9
       }
     ]
   },
@@ -622,8 +622,8 @@
   },
   "Nuova Zelanda": {
     "code": "NZL",
-    "total_value": 16500000.0,
-    "avg_age": 30.0,
+    "total_value": 17000000.0,
+    "avg_age": 25.9,
     "player_count": 5,
     "top_players": [
       {
@@ -645,8 +645,8 @@
   },
   "Spagna": {
     "code": "ESP",
-    "total_value": 365050000.0,
-    "avg_age": 28.3,
+    "total_value": 405000000.0,
+    "avg_age": 25.3,
     "player_count": 6,
     "top_players": [
       {
@@ -708,7 +708,7 @@
       {
         "name": "Mohamed Al-Owais",
         "value_str": "€1.5M",
-        "age": 34.6
+        "age": 34.7
       }
     ]
   },
@@ -783,8 +783,8 @@
   },
   "Iraq": {
     "code": "IRQ",
-    "total_value": 6300000.0,
-    "avg_age": 31.4,
+    "total_value": 7500000,
+    "avg_age": 30.9,
     "player_count": 5,
     "top_players": [
       {
@@ -793,14 +793,14 @@
         "age": 30.2
       },
       {
+        "name": "Jalal Hassan",
+        "value_str": "€1.5M",
+        "age": 35.0
+      },
+      {
         "name": "Ali Jassim",
         "value_str": "€1.5M",
         "age": 26.5
-      },
-      {
-        "name": "Rebin Sulaka",
-        "value_str": "€1.5M",
-        "age": 34.1
       }
     ]
   },
@@ -990,8 +990,8 @@
   },
   "Colombia": {
     "code": "COL",
-    "total_value": 123150000.0,
-    "avg_age": 30.6,
+    "total_value": 133000000.0,
+    "avg_age": 31.3,
     "player_count": 6,
     "top_players": [
       {
@@ -1082,14 +1082,14 @@
   },
   "Panama": {
     "code": "PAN",
-    "total_value": 65000000.0,
-    "avg_age": 31.2,
+    "total_value": 20500000.0,
+    "avg_age": 31.4,
     "player_count": 5,
     "top_players": [
       {
         "name": "Michael Amir Murillo",
-        "value_str": "€55.0M",
-        "age": 23.9
+        "value_str": "€10.0M",
+        "age": 30.3
       },
       {
         "name": "Adalberto Carrasquilla",

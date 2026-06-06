@@ -1,4 +1,4 @@
-import { state, saveLocalState, exportStateAsJson, importStateFromJson } from './state.js';
+import { state, saveLocalState, exportStateAsJson, importStateFromJson, clearSimulationHistory } from './state.js';
 import { 
     recalculateKnockoutProgression, 
     recalculateStandings, 
@@ -18,8 +18,16 @@ import {
     closeLineupManager, 
     updateModalLineupLists, 
     updateBetSlipUI,
-    renderAnalyticsTab
+    renderAnalyticsTab,
+    openMonteCarlo,
+    closeMonteCarlo,
+    updateMonteCarloProgress,
+    showMonteCarloResults,
+    renderConvergenceChart,
+    renderSuperAggregator,
+    openAbmSimulation
 } from './ui.js';
+import { runMonteCarlo } from './simulator.js';
 
 // Debounce helper for search performance (reducing CPU/memory usage)
 function debounce(func, wait) {
@@ -118,6 +126,11 @@ export function addNewPlayerFromForm() {
 
 // Global event delegation handler to intercept dyn-click items (removes inline onclick attributes)
 function handleGlobalClick(e) {
+    // Hide bracket popovers if clicked outside
+    if (!e.target.closest(".br-toggle-consensus") && !e.target.closest(".bracket-popover")) {
+        document.querySelectorAll(".bracket-popover").forEach(p => p.style.display = "none");
+    }
+
     // 1. Check dynamic odd toggles
     const oddBtn = e.target.closest(".odd-btn");
     if (oddBtn) {
@@ -179,13 +192,51 @@ function handleGlobalClick(e) {
     if (simBtn) {
         const matchId = parseInt(simBtn.dataset.matchId);
         if (!isNaN(matchId)) {
-            simulateMatch(matchId);
-            renderMatches();
-            renderBracket();
-            renderStandings();
-            const activeTab = document.querySelector(".tab-btn.active");
-            if (activeTab && activeTab.dataset.tab === "analytics") {
-                renderAnalyticsTab();
+            openAbmSimulation(matchId, () => {
+                renderMatches();
+                renderBracket();
+                renderStandings();
+                const activeTab = document.querySelector(".tab-btn.active");
+                if (activeTab && activeTab.dataset.tab === "analytics") {
+                    renderAnalyticsTab();
+                }
+            });
+        }
+        return;
+    }
+
+    // 7. Monte Carlo modal trigger
+    const openMcBtn = e.target.closest(".btn-open-mc-modal");
+    if (openMcBtn) {
+        openMonteCarlo();
+        return;
+    }
+
+    // 8. Toggle consensus details triggers (group matches)
+    const toggleConsensusBtn = e.target.closest(".btn-toggle-consensus");
+    if (toggleConsensusBtn) {
+        const matchId = parseInt(toggleConsensusBtn.dataset.matchId);
+        const detailsContainer = document.querySelector(`.match-consensus-details[data-match-id="${matchId}"]`);
+        if (detailsContainer) {
+            const isVisible = detailsContainer.style.display === "block";
+            detailsContainer.style.display = isVisible ? "none" : "block";
+            toggleConsensusBtn.innerHTML = isVisible 
+                ? `<i class="fa-solid fa-chevron-down"></i> Analisi Multimodello` 
+                : `<i class="fa-solid fa-chevron-up"></i> Nascondi Analisi`;
+        }
+        return;
+    }
+
+    // 9. Toggle bracket consensus details popover triggers
+    const brConsensusBtn = e.target.closest(".br-toggle-consensus");
+    if (brConsensusBtn) {
+        const matchId = parseInt(brConsensusBtn.dataset.matchId);
+        const popover = brConsensusBtn.closest(".bracket-match-node").querySelector(`.bracket-popover[data-match-id="${matchId}"]`);
+        if (popover) {
+            const isVisible = popover.style.display === "block";
+            document.querySelectorAll(".bracket-popover").forEach(p => p.style.display = "none");
+            if (!isVisible) {
+                popover.style.display = "block";
             }
         }
         return;
@@ -232,6 +283,68 @@ export function setupEventListeners() {
     // Slip and Modals actions
     document.getElementById("slip-stake").addEventListener("input", updateBetSlipUI);
     document.getElementById("btn-close-modal").addEventListener("click", closeLineupManager);
+    
+    // Monte Carlo simulation modal actions
+    document.getElementById("btn-close-mc-modal").addEventListener("click", closeMonteCarlo);
+    document.getElementById("btn-close-mc-footer").addEventListener("click", closeMonteCarlo);
+
+    document.getElementById("btn-run-mc").addEventListener("click", () => {
+        const btn = document.getElementById("btn-run-mc");
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> In corso...`;
+
+        const totalSims = parseInt(document.getElementById("mc-sim-count").value) || 10000;
+        const modelSelection = document.getElementById("mc-model-select").value || "consensus";
+
+        runMonteCarlo(
+            totalSims,
+            modelSelection,
+            (done, pct, elapsed, remaining) => {
+                updateMonteCarloProgress(done, pct, elapsed, remaining);
+            },
+            (results) => {
+                // Save run results in state.simulationHistory
+                const runWinners = {};
+                results.consensus.forEach(item => {
+                    runWinners[item.name] = parseFloat(item.pctConsensus);
+                });
+
+                const runSemis = {};
+                if (results.semisConsensus) {
+                    results.semisConsensus.forEach(item => {
+                        runSemis[item.name] = parseFloat(item.pctConsensus);
+                    });
+                }
+
+                const historyRecord = {
+                    id: "sim_" + Date.now() + "_" + Math.floor(Math.random()*1000),
+                    timestamp: Date.now(),
+                    model: results.modelSelection,
+                    iterations: results.total,
+                    winners: runWinners,
+                    semis: runSemis
+                };
+                
+                state.simulationHistory.push(historyRecord);
+                saveLocalState();
+
+                showMonteCarloResults(results);
+                renderSuperAggregator();
+                renderConvergenceChart();
+            }
+        );
+    });
+
+    const clearSimHistBtn = document.getElementById("btn-clear-sim-history");
+    if (clearSimHistBtn) {
+        clearSimHistBtn.addEventListener("click", () => {
+            if (confirm("Sei sicuro di voler cancellare tutto lo storico delle simulazioni massive?")) {
+                clearSimulationHistory();
+                renderSuperAggregator();
+                renderConvergenceChart();
+            }
+        });
+    }
     
     document.getElementById("btn-save-lineup").addEventListener("click", () => {
         closeLineupManager();
@@ -322,26 +435,98 @@ export function setupEventListeners() {
         }
     });
 
-    // Listen to custom recalculation notifications from score inputs
-    document.addEventListener("scoreChanged", () => {
-        recalculateStandings();
-        renderStandings();
-        renderBracket();
-        updateBetSlipUI();
-        const activeTab = document.querySelector(".tab-btn.active");
-        if (activeTab && activeTab.dataset.tab === "analytics") {
-            renderAnalyticsTab();
-        }
-    });
+    // Delegated score input listener for Group Matches
+    const matchesContainer = document.getElementById("matches-container");
+    if (matchesContainer) {
+        matchesContainer.addEventListener("input", debounce((e) => {
+            const input = e.target;
+            if (!input.classList.contains("team-a-score") && !input.classList.contains("team-b-score")) return;
+            
+            const card = input.closest(".match-card");
+            if (!card) return;
+            
+            const matchId = parseInt(card.dataset.matchId);
+            const m = state.matches.find(x => x.id === matchId);
+            if (!m) return;
+            
+            const scoreAInput = card.querySelector(".team-a-score");
+            const scoreBInput = card.querySelector(".team-b-score");
+            
+            const valA = scoreAInput.value;
+            const valB = scoreBInput.value;
+            
+            if (valA !== "" && valB !== "") {
+                const parsedA = parseInt(valA);
+                const parsedB = parseInt(valB);
+                m.scoreA = isNaN(parsedA) || parsedA < 0 ? 0 : Math.min(15, parsedA);
+                m.scoreB = isNaN(parsedB) || parsedB < 0 ? 0 : Math.min(15, parsedB);
+                scoreAInput.value = m.scoreA;
+                scoreBInput.value = m.scoreB;
+            } else {
+                m.scoreA = null;
+                m.scoreB = null;
+                state.tournamentEvents = state.tournamentEvents.filter(evt => evt.matchId !== m.id);
+            }
+            
+            recalculateStandings();
+            renderStandings();
+            renderBracket();
+            updateBetSlipUI();
+            
+            const activeTab = document.querySelector(".tab-btn.active");
+            if (activeTab && activeTab.dataset.tab === "analytics") {
+                renderAnalyticsTab();
+            }
+        }, 350));
+    }
 
-    document.addEventListener("knockoutScoreChanged", () => {
-        recalculateKnockoutProgression();
-        renderBracket();
-        const activeTab = document.querySelector(".tab-btn.active");
-        if (activeTab && activeTab.dataset.tab === "analytics") {
-            renderAnalyticsTab();
-        }
-    });
+    // Delegated score input listener for Bracket (Knockout)
+    const bracketContainer = document.getElementById("bracket-container");
+    if (bracketContainer) {
+        bracketContainer.addEventListener("input", debounce((e) => {
+            const input = e.target;
+            if (!input.classList.contains("team-a-score") && !input.classList.contains("team-b-score")) return;
+            
+            const node = input.closest(".bracket-match-node");
+            if (!node) return;
+            
+            const matchId = parseInt(node.dataset.matchId);
+            const m = state.knockoutMatches.find(x => x.id === matchId);
+            if (!m) return;
+            
+            const scoreAInput = node.querySelector(".team-a-score");
+            const scoreBInput = node.querySelector(".team-b-score");
+            
+            const valA = scoreAInput.value;
+            const valB = scoreBInput.value;
+            
+            if (valA !== "" && valB !== "") {
+                const parsedA = parseInt(valA);
+                const parsedB = parseInt(valB);
+                m.scoreA = isNaN(parsedA) || parsedA < 0 ? 0 : Math.min(15, parsedA);
+                m.scoreB = isNaN(parsedB) || parsedB < 0 ? 0 : Math.min(15, parsedB);
+                scoreAInput.value = m.scoreA;
+                scoreBInput.value = m.scoreB;
+                
+                if (m.scoreA === m.scoreB && !m.penaltiesWinner) {
+                    m.penaltiesWinner = "A";
+                }
+            } else {
+                m.scoreA = null;
+                m.scoreB = null;
+                m.penaltiesWinner = null;
+                state.tournamentEvents = state.tournamentEvents.filter(evt => evt.matchId !== m.id);
+            }
+            
+            recalculateKnockoutProgression();
+            renderBracket();
+            
+            const activeTab = document.querySelector(".tab-btn.active");
+            if (activeTab && activeTab.dataset.tab === "analytics") {
+                renderAnalyticsTab();
+            }
+        }, 350));
+    }
 
     // Attach Event Delegation listener to root level
     document.addEventListener("click", handleGlobalClick);

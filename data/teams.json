@@ -14,7 +14,7 @@
         "assists": 2,
         "yellowCards": 4,
         "status": "starting",
-        "value": 22000000,
+        "value": 22000000.0,
         "age": 28.6
       },
       {
@@ -26,7 +26,7 @@
         "assists": 4,
         "yellowCards": 1,
         "status": "starting",
-        "value": 40000000,
+        "value": 40000000.0,
         "age": 25.1
       },
       {
@@ -38,7 +38,7 @@
         "assists": 3,
         "yellowCards": 2,
         "status": "bench",
-        "value": 4000000,
+        "value": 4000000.0,
         "age": 35.1
       },
       {
@@ -50,7 +50,7 @@
         "assists": 6,
         "yellowCards": 3,
         "status": "starting",
-        "value": 9000000,
+        "value": 9000000.0,
         "age": 30.4
       },
       {
@@ -62,7 +62,7 @@
         "assists": 0,
         "yellowCards": 5,
         "status": "starting",
-        "value": 7000000,
+        "value": 7000000.0,
         "age": 29.3
       },
       {
@@ -74,8 +74,8 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 300000,
-        "age": 31.4
+        "value": 6000000,
+        "age": 26.3
       },
       {
         "name": "Johan Vásquez",
@@ -86,7 +86,7 @@
         "assists": 1,
         "yellowCards": 4,
         "status": "starting",
-        "value": 10000000,
+        "value": 10000000.0,
         "age": 27.6
       },
       {
@@ -98,7 +98,7 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "bench",
-        "value": 7000000,
+        "value": 7000000.0,
         "age": 30.2
       },
       {
@@ -110,7 +110,7 @@
         "assists": 5,
         "yellowCards": 1,
         "status": "starting",
-        "value": 4000000,
+        "value": 4000000.0,
         "age": 28.8
       },
       {
@@ -122,7 +122,7 @@
         "assists": 2,
         "yellowCards": 3,
         "status": "bench",
-        "value": 3500000,
+        "value": 3500000.0,
         "age": 28.5
       }
     ]
@@ -154,7 +154,7 @@
         "assists": 3,
         "yellowCards": 2,
         "status": "starting",
-        "value": 13000000,
+        "value": 13000000.0,
         "age": 25.7
       },
       {
@@ -190,7 +190,7 @@
         "assists": 5,
         "yellowCards": 1,
         "status": "starting",
-        "value": 1500000,
+        "value": 1500000.0,
         "age": 32.1
       },
       {
@@ -251,7 +251,7 @@
         "yellowCards": 0,
         "status": "bench",
         "value": 1500000,
-        "age": 26
+        "age": 26.0
       }
     ]
   },
@@ -270,8 +270,8 @@
         "assists": 9,
         "yellowCards": 1,
         "status": "starting",
-        "value": 17000000,
-        "age": 33.9
+        "value": 70000000,
+        "age": 26.5
       },
       {
         "name": "Kim Min-jae",
@@ -282,8 +282,8 @@
         "assists": 1,
         "yellowCards": 5,
         "status": "starting",
-        "value": 25000000,
-        "age": 29.5
+        "value": 70000000,
+        "age": 26.5
       },
       {
         "name": "Lee Kang-in",
@@ -294,8 +294,8 @@
         "assists": 10,
         "yellowCards": 2,
         "status": "starting",
-        "value": 25000000,
-        "age": 25.3
+        "value": 40000000,
+        "age": 26.5
       },
       {
         "name": "Hwang Hee-chan",
@@ -306,8 +306,8 @@
         "assists": 3,
         "yellowCards": 3,
         "status": "bench",
-        "value": 10000000,
-        "age": 30.4
+        "value": 18000000,
+        "age": 26.5
       },
       {
         "name": "Jo Hyeon-woo",
@@ -318,8 +318,8 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 300000,
-        "age": 31.1
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "Hwang In-beom",
@@ -330,8 +330,8 @@
         "assists": 6,
         "yellowCards": 4,
         "status": "starting",
-        "value": 4500000,
-        "age": 29.7
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "Seol Young-woo",
@@ -343,7 +343,7 @@
         "yellowCards": 2,
         "status": "starting",
         "value": 6000000,
-        "age": 36.5
+        "age": 26.5
       },
       {
         "name": "Lee Jae-sung",
@@ -354,8 +354,8 @@
         "assists": 3,
         "yellowCards": 1,
         "status": "bench",
-        "value": 2000000,
-        "age": 33.8
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "Cho Gue-sung",
@@ -366,8 +366,8 @@
         "assists": 2,
         "yellowCards": 1,
         "status": "starting",
-        "value": 4500000,
-        "age": 28.4
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "Kim Young-gwon",
@@ -378,8 +378,8 @@
         "assists": 0,
         "yellowCards": 2,
         "status": "bench",
-        "value": 50000,
-        "age": 38.7
+        "value": 1500000,
+        "age": 26.5
       }
     ]
   },
@@ -398,8 +398,8 @@
         "assists": 2,
         "yellowCards": 1,
         "status": "starting",
-        "value": 25000000,
-        "age": 30.4
+        "value": 40000000,
+        "age": 26.5
       },
       {
         "name": "Tomáš Souček",
@@ -410,8 +410,8 @@
         "assists": 3,
         "yellowCards": 4,
         "status": "starting",
-        "value": 12000000,
-        "age": 31.3
+        "value": 18000000,
+        "age": 26.5
       },
       {
         "name": "Ladislav Krejčí",
@@ -422,8 +422,8 @@
         "assists": 1,
         "yellowCards": 6,
         "status": "starting",
-        "value": 22000000,
-        "age": 27.1
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "David Zima",
@@ -434,8 +434,8 @@
         "assists": 0,
         "yellowCards": 3,
         "status": "starting",
-        "value": 4000000,
-        "age": 25.6
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "Jan Kuchta",
@@ -446,8 +446,8 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "bench",
-        "value": 4000000,
-        "age": 29.4
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "Antonín Barák",
@@ -458,8 +458,8 @@
         "assists": 5,
         "yellowCards": 2,
         "status": "starting",
-        "value": 4500000,
-        "age": 31.5
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "Vladimír Coufal",
@@ -470,8 +470,8 @@
         "assists": 4,
         "yellowCards": 5,
         "status": "starting",
-        "value": 2700000,
-        "age": 33.8
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "Jindřich Staněk",
@@ -482,8 +482,8 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 3500000,
-        "age": 30.1
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "Adam Hložek",
@@ -494,8 +494,8 @@
         "assists": 6,
         "yellowCards": 0,
         "status": "bench",
-        "value": 15000000,
-        "age": 23.9
+        "value": 6000000,
+        "age": 26.5
       },
       {
         "name": "Lukáš Provod",
@@ -507,7 +507,7 @@
         "yellowCards": 2,
         "status": "bench",
         "value": 6000000,
-        "age": 29.6
+        "age": 26.5
       }
     ]
   },
@@ -526,7 +526,7 @@
         "assists": 8,
         "yellowCards": 2,
         "status": "bench",
-        "value": 50000000,
+        "value": 50000000.0,
         "age": 25.6
       },
       {
@@ -538,7 +538,7 @@
         "assists": 5,
         "yellowCards": 1,
         "status": "starting",
-        "value": 35000000,
+        "value": 35000000.0,
         "age": 26.4
       },
       {
@@ -550,8 +550,8 @@
         "assists": 6,
         "yellowCards": 3,
         "status": "starting",
-        "value": 11000000,
-        "age": 29.4
+        "value": 11000000.0,
+        "age": 29.5
       },
       {
         "name": "Moïse Bombito",
@@ -562,7 +562,7 @@
         "assists": 1,
         "yellowCards": 4,
         "status": "starting",
-        "value": 8000000,
+        "value": 8000000.0,
         "age": 26.2
       },
       {
@@ -586,8 +586,8 @@
         "assists": 4,
         "yellowCards": 1,
         "status": "absent",
-        "value": 1800000,
-        "age": 38.1
+        "value": 800000.0,
+        "age": 22.7
       },
       {
         "name": "Ali Ahmed",
@@ -634,7 +634,7 @@
         "assists": 2,
         "yellowCards": 2,
         "status": "starting",
-        "value": 3500000,
+        "value": 3500000.0,
         "age": 31.1
       },
       {
@@ -646,7 +646,7 @@
         "assists": 4,
         "yellowCards": 5,
         "status": "starting",
-        "value": 8000000,
+        "value": 8000000.0,
         "age": 27.7
       }
     ]
@@ -666,7 +666,7 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "starting",
-        "value": 2700000,
+        "value": 2700000.0,
         "age": 40.2
       },
       {
@@ -678,7 +678,7 @@
         "assists": 8,
         "yellowCards": 1,
         "status": "starting",
-        "value": 5000000,
+        "value": 5000000.0,
         "age": 21.2
       },
       {
@@ -702,8 +702,8 @@
         "assists": 2,
         "yellowCards": 5,
         "status": "starting",
-        "value": 10000000,
-        "age": 33
+        "value": 10000000.0,
+        "age": 33.0
       },
       {
         "name": "Rade Krunić",
@@ -714,7 +714,7 @@
         "assists": 4,
         "yellowCards": 4,
         "status": "starting",
-        "value": 6000000,
+        "value": 6000000.0,
         "age": 32.7
       },
       {
@@ -726,7 +726,7 @@
         "assists": 3,
         "yellowCards": 2,
         "status": "bench",
-        "value": 4500000,
+        "value": 4500000.0,
         "age": 23.3
       },
       {
@@ -738,7 +738,7 @@
         "assists": 5,
         "yellowCards": 3,
         "status": "starting",
-        "value": 22000000,
+        "value": 22000000.0,
         "age": 28.2
       },
       {
@@ -750,7 +750,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 4500000,
+        "value": 4500000.0,
         "age": 30.5
       }
     ]
@@ -770,7 +770,7 @@
         "assists": 12,
         "yellowCards": 2,
         "status": "starting",
-        "value": 4500000,
+        "value": 4500000.0,
         "age": 29.5
       },
       {
@@ -818,7 +818,7 @@
         "assists": 0,
         "yellowCards": 3,
         "status": "starting",
-        "value": 500000,
+        "value": 500000.0,
         "age": 35.9
       },
       {
@@ -830,8 +830,8 @@
         "assists": 5,
         "yellowCards": 0,
         "status": "bench",
-        "value": 300000,
-        "age": 37.4
+        "value": 6000000,
+        "age": 35.5
       }
     ]
   },
@@ -850,7 +850,7 @@
         "assists": 8,
         "yellowCards": 5,
         "status": "starting",
-        "value": 10000000,
+        "value": 10000000.0,
         "age": 33.7
       },
       {
@@ -862,7 +862,7 @@
         "assists": 1,
         "yellowCards": 3,
         "status": "starting",
-        "value": 22000000,
+        "value": 22000000.0,
         "age": 30.9
       },
       {
@@ -874,7 +874,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 40000000,
+        "value": 40000000.0,
         "age": 28.5
       },
       {
@@ -886,7 +886,7 @@
         "assists": 2,
         "yellowCards": 2,
         "status": "bench",
-        "value": 12000000,
+        "value": 12000000.0,
         "age": 29.3
       },
       {
@@ -898,7 +898,7 @@
         "assists": 6,
         "yellowCards": 3,
         "status": "starting",
-        "value": 40000000,
+        "value": 40000000.0,
         "age": 25.6
       },
       {
@@ -910,7 +910,7 @@
         "assists": 4,
         "yellowCards": 4,
         "status": "starting",
-        "value": 4000000,
+        "value": 4000000.0,
         "age": 34.1
       },
       {
@@ -922,7 +922,7 @@
         "assists": 3,
         "yellowCards": 2,
         "status": "starting",
-        "value": 3500000,
+        "value": 3500000.0,
         "age": 33.8
       },
       {
@@ -934,7 +934,7 @@
         "assists": 3,
         "yellowCards": 1,
         "status": "starting",
-        "value": 9000000,
+        "value": 9000000.0,
         "age": 25.5
       }
     ]
@@ -954,7 +954,7 @@
         "assists": 5,
         "yellowCards": 2,
         "status": "starting",
-        "value": 180000000,
+        "value": 180000000.0,
         "age": 25.9
       },
       {
@@ -966,7 +966,7 @@
         "assists": 9,
         "yellowCards": 3,
         "status": "starting",
-        "value": 50000000,
+        "value": 50000000.0,
         "age": 34.3
       },
       {
@@ -979,7 +979,7 @@
         "yellowCards": 1,
         "status": "bench",
         "value": 18000000,
-        "age": 31.2
+        "age": 19.9
       },
       {
         "name": "Casemiro",
@@ -990,7 +990,7 @@
         "assists": 3,
         "yellowCards": 6,
         "status": "starting",
-        "value": 8000000,
+        "value": 8000000.0,
         "age": 34.3
       },
       {
@@ -1002,7 +1002,7 @@
         "assists": 8,
         "yellowCards": 5,
         "status": "starting",
-        "value": 75000000,
+        "value": 75000000.0,
         "age": 28.5
       },
       {
@@ -1014,7 +1014,7 @@
         "assists": 1,
         "yellowCards": 2,
         "status": "starting",
-        "value": 30000000,
+        "value": 30000000.0,
         "age": 32.1
       },
       {
@@ -1026,7 +1026,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 17000000,
+        "value": 17000000.0,
         "age": 33.7
       },
       {
@@ -1038,7 +1038,7 @@
         "assists": 0,
         "yellowCards": 3,
         "status": "starting",
-        "value": 75000000,
+        "value": 75000000.0,
         "age": 28.5
       },
       {
@@ -1050,7 +1050,7 @@
         "assists": 7,
         "yellowCards": 4,
         "status": "bench",
-        "value": 35000000,
+        "value": 35000000.0,
         "age": 28.8
       },
       {
@@ -1062,7 +1062,7 @@
         "assists": 6,
         "yellowCards": 1,
         "status": "starting",
-        "value": 110000000,
+        "value": 110000000.0,
         "age": 25.4
       }
     ]
@@ -1082,7 +1082,7 @@
         "assists": 8,
         "yellowCards": 3,
         "status": "starting",
-        "value": 80000000,
+        "value": 80000000.0,
         "age": 27.6
       },
       {
@@ -1094,7 +1094,7 @@
         "assists": 7,
         "yellowCards": 1,
         "status": "starting",
-        "value": 40000000,
+        "value": 40000000.0,
         "age": 26.8
       },
       {
@@ -1106,7 +1106,7 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 9000000,
+        "value": 9000000.0,
         "age": 35.2
       },
       {
@@ -1118,7 +1118,7 @@
         "assists": 3,
         "yellowCards": 2,
         "status": "starting",
-        "value": 5000000,
+        "value": 5000000.0,
         "age": 32.9
       },
       {
@@ -1130,7 +1130,7 @@
         "assists": 2,
         "yellowCards": 0,
         "status": "bench",
-        "value": 400000,
+        "value": 400000.0,
         "age": 24.7
       },
       {
@@ -1142,7 +1142,7 @@
         "assists": 2,
         "yellowCards": 7,
         "status": "starting",
-        "value": 22000000,
+        "value": 22000000.0,
         "age": 29.8
       },
       {
@@ -1154,7 +1154,7 @@
         "assists": 0,
         "yellowCards": 3,
         "status": "starting",
-        "value": 22000000,
+        "value": 22000000.0,
         "age": 30.2
       },
       {
@@ -1166,7 +1166,7 @@
         "assists": 5,
         "yellowCards": 1,
         "status": "starting",
-        "value": 10000000,
+        "value": 10000000.0,
         "age": 26.1
       }
     ]
@@ -1186,7 +1186,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 250000,
+        "value": 250000.0,
         "age": 38.3
       },
       {
@@ -1198,7 +1198,7 @@
         "assists": 2,
         "yellowCards": 2,
         "status": "starting",
-        "value": 1600000,
+        "value": 1600000.0,
         "age": 32.2
       },
       {
@@ -1210,7 +1210,7 @@
         "assists": 6,
         "yellowCards": 3,
         "status": "starting",
-        "value": 15000000,
+        "value": 15000000.0,
         "age": 27.9
       },
       {
@@ -1222,7 +1222,7 @@
         "assists": 1,
         "yellowCards": 1,
         "status": "starting",
-        "value": 18000000,
+        "value": 18000000.0,
         "age": 25.8
       },
       {
@@ -1234,8 +1234,8 @@
         "assists": 3,
         "yellowCards": 4,
         "status": "starting",
-        "value": 2000000,
-        "age": 26
+        "value": 2000000.0,
+        "age": 26.0
       },
       {
         "name": "Ricardo Adé",
@@ -1246,8 +1246,8 @@
         "assists": 0,
         "yellowCards": 2,
         "status": "starting",
-        "value": 200000,
-        "age": 50.3
+        "value": 1500000,
+        "age": 26.5
       }
     ]
   },
@@ -1266,7 +1266,7 @@
         "assists": 6,
         "yellowCards": 3,
         "status": "starting",
-        "value": 30000000,
+        "value": 30000000.0,
         "age": 32.2
       },
       {
@@ -1278,7 +1278,7 @@
         "assists": 2,
         "yellowCards": 4,
         "status": "starting",
-        "value": 45000000,
+        "value": 45000000.0,
         "age": 29.5
       },
       {
@@ -1290,7 +1290,7 @@
         "assists": 5,
         "yellowCards": 5,
         "status": "starting",
-        "value": 15000000,
+        "value": 15000000.0,
         "age": 31.6
       },
       {
@@ -1302,8 +1302,8 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "starting",
-        "value": 20000000,
-        "age": 25
+        "value": 20000000.0,
+        "age": 25.0
       },
       {
         "name": "Che Adams",
@@ -1314,7 +1314,7 @@
         "assists": 3,
         "yellowCards": 1,
         "status": "starting",
-        "value": 18000000,
+        "value": 18000000.0,
         "age": 29.9
       },
       {
@@ -1326,7 +1326,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 2500000,
+        "value": 2500000.0,
         "age": 30.4
       }
     ]
@@ -1346,7 +1346,7 @@
         "assists": 8,
         "yellowCards": 1,
         "status": "starting",
-        "value": 60000000,
+        "value": 60000000.0,
         "age": 27.7
       },
       {
@@ -1358,7 +1358,7 @@
         "assists": 5,
         "yellowCards": 5,
         "status": "starting",
-        "value": 22000000,
+        "value": 22000000.0,
         "age": 27.8
       },
       {
@@ -1370,7 +1370,7 @@
         "assists": 2,
         "yellowCards": 2,
         "status": "starting",
-        "value": 22000000,
+        "value": 22000000.0,
         "age": 24.9
       },
       {
@@ -1382,7 +1382,7 @@
         "assists": 6,
         "yellowCards": 3,
         "status": "starting",
-        "value": 18000000,
+        "value": 18000000.0,
         "age": 25.6
       },
       {
@@ -1394,8 +1394,8 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "bench",
-        "value": 300000,
-        "age": 47.8
+        "value": 6000000,
+        "age": 22.3
       },
       {
         "name": "Antonee Robinson",
@@ -1406,7 +1406,7 @@
         "assists": 7,
         "yellowCards": 4,
         "status": "starting",
-        "value": 30000000,
+        "value": 30000000.0,
         "age": 28.8
       },
       {
@@ -1418,7 +1418,7 @@
         "assists": 1,
         "yellowCards": 5,
         "status": "starting",
-        "value": 25000000,
+        "value": 25000000.0,
         "age": 27.3
       },
       {
@@ -1430,7 +1430,7 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 7000000,
+        "value": 7000000.0,
         "age": 31.9
       }
     ]
@@ -1450,7 +1450,7 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "starting",
-        "value": 20000000,
+        "value": 20000000.0,
         "age": 22.4
       },
       {
@@ -1462,7 +1462,7 @@
         "assists": 3,
         "yellowCards": 3,
         "status": "starting",
-        "value": 9000000,
+        "value": 9000000.0,
         "age": 32.3
       },
       {
@@ -1474,7 +1474,7 @@
         "assists": 0,
         "yellowCards": 5,
         "status": "starting",
-        "value": 8500000,
+        "value": 8500000.0,
         "age": 33.1
       },
       {
@@ -1486,7 +1486,7 @@
         "assists": 4,
         "yellowCards": 1,
         "status": "starting",
-        "value": 11000000,
+        "value": 11000000.0,
         "age": 26.8
       },
       {
@@ -1518,7 +1518,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 2000000,
+        "value": 2000000.0,
         "age": 34.2
       },
       {
@@ -1530,7 +1530,7 @@
         "assists": 4,
         "yellowCards": 1,
         "status": "starting",
-        "value": 6000000,
+        "value": 6000000.0,
         "age": 20.3
       },
       {
@@ -1542,7 +1542,7 @@
         "assists": 2,
         "yellowCards": 5,
         "status": "starting",
-        "value": 1500000,
+        "value": 1500000.0,
         "age": 33.2
       },
       {
@@ -1554,7 +1554,7 @@
         "assists": 0,
         "yellowCards": 2,
         "status": "starting",
-        "value": 6000000,
+        "value": 6000000.0,
         "age": 27.6
       },
       {
@@ -1586,8 +1586,8 @@
         "assists": 6,
         "yellowCards": 1,
         "status": "starting",
-        "value": 45000000,
-        "age": 21.3
+        "value": 40000000,
+        "age": 26.5
       },
       {
         "name": "Hakan Çalhanoğlu",
@@ -1598,8 +1598,8 @@
         "assists": 8,
         "yellowCards": 4,
         "status": "starting",
-        "value": 22000000,
-        "age": 32.3
+        "value": 40000000,
+        "age": 26.5
       },
       {
         "name": "Kenan Yıldız",
@@ -1610,8 +1610,8 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "starting",
-        "value": 75000000,
-        "age": 21.1
+        "value": 18000000,
+        "age": 26.5
       },
       {
         "name": "Ferdi Kadıoğlu",
@@ -1622,8 +1622,8 @@
         "assists": 5,
         "yellowCards": 3,
         "status": "starting",
-        "value": 28000000,
-        "age": 26.7
+        "value": 18000000,
+        "age": 26.5
       },
       {
         "name": "Mert Günok",
@@ -1634,8 +1634,8 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 500000,
-        "age": 37.3
+        "value": 6000000,
+        "age": 26.5
       }
     ]
   },
@@ -1654,7 +1654,7 @@
         "assists": 9,
         "yellowCards": 1,
         "status": "starting",
-        "value": 130000000,
+        "value": 130000000.0,
         "age": 23.3
       },
       {
@@ -1666,7 +1666,7 @@
         "assists": 13,
         "yellowCards": 2,
         "status": "starting",
-        "value": 110000000,
+        "value": 110000000.0,
         "age": 23.1
       },
       {
@@ -1678,7 +1678,7 @@
         "assists": 7,
         "yellowCards": 4,
         "status": "starting",
-        "value": 40000000,
+        "value": 40000000.0,
         "age": 31.3
       },
       {
@@ -1690,8 +1690,8 @@
         "assists": 6,
         "yellowCards": 3,
         "status": "starting",
-        "value": 55000000,
-        "age": 27
+        "value": 55000000.0,
+        "age": 27.0
       },
       {
         "name": "Antonio Rüdiger",
@@ -1702,7 +1702,7 @@
         "assists": 0,
         "yellowCards": 5,
         "status": "starting",
-        "value": 25000000,
+        "value": 25000000.0,
         "age": 33.3
       },
       {
@@ -1714,7 +1714,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 28000000,
+        "value": 28000000.0,
         "age": 34.1
       }
     ]
@@ -1734,7 +1734,7 @@
         "assists": 4,
         "yellowCards": 3,
         "status": "starting",
-        "value": 900000,
+        "value": 900000.0,
         "age": 34.8
       },
       {
@@ -1746,7 +1746,7 @@
         "assists": 1,
         "yellowCards": 1,
         "status": "starting",
-        "value": 900000,
+        "value": 900000.0,
         "age": 34.1
       },
       {
@@ -1758,7 +1758,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 200000,
+        "value": 200000.0,
         "age": 37.3
       },
       {
@@ -1770,7 +1770,7 @@
         "assists": 1,
         "yellowCards": 2,
         "status": "starting",
-        "value": 300000,
+        "value": 300000.0,
         "age": 37.2
       },
       {
@@ -1782,7 +1782,7 @@
         "assists": 2,
         "yellowCards": 3,
         "status": "starting",
-        "value": 450000,
+        "value": 450000.0,
         "age": 32.4
       }
     ]
@@ -1802,7 +1802,7 @@
         "assists": 4,
         "yellowCards": 4,
         "status": "starting",
-        "value": 20000000,
+        "value": 20000000.0,
         "age": 29.5
       },
       {
@@ -1814,7 +1814,7 @@
         "assists": 6,
         "yellowCards": 1,
         "status": "starting",
-        "value": 50000000,
+        "value": 50000000.0,
         "age": 23.9
       },
       {
@@ -1826,7 +1826,7 @@
         "assists": 1,
         "yellowCards": 3,
         "status": "starting",
-        "value": 30000000,
+        "value": 30000000.0,
         "age": 26.8
       },
       {
@@ -1838,8 +1838,8 @@
         "assists": 2,
         "yellowCards": 1,
         "status": "bench",
-        "value": 2000000,
-        "age": 31.9
+        "value": 2000000.0,
+        "age": 32.0
       },
       {
         "name": "Ousmane Diomande",
@@ -1850,7 +1850,7 @@
         "assists": 0,
         "yellowCards": 3,
         "status": "starting",
-        "value": 45000000,
+        "value": 45000000.0,
         "age": 22.5
       },
       {
@@ -1862,7 +1862,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 2500000,
+        "value": 2500000.0,
         "age": 25.8
       }
     ]
@@ -1882,7 +1882,7 @@
         "assists": 5,
         "yellowCards": 6,
         "status": "starting",
-        "value": 110000000,
+        "value": 110000000.0,
         "age": 24.6
       },
       {
@@ -1894,7 +1894,7 @@
         "assists": 2,
         "yellowCards": 4,
         "status": "starting",
-        "value": 50000000,
+        "value": 50000000.0,
         "age": 24.4
       },
       {
@@ -1906,7 +1906,7 @@
         "assists": 0,
         "yellowCards": 3,
         "status": "starting",
-        "value": 70000000,
+        "value": 70000000.0,
         "age": 24.6
       },
       {
@@ -1918,7 +1918,7 @@
         "assists": 1,
         "yellowCards": 2,
         "status": "starting",
-        "value": 3800000,
+        "value": 3800000.0,
         "age": 36.6
       },
       {
@@ -1962,7 +1962,7 @@
         "assists": 1,
         "yellowCards": 3,
         "status": "starting",
-        "value": 18000000,
+        "value": 18000000.0,
         "age": 34.9
       },
       {
@@ -1974,7 +1974,7 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "starting",
-        "value": 10000000,
+        "value": 10000000.0,
         "age": 32.3
       },
       {
@@ -1986,7 +1986,7 @@
         "assists": 5,
         "yellowCards": 2,
         "status": "starting",
-        "value": 70000000,
+        "value": 70000000.0,
         "age": 29.1
       },
       {
@@ -1998,7 +1998,7 @@
         "assists": 5,
         "yellowCards": 1,
         "status": "starting",
-        "value": 70000000,
+        "value": 70000000.0,
         "age": 27.1
       },
       {
@@ -2010,7 +2010,7 @@
         "assists": 1,
         "yellowCards": 3,
         "status": "starting",
-        "value": 18000000,
+        "value": 18000000.0,
         "age": 31.3
       },
       {
@@ -2022,7 +2022,7 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 35000000,
+        "value": 35000000.0,
         "age": 23.8
       }
     ]
@@ -2042,7 +2042,7 @@
         "assists": 3,
         "yellowCards": 5,
         "status": "starting",
-        "value": 5000000,
+        "value": 5000000.0,
         "age": 33.3
       },
       {
@@ -2054,8 +2054,8 @@
         "assists": 9,
         "yellowCards": 1,
         "status": "starting",
-        "value": 30000000,
-        "age": 25
+        "value": 30000000.0,
+        "age": 25.0
       },
       {
         "name": "Takehiro Tomiyasu",
@@ -2066,7 +2066,7 @@
         "assists": 1,
         "yellowCards": 3,
         "status": "starting",
-        "value": 12000000,
+        "value": 12000000.0,
         "age": 27.6
       },
       {
@@ -2078,8 +2078,8 @@
         "assists": 6,
         "yellowCards": 0,
         "status": "starting",
-        "value": 30000000,
-        "age": 29
+        "value": 30000000.0,
+        "age": 29.0
       },
       {
         "name": "Zion Suzuki",
@@ -2090,7 +2090,7 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 20000000,
+        "value": 20000000.0,
         "age": 23.8
       },
       {
@@ -2102,7 +2102,7 @@
         "assists": 0,
         "yellowCards": 3,
         "status": "starting",
-        "value": 10000000,
+        "value": 10000000.0,
         "age": 29.3
       }
     ]
@@ -2122,7 +2122,7 @@
         "assists": 3,
         "yellowCards": 1,
         "status": "starting",
-        "value": 120000000,
+        "value": 120000000.0,
         "age": 26.7
       },
       {
@@ -2134,8 +2134,8 @@
         "assists": 8,
         "yellowCards": 2,
         "status": "starting",
-        "value": 70000000,
-        "age": 28
+        "value": 70000000.0,
+        "age": 28.0
       },
       {
         "name": "Victor Lindelöf",
@@ -2146,7 +2146,7 @@
         "assists": 1,
         "yellowCards": 3,
         "status": "starting",
-        "value": 15000000,
+        "value": 15000000.0,
         "age": 31.9
       },
       {
@@ -2158,7 +2158,7 @@
         "assists": 8,
         "yellowCards": 4,
         "status": "starting",
-        "value": 45000000,
+        "value": 45000000.0,
         "age": 26.1
       },
       {
@@ -2170,7 +2170,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 700000,
+        "value": 700000.0,
         "age": 36.4
       }
     ]
@@ -2190,7 +2190,7 @@
         "assists": 2,
         "yellowCards": 3,
         "status": "starting",
-        "value": 6000000,
+        "value": 6000000.0,
         "age": 31.1
       },
       {
@@ -2202,7 +2202,7 @@
         "assists": 4,
         "yellowCards": 4,
         "status": "starting",
-        "value": 9000000,
+        "value": 9000000.0,
         "age": 23.4
       },
       {
@@ -2214,8 +2214,8 @@
         "assists": 0,
         "yellowCards": 2,
         "status": "starting",
-        "value": 7000000,
-        "age": 28
+        "value": 7000000.0,
+        "age": 28.0
       },
       {
         "name": "Youssef Msakni",
@@ -2226,7 +2226,7 @@
         "assists": 3,
         "yellowCards": 1,
         "status": "starting",
-        "value": 900000,
+        "value": 900000.0,
         "age": 35.6
       },
       {
@@ -2258,8 +2258,8 @@
         "assists": 14,
         "yellowCards": 2,
         "status": "starting",
-        "value": 30000000,
-        "age": 23.4
+        "value": 15000000.0,
+        "age": 34.9
       },
       {
         "name": "Romelu Lukaku",
@@ -2270,7 +2270,7 @@
         "assists": 2,
         "yellowCards": 2,
         "status": "starting",
-        "value": 15000000,
+        "value": 15000000.0,
         "age": 33.1
       },
       {
@@ -2282,7 +2282,7 @@
         "assists": 5,
         "yellowCards": 3,
         "status": "starting",
-        "value": 35000000,
+        "value": 35000000.0,
         "age": 29.1
       },
       {
@@ -2294,8 +2294,8 @@
         "assists": 9,
         "yellowCards": 1,
         "status": "starting",
-        "value": 65000000,
-        "age": 24
+        "value": 65000000.0,
+        "age": 24.0
       },
       {
         "name": "Wout Faes",
@@ -2306,7 +2306,7 @@
         "assists": 0,
         "yellowCards": 4,
         "status": "starting",
-        "value": 12000000,
+        "value": 12000000.0,
         "age": 28.2
       },
       {
@@ -2318,7 +2318,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 6000000,
+        "value": 6000000.0,
         "age": 33.9
       }
     ]
@@ -2338,8 +2338,8 @@
         "assists": 8,
         "yellowCards": 1,
         "status": "starting",
-        "value": 30000000,
-        "age": 34
+        "value": 30000000.0,
+        "age": 34.0
       },
       {
         "name": "Omar Marmoush",
@@ -2350,7 +2350,7 @@
         "assists": 6,
         "yellowCards": 2,
         "status": "starting",
-        "value": 65000000,
+        "value": 65000000.0,
         "age": 27.3
       },
       {
@@ -2374,7 +2374,7 @@
         "assists": 1,
         "yellowCards": 3,
         "status": "starting",
-        "value": 4000000,
+        "value": 4000000.0,
         "age": 28.5
       },
       {
@@ -2386,7 +2386,7 @@
         "assists": 3,
         "yellowCards": 2,
         "status": "starting",
-        "value": 4500000,
+        "value": 4500000.0,
         "age": 31.7
       }
     ]
@@ -2406,7 +2406,7 @@
         "assists": 5,
         "yellowCards": 3,
         "status": "starting",
-        "value": 2500000,
+        "value": 2500000.0,
         "age": 33.9
       },
       {
@@ -2418,7 +2418,7 @@
         "assists": 2,
         "yellowCards": 2,
         "status": "starting",
-        "value": 8000000,
+        "value": 8000000.0,
         "age": 31.4
       },
       {
@@ -2430,7 +2430,7 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 1200000,
+        "value": 1200000.0,
         "age": 33.7
       },
       {
@@ -2442,7 +2442,7 @@
         "assists": 4,
         "yellowCards": 3,
         "status": "starting",
-        "value": 2000000,
+        "value": 2000000.0,
         "age": 32.7
       },
       {
@@ -2454,7 +2454,7 @@
         "assists": 2,
         "yellowCards": 2,
         "status": "starting",
-        "value": 1300000,
+        "value": 1300000.0,
         "age": 32.7
       }
     ]
@@ -2474,7 +2474,7 @@
         "assists": 1,
         "yellowCards": 2,
         "status": "starting",
-        "value": 8000000,
+        "value": 8000000.0,
         "age": 34.5
       },
       {
@@ -2486,7 +2486,7 @@
         "assists": 3,
         "yellowCards": 4,
         "status": "starting",
-        "value": 3000000,
+        "value": 3000000.0,
         "age": 24.3
       },
       {
@@ -2498,7 +2498,7 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "starting",
-        "value": 3000000,
+        "value": 3000000.0,
         "age": 25.7
       },
       {
@@ -2510,7 +2510,7 @@
         "assists": 0,
         "yellowCards": 3,
         "status": "starting",
-        "value": 1500000,
+        "value": 1500000.0,
         "age": 21.3
       },
       {
@@ -2522,8 +2522,8 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 1000000,
-        "age": 44
+        "value": 1500000,
+        "age": 23.9
       }
     ]
   },
@@ -2542,7 +2542,7 @@
         "assists": 6,
         "yellowCards": 5,
         "status": "starting",
-        "value": 75000000,
+        "value": 75000000.0,
         "age": 29.9
       },
       {
@@ -2554,7 +2554,7 @@
         "assists": 11,
         "yellowCards": 1,
         "status": "starting",
-        "value": 120000000,
+        "value": 120000000.0,
         "age": 18.9
       },
       {
@@ -2566,7 +2566,7 @@
         "assists": 7,
         "yellowCards": 2,
         "status": "starting",
-        "value": 80000000,
+        "value": 80000000.0,
         "age": 23.5
       },
       {
@@ -2578,7 +2578,7 @@
         "assists": 9,
         "yellowCards": 1,
         "status": "starting",
-        "value": 60000000,
+        "value": 60000000.0,
         "age": 23.9
       },
       {
@@ -2590,8 +2590,8 @@
         "assists": 4,
         "yellowCards": 4,
         "status": "starting",
-        "value": 50000,
-        "age": 44.3
+        "value": 40000000,
+        "age": 26.5
       },
       {
         "name": "Unai Simón",
@@ -2602,8 +2602,8 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 30000000,
-        "age": 29
+        "value": 30000000.0,
+        "age": 29.0
       }
     ]
   },
@@ -2622,7 +2622,7 @@
         "assists": 3,
         "yellowCards": 2,
         "status": "starting",
-        "value": 700000,
+        "value": 700000.0,
         "age": 36.4
       },
       {
@@ -2634,7 +2634,7 @@
         "assists": 0,
         "yellowCards": 4,
         "status": "starting",
-        "value": 18000000,
+        "value": 18000000.0,
         "age": 25.2
       },
       {
@@ -2646,7 +2646,7 @@
         "assists": 4,
         "yellowCards": 3,
         "status": "starting",
-        "value": 750000,
+        "value": 750000.0,
         "age": 32.5
       },
       {
@@ -2658,7 +2658,7 @@
         "assists": 1,
         "yellowCards": 1,
         "status": "starting",
-        "value": 325000,
+        "value": 325000.0,
         "age": 35.5
       },
       {
@@ -2690,7 +2690,7 @@
         "assists": 6,
         "yellowCards": 3,
         "status": "starting",
-        "value": 2000000,
+        "value": 2000000.0,
         "age": 34.8
       },
       {
@@ -2702,7 +2702,7 @@
         "assists": 4,
         "yellowCards": 4,
         "status": "starting",
-        "value": 3000000,
+        "value": 3000000.0,
         "age": 26.9
       },
       {
@@ -2715,7 +2715,7 @@
         "yellowCards": 1,
         "status": "starting",
         "value": 1500000,
-        "age": 34.6
+        "age": 34.7
       },
       {
         "name": "Firas Al-Buraikan",
@@ -2758,7 +2758,7 @@
         "assists": 6,
         "yellowCards": 4,
         "status": "starting",
-        "value": 120000000,
+        "value": 120000000.0,
         "age": 27.9
       },
       {
@@ -2770,7 +2770,7 @@
         "assists": 1,
         "yellowCards": 4,
         "status": "starting",
-        "value": 70000000,
+        "value": 70000000.0,
         "age": 27.2
       },
       {
@@ -2782,7 +2782,7 @@
         "assists": 4,
         "yellowCards": 3,
         "status": "starting",
-        "value": 70000000,
+        "value": 70000000.0,
         "age": 26.9
       },
       {
@@ -2794,7 +2794,7 @@
         "assists": 2,
         "yellowCards": 6,
         "status": "starting",
-        "value": 30000000,
+        "value": 30000000.0,
         "age": 25.1
       },
       {
@@ -2806,7 +2806,7 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 3500000,
+        "value": 3500000.0,
         "age": 33.2
       }
     ]
@@ -2826,7 +2826,7 @@
         "assists": 5,
         "yellowCards": 1,
         "status": "starting",
-        "value": 180000000,
+        "value": 180000000.0,
         "age": 27.5
       },
       {
@@ -2838,7 +2838,7 @@
         "assists": 10,
         "yellowCards": 2,
         "status": "starting",
-        "value": 100000000,
+        "value": 100000000.0,
         "age": 29.1
       },
       {
@@ -2850,7 +2850,7 @@
         "assists": 8,
         "yellowCards": 1,
         "status": "starting",
-        "value": 130000000,
+        "value": 130000000.0,
         "age": 24.5
       },
       {
@@ -2862,7 +2862,7 @@
         "assists": 0,
         "yellowCards": 3,
         "status": "starting",
-        "value": 90000000,
+        "value": 90000000.0,
         "age": 25.2
       },
       {
@@ -2874,7 +2874,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 38000000,
+        "value": 38000000.0,
         "age": 30.9
       },
       {
@@ -2886,8 +2886,8 @@
         "assists": 2,
         "yellowCards": 5,
         "status": "starting",
-        "value": 100000000,
-        "age": 26.3
+        "value": 100000000.0,
+        "age": 26.4
       },
       {
         "name": "Theo Hernández",
@@ -2898,7 +2898,7 @@
         "assists": 7,
         "yellowCards": 4,
         "status": "starting",
-        "value": 60000000,
+        "value": 60000000.0,
         "age": 28.7
       },
       {
@@ -2910,7 +2910,7 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "bench",
-        "value": 60000000,
+        "value": 60000000.0,
         "age": 28.8
       }
     ]
@@ -2930,7 +2930,7 @@
         "assists": 6,
         "yellowCards": 2,
         "status": "starting",
-        "value": 25000000,
+        "value": 25000000.0,
         "age": 34.1
       },
       {
@@ -2942,8 +2942,8 @@
         "assists": 0,
         "yellowCards": 4,
         "status": "starting",
-        "value": 12000000,
-        "age": 35
+        "value": 12000000.0,
+        "age": 35.0
       },
       {
         "name": "Nicolas Jackson",
@@ -2954,8 +2954,8 @@
         "assists": 4,
         "yellowCards": 3,
         "status": "starting",
-        "value": 45000000,
-        "age": 25
+        "value": 45000000.0,
+        "age": 25.0
       },
       {
         "name": "Lamine Camara",
@@ -2966,7 +2966,7 @@
         "assists": 5,
         "yellowCards": 3,
         "status": "starting",
-        "value": 30000000,
+        "value": 30000000.0,
         "age": 22.4
       },
       {
@@ -2978,7 +2978,7 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 10000000,
+        "value": 10000000.0,
         "age": 34.3
       }
     ]
@@ -3010,8 +3010,8 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 300000,
-        "age": 37.4
+        "value": 1500000,
+        "age": 35.0
       },
       {
         "name": "Ali Jassim",
@@ -3066,7 +3066,7 @@
         "assists": 8,
         "yellowCards": 1,
         "status": "starting",
-        "value": 200000000,
+        "value": 200000000.0,
         "age": 25.9
       },
       {
@@ -3078,7 +3078,7 @@
         "assists": 12,
         "yellowCards": 2,
         "status": "starting",
-        "value": 75000000,
+        "value": 75000000.0,
         "age": 27.5
       },
       {
@@ -3090,7 +3090,7 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "starting",
-        "value": 20000000,
+        "value": 20000000.0,
         "age": 30.5
       },
       {
@@ -3102,7 +3102,7 @@
         "assists": 0,
         "yellowCards": 4,
         "status": "bench",
-        "value": 10000000,
+        "value": 10000000.0,
         "age": 26.5
       },
       {
@@ -3114,7 +3114,7 @@
         "assists": 3,
         "yellowCards": 5,
         "status": "starting",
-        "value": 20000000,
+        "value": 20000000.0,
         "age": 28.5
       },
       {
@@ -3126,7 +3126,7 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 900000,
+        "value": 900000.0,
         "age": 35.7
       }
     ]
@@ -3146,7 +3146,7 @@
         "assists": 8,
         "yellowCards": 1,
         "status": "starting",
-        "value": 35000000,
+        "value": 35000000.0,
         "age": 38.9
       },
       {
@@ -3158,8 +3158,8 @@
         "assists": 0,
         "yellowCards": 2,
         "status": "starting",
-        "value": 15000000,
-        "age": 33.7
+        "value": 15000000.0,
+        "age": 33.8
       },
       {
         "name": "Lautaro Martínez",
@@ -3170,7 +3170,7 @@
         "assists": 3,
         "yellowCards": 2,
         "status": "starting",
-        "value": 85000000,
+        "value": 85000000.0,
         "age": 28.8
       },
       {
@@ -3182,7 +3182,7 @@
         "assists": 7,
         "yellowCards": 3,
         "status": "starting",
-        "value": 85000000,
+        "value": 85000000.0,
         "age": 27.4
       },
       {
@@ -3194,7 +3194,7 @@
         "assists": 6,
         "yellowCards": 1,
         "status": "bench",
-        "value": 100000000,
+        "value": 100000000.0,
         "age": 26.3
       },
       {
@@ -3206,7 +3206,7 @@
         "assists": 0,
         "yellowCards": 6,
         "status": "starting",
-        "value": 60000000,
+        "value": 60000000.0,
         "age": 28.1
       },
       {
@@ -3218,8 +3218,8 @@
         "assists": 5,
         "yellowCards": 7,
         "status": "starting",
-        "value": 15000000,
-        "age": 32
+        "value": 15000000.0,
+        "age": 32.0
       },
       {
         "name": "Lisandro Martínez",
@@ -3230,7 +3230,7 @@
         "assists": 1,
         "yellowCards": 3,
         "status": "bench",
-        "value": 50000000,
+        "value": 50000000.0,
         "age": 28.4
       }
     ]
@@ -3250,7 +3250,7 @@
         "assists": 8,
         "yellowCards": 1,
         "status": "starting",
-        "value": 18000000,
+        "value": 18000000.0,
         "age": 35.3
       },
       {
@@ -3262,8 +3262,8 @@
         "assists": 6,
         "yellowCards": 3,
         "status": "starting",
-        "value": 40000000,
-        "age": 25
+        "value": 40000000.0,
+        "age": 25.0
       },
       {
         "name": "Mohamed Amoura",
@@ -3274,7 +3274,7 @@
         "assists": 4,
         "yellowCards": 2,
         "status": "starting",
-        "value": 32000000,
+        "value": 32000000.0,
         "age": 26.1
       },
       {
@@ -3286,7 +3286,7 @@
         "assists": 3,
         "yellowCards": 4,
         "status": "starting",
-        "value": 9000000,
+        "value": 9000000.0,
         "age": 28.5
       },
       {
@@ -3298,7 +3298,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 2000000,
+        "value": 2000000.0,
         "age": 29.4
       }
     ]
@@ -3318,7 +3318,7 @@
         "assists": 3,
         "yellowCards": 2,
         "status": "starting",
-        "value": 20000000,
+        "value": 20000000.0,
         "age": 33.9
       },
       {
@@ -3330,7 +3330,7 @@
         "assists": 6,
         "yellowCards": 4,
         "status": "starting",
-        "value": 7000000,
+        "value": 7000000.0,
         "age": 32.2
       },
       {
@@ -3342,8 +3342,8 @@
         "assists": 4,
         "yellowCards": 3,
         "status": "starting",
-        "value": 32000000,
-        "age": 29
+        "value": 32000000.0,
+        "age": 29.0
       },
       {
         "name": "Christoph Baumgartner",
@@ -3354,7 +3354,7 @@
         "assists": 5,
         "yellowCards": 1,
         "status": "starting",
-        "value": 18000000,
+        "value": 18000000.0,
         "age": 26.8
       },
       {
@@ -3366,7 +3366,7 @@
         "assists": 2,
         "yellowCards": 2,
         "status": "starting",
-        "value": 1500000,
+        "value": 1500000.0,
         "age": 32.1
       },
       {
@@ -3466,7 +3466,7 @@
         "assists": 2,
         "yellowCards": 2,
         "status": "starting",
-        "value": 15000000,
+        "value": 15000000.0,
         "age": 41.3
       },
       {
@@ -3478,7 +3478,7 @@
         "assists": 11,
         "yellowCards": 5,
         "status": "starting",
-        "value": 40000000,
+        "value": 40000000.0,
         "age": 31.7
       },
       {
@@ -3490,7 +3490,7 @@
         "assists": 0,
         "yellowCards": 3,
         "status": "starting",
-        "value": 60000000,
+        "value": 60000000.0,
         "age": 29.1
       },
       {
@@ -3502,8 +3502,8 @@
         "assists": 9,
         "yellowCards": 2,
         "status": "starting",
-        "value": 90000000,
-        "age": 27
+        "value": 90000000.0,
+        "age": 27.0
       },
       {
         "name": "Diogo Costa",
@@ -3514,7 +3514,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 40000000,
+        "value": 40000000.0,
         "age": 26.7
       },
       {
@@ -3526,7 +3526,7 @@
         "assists": 10,
         "yellowCards": 2,
         "status": "starting",
-        "value": 27000000,
+        "value": 27000000.0,
         "age": 31.8
       },
       {
@@ -3538,8 +3538,8 @@
         "assists": 5,
         "yellowCards": 4,
         "status": "bench",
-        "value": 25000000,
-        "age": 32
+        "value": 25000000.0,
+        "age": 32.0
       },
       {
         "name": "Diogo Jota",
@@ -3550,7 +3550,7 @@
         "assists": 4,
         "yellowCards": 1,
         "status": "bench",
-        "value": 40000000,
+        "value": 40000000.0,
         "age": 29.5
       }
     ]
@@ -3570,7 +3570,7 @@
         "assists": 0,
         "yellowCards": 4,
         "status": "starting",
-        "value": 2500000,
+        "value": 2500000.0,
         "age": 31.8
       },
       {
@@ -3582,7 +3582,7 @@
         "assists": 3,
         "yellowCards": 1,
         "status": "starting",
-        "value": 28000000,
+        "value": 28000000.0,
         "age": 29.7
       },
       {
@@ -3594,7 +3594,7 @@
         "assists": 2,
         "yellowCards": 2,
         "status": "starting",
-        "value": 22000000,
+        "value": 22000000.0,
         "age": 28.5
       },
       {
@@ -3606,7 +3606,7 @@
         "assists": 2,
         "yellowCards": 3,
         "status": "starting",
-        "value": 1200000,
+        "value": 1200000.0,
         "age": 29.8
       },
       {
@@ -3618,7 +3618,7 @@
         "assists": 0,
         "yellowCards": 0,
         "status": "starting",
-        "value": 700000,
+        "value": 700000.0,
         "age": 31.8
       }
     ]
@@ -3638,7 +3638,7 @@
         "assists": 3,
         "yellowCards": 2,
         "status": "starting",
-        "value": 5000000,
+        "value": 5000000.0,
         "age": 30.9
       },
       {
@@ -3650,7 +3650,7 @@
         "assists": 1,
         "yellowCards": 4,
         "status": "starting",
-        "value": 35000000,
+        "value": 35000000.0,
         "age": 22.3
       },
       {
@@ -3662,7 +3662,7 @@
         "assists": 4,
         "yellowCards": 3,
         "status": "starting",
-        "value": 1600000,
+        "value": 1600000.0,
         "age": 29.9
       },
       {
@@ -3674,7 +3674,7 @@
         "assists": 6,
         "yellowCards": 1,
         "status": "starting",
-        "value": 1700000,
+        "value": 1700000.0,
         "age": 32.8
       },
       {
@@ -3706,7 +3706,7 @@
         "assists": 5,
         "yellowCards": 2,
         "status": "starting",
-        "value": 70000000,
+        "value": 70000000.0,
         "age": 29.4
       },
       {
@@ -3718,7 +3718,7 @@
         "assists": 8,
         "yellowCards": 3,
         "status": "starting",
-        "value": 6000000,
+        "value": 6000000.0,
         "age": 34.9
       },
       {
@@ -3730,8 +3730,8 @@
         "assists": 2,
         "yellowCards": 5,
         "status": "starting",
-        "value": 950000,
-        "age": 32.3
+        "value": 6000000,
+        "age": 26.0
       },
       {
         "name": "Daniel Muñoz",
@@ -3742,8 +3742,8 @@
         "assists": 4,
         "yellowCards": 4,
         "status": "starting",
-        "value": 27000000,
-        "age": 30
+        "value": 27000000.0,
+        "age": 30.0
       },
       {
         "name": "Davinson Sánchez",
@@ -3754,8 +3754,8 @@
         "assists": 0,
         "yellowCards": 4,
         "status": "starting",
-        "value": 18000000,
-        "age": 30
+        "value": 18000000.0,
+        "age": 30.0
       },
       {
         "name": "Camilo Vargas",
@@ -3766,8 +3766,8 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 1200000,
-        "age": 27.3
+        "value": 6000000,
+        "age": 37.2
       }
     ]
   },
@@ -3786,8 +3786,8 @@
         "assists": 5,
         "yellowCards": 1,
         "status": "starting",
-        "value": 65000000,
-        "age": 32.8
+        "value": 65000000.0,
+        "age": 32.9
       },
       {
         "name": "Jude Bellingham",
@@ -3798,7 +3798,7 @@
         "assists": 4,
         "yellowCards": 4,
         "status": "starting",
-        "value": 160000000,
+        "value": 160000000.0,
         "age": 22.9
       },
       {
@@ -3810,7 +3810,7 @@
         "assists": 8,
         "yellowCards": 1,
         "status": "starting",
-        "value": 130000000,
+        "value": 130000000.0,
         "age": 24.7
       },
       {
@@ -3822,7 +3822,7 @@
         "assists": 3,
         "yellowCards": 3,
         "status": "starting",
-        "value": 120000000,
+        "value": 120000000.0,
         "age": 27.4
       },
       {
@@ -3834,7 +3834,7 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 15000000,
+        "value": 15000000.0,
         "age": 32.2
       },
       {
@@ -3846,8 +3846,8 @@
         "assists": 1,
         "yellowCards": 2,
         "status": "starting",
-        "value": 18000000,
-        "age": 32
+        "value": 18000000.0,
+        "age": 32.0
       },
       {
         "name": "Kyle Walker",
@@ -3858,7 +3858,7 @@
         "assists": 2,
         "yellowCards": 3,
         "status": "starting",
-        "value": 13000000,
+        "value": 13000000.0,
         "age": 29.1
       },
       {
@@ -3870,8 +3870,8 @@
         "assists": 8,
         "yellowCards": 1,
         "status": "bench",
-        "value": 150000000,
-        "age": 26
+        "value": 150000000.0,
+        "age": 26.0
       }
     ]
   },
@@ -3890,7 +3890,7 @@
         "assists": 7,
         "yellowCards": 2,
         "status": "starting",
-        "value": 4000000,
+        "value": 4000000.0,
         "age": 40.7
       },
       {
@@ -3902,7 +3902,7 @@
         "assists": 2,
         "yellowCards": 3,
         "status": "starting",
-        "value": 70000000,
+        "value": 70000000.0,
         "age": 24.4
       },
       {
@@ -3914,7 +3914,7 @@
         "assists": 4,
         "yellowCards": 4,
         "status": "starting",
-        "value": 15000000,
+        "value": 15000000.0,
         "age": 32.1
       },
       {
@@ -3926,8 +3926,8 @@
         "assists": 3,
         "yellowCards": 1,
         "status": "starting",
-        "value": 3000000,
-        "age": 35
+        "value": 3000000.0,
+        "age": 35.0
       },
       {
         "name": "Dominik Livaković",
@@ -3938,7 +3938,7 @@
         "assists": 0,
         "yellowCards": 1,
         "status": "starting",
-        "value": 11000000,
+        "value": 11000000.0,
         "age": 31.4
       }
     ]
@@ -3958,7 +3958,7 @@
         "assists": 2,
         "yellowCards": 3,
         "status": "starting",
-        "value": 65000000,
+        "value": 65000000.0,
         "age": 26.4
       },
       {
@@ -3970,7 +3970,7 @@
         "assists": 5,
         "yellowCards": 2,
         "status": "starting",
-        "value": 55000000,
+        "value": 55000000.0,
         "age": 25.8
       },
       {
@@ -3982,8 +3982,8 @@
         "assists": 1,
         "yellowCards": 4,
         "status": "starting",
-        "value": 5000000,
-        "age": 33
+        "value": 5000000.0,
+        "age": 33.0
       },
       {
         "name": "Mohammed Salisu",
@@ -3994,7 +3994,7 @@
         "assists": 0,
         "yellowCards": 5,
         "status": "starting",
-        "value": 10000000,
+        "value": 10000000.0,
         "age": 27.1
       },
       {
@@ -4050,8 +4050,8 @@
         "assists": 3,
         "yellowCards": 3,
         "status": "starting",
-        "value": 55000000,
-        "age": 23.9
+        "value": 10000000.0,
+        "age": 30.3
       },
       {
         "name": "Fidel Escobar",
@@ -4062,8 +4062,8 @@
         "assists": 1,
         "yellowCards": 2,
         "status": "starting",
-        "value": 1000000,
-        "age": 36.6
+        "value": 1500000,
+        "age": 31.4
       },
       {
         "name": "Orlando Mosquera",

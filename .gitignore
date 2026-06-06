@@ -1,8 +1,5 @@
 # Large raw datasets (StatsBomb / Transfermarkt / Season)
-archive/
-archive (1)/
-archive (2)/
-archive (3)/
+archive-historical/
 archive-transfermarkt/
 archive-statsbomb/
 archive-season/
@@ -27,3 +24,8 @@ downloaded_files/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Agent files
+.agents/
+ .agents/
+

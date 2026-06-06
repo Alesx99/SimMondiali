@@ -133,7 +133,7 @@ function main() {
     console.log(`Loaded ${allSimTeams.size} active teams from local database.`);
 
     // 2. Load shootouts.csv
-    const shootoutsPath = path.join(WORKSPACE, 'archive', 'shootouts.csv');
+    const shootoutsPath = path.join(WORKSPACE, 'archive-historical', 'shootouts.csv');
     const shootouts = {};
     if (fs.existsSync(shootoutsPath)) {
         console.log("Loading shootouts database...");
@@ -153,7 +153,7 @@ function main() {
     }
 
     // 3. Load results.csv
-    const resultsPath = path.join(WORKSPACE, 'archive', 'results.csv');
+    const resultsPath = path.join(WORKSPACE, 'archive-historical', 'results.csv');
     if (!fs.existsSync(resultsPath)) {
         console.error("Error: results.csv not found!");
         return;
@@ -236,19 +236,27 @@ function main() {
             recB.gf += awayScore;
             recB.ga += homeScore;
 
-            // Include home_team and away_team inside the matches log to permit orientation
-            const matchSummary = {
-                date: dateStr,
-                tournament: tournament,
-                home_team: homeSim,
-                away_team: awaySim,
-                score: `${homeScore}-${awayScore}`,
-                neutral: neutral,
-                shootout_winner: shWinnerSim
-            };
+            // Log individual match for historical timeline using compact arrays:
+            // [date, tournament, score_t1_t2, is_t1_home, shootout_winner_is_t1]
+            const swCodeHome = shWinnerSim ? (shWinnerSim === homeSim ? 1 : 2) : null;
+            const matchSummaryHome = [
+                dateStr,
+                tournament,
+                `${homeScore}-${awayScore}`,
+                true, // is_t1_home
+                swCodeHome
+            ];
+            recA.matches.push(matchSummaryHome);
 
-            recA.matches.push(matchSummary);
-            recB.matches.push(matchSummary);
+            const swCodeAway = shWinnerSim ? (shWinnerSim === awaySim ? 1 : 2) : null;
+            const matchSummaryAway = [
+                dateStr,
+                tournament,
+                `${awayScore}-${homeScore}`,
+                false, // is_t1_home
+                swCodeAway
+            ];
+            recB.matches.push(matchSummaryAway);
 
             if (homeScore > awayScore) {
                 recA.win += 1;
@@ -275,8 +283,8 @@ function main() {
         h2hCompact[t1] = {};
         for (const [t2, data] of Object.entries(opponents)) {
             if (data.played > 0) {
-                // Keep latest 5 matches
-                data.matches = data.matches.sort((x, y) => y.date.localeCompare(x.date)).slice(0, 5);
+                // Keep latest 5 matches, sorted by date (index 0)
+                data.matches = data.matches.sort((x, y) => y[0].localeCompare(x[0])).slice(0, 5);
                 h2hCompact[t1][t2] = data;
             }
         }
@@ -325,7 +333,7 @@ function main() {
         exact_scores: exactScoresPct
     };
 
-    fs.writeFileSync(path.join(OUTPUT_DIR, 'h2h_stats.json'), JSON.stringify(h2hCompact, null, 2), 'utf8');
+    fs.writeFileSync(path.join(OUTPUT_DIR, 'h2h_stats.json'), JSON.stringify(h2hCompact), 'utf8');
     fs.writeFileSync(path.join(OUTPUT_DIR, 'recurrences.json'), JSON.stringify(recurrencesData, null, 2), 'utf8');
     console.log("H2H stats and recurrences written successfully to data/stats/");
 }

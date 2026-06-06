@@ -55,13 +55,39 @@ export function getTeamDepartments(teamCode) {
     };
 }
 
+export function getGbdtBaseline(teamACode, teamBCode) {
+    if (!state.gbdtBaselines) return null;
+
+    const keyDirect = `${teamACode}_${teamBCode}`;
+    if (state.gbdtBaselines[keyDirect]) {
+        const baseline = state.gbdtBaselines[keyDirect];
+        return {
+            lambdaA: baseline.lambdaA,
+            lambdaB: baseline.lambdaB,
+            gamma: baseline.gamma
+        };
+    }
+
+    const keyReversed = `${teamBCode}_${teamACode}`;
+    if (state.gbdtBaselines[keyReversed]) {
+        const baseline = state.gbdtBaselines[keyReversed];
+        return {
+            lambdaA: baseline.lambdaB,
+            lambdaB: baseline.lambdaA,
+            gamma: baseline.gamma
+        };
+    }
+
+    return null;
+}
+
 // 2. CALCOLO PROBABILITÀ POISSON
+const FACTORIALS = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800];
 export function calculatePoissonProbability(lambda, k) {
     // Safeguard lambda range to prevent NaN or extreme underflow
     const safeLambda = Math.max(0.1, Math.min(8.0, lambda));
     const e = Math.exp(-safeLambda);
-    let factorial = 1;
-    for (let i = 1; i <= k; i++) factorial *= i;
+    const factorial = FACTORIALS[k] || 3628800; // default/cap at 10!
     return (Math.pow(safeLambda, k) * e) / factorial;
 }
 
@@ -90,6 +116,7 @@ export function calculateMatchOdds(teamACode, teamBCode) {
             oddGG: "2.00", oddNG: "2.00",
             xgA: "1.3", xgB: "1.3",
             recChoice: "X", recOdd: "3.00",
+            recScore: "1-1",
             bookieOddA: "2.80", bookieOddX: "2.80", bookieOddB: "2.80",
             bookieOddUnder: "1.85", bookieOddOver: "1.85",
             bookieOddGG: "1.85", bookieOddNG: "1.85",
@@ -103,42 +130,77 @@ export function calculateMatchOdds(teamACode, teamBCode) {
     // Host factor scaling
     let hostBonusA = ["MEX", "USA", "CAN"].includes(teamACode) ? CONFIG.hostBonus : 1.0;
     let hostBonusB = ["MEX", "USA", "CAN"].includes(teamBCode) ? CONFIG.hostBonus : 1.0;
+    let lambdaA, lambdaB, rho;
 
-    const ratingA = (depsA.att + depsA.mid + depsA.def) / 3;
-    const ratingB = (depsB.att + depsB.mid + depsB.def) / 3;
+    const baseline = getGbdtBaseline(teamACode, teamBCode);
+    if (baseline) {
+        const getSquadAverages = (t) => {
+            const players = t.players || [];
+            const att = players.filter(p => p.pos === "A");
+            const mid = players.filter(p => p.pos === "M" || p.pos === "C");
+            const def = players.filter(p => p.pos === "D" || p.pos === "P");
+            
+            return {
+                att_avg: att.length > 0 ? att.reduce((sum, p) => sum + p.rating, 0) / att.length : 75.0,
+                mid_avg: mid.length > 0 ? mid.reduce((sum, p) => sum + p.rating, 0) / mid.length : 75.0,
+                def_avg: def.length > 0 ? def.reduce((sum, p) => sum + p.rating, 0) / def.length : 75.0
+            };
+        };
+        
+        const avgA = getSquadAverages(teamA);
+        const avgB = getSquadAverages(teamB);
+        
+        const ratio_att_A = Math.max(0.5, Math.min(1.8, depsA.att / avgA.att_avg));
+        const ratio_mid_A = Math.max(0.5, Math.min(1.8, depsA.mid / avgA.mid_avg));
+        const ratio_def_A = Math.max(0.5, Math.min(1.8, depsA.def / avgA.def_avg));
+        
+        const ratio_att_B = Math.max(0.5, Math.min(1.8, depsB.att / avgB.att_avg));
+        const ratio_mid_B = Math.max(0.5, Math.min(1.8, depsB.mid / avgB.mid_avg));
+        const ratio_def_B = Math.max(0.5, Math.min(1.8, depsB.def / avgB.def_avg));
+        
+        let lambdaA_adj = baseline.lambdaA * Math.pow(ratio_att_A, 1.4) * Math.pow(ratio_mid_A, 0.8) * Math.pow(1 / ratio_def_B, 1.2) * hostBonusA;
+        let lambdaB_adj = baseline.lambdaB * Math.pow(ratio_att_B, 1.4) * Math.pow(ratio_mid_B, 0.8) * Math.pow(1 / ratio_def_A, 1.2) * hostBonusB;
+        
+        lambdaA = Math.max(0.1, Math.min(8.0, lambdaA_adj));
+        lambdaB = Math.max(0.1, Math.min(8.0, lambdaB_adj));
+        
+        let gamma_adj = baseline.gamma * ((ratio_mid_A + ratio_mid_B) / 2);
+        rho = Math.max(-0.25, Math.min(0.25, gamma_adj));
+    } else {
+        const ratingA = (depsA.att + depsA.mid + depsA.def) / 3;
+        const ratingB = (depsB.att + depsB.mid + depsB.def) / 3;
 
-    // Blended strength (40% history, 60% dynamic lineup)
-    const strengthA = (teamA.baseStrength * 0.40) + (ratingA * 0.60);
-    const strengthB = (teamB.baseStrength * 0.40) + (ratingB * 0.60);
+        const strengthA = (teamA.baseStrength * 0.40) + (ratingA * 0.60);
+        const strengthB = (teamB.baseStrength * 0.40) + (ratingB * 0.60);
 
-    const attDefRatioA = Math.pow(depsA.att / depsB.def, 1.4);
-    const attDefRatioB = Math.pow(depsB.att / depsA.def, 1.4);
-    const midRatioA = Math.pow(depsA.mid / depsB.mid, 0.9);
-    const midRatioB = Math.pow(depsB.mid / depsA.mid, 0.9);
+        const attDefRatioA = Math.pow(depsA.att / depsB.def, 1.4);
+        const attDefRatioB = Math.pow(depsB.att / depsA.def, 1.4);
+        const midRatioA = Math.pow(depsA.mid / depsB.mid, 0.9);
+        const midRatioB = Math.pow(depsB.mid / depsA.mid, 0.9);
 
-    const qualityRatioA = Math.pow(strengthA / strengthB, 2.2);
-    const qualityRatioB = Math.pow(strengthB / strengthA, 2.2);
+        const qualityRatioA = Math.pow(strengthA / strengthB, 2.2);
+        const qualityRatioB = Math.pow(strengthB / strengthA, 2.2);
 
-    // Live squad financial values factor
-    const valA = teamA.players.reduce((sum, p) => sum + (p.value || 0), 0) || 50000000;
-    const valB = teamB.players.reduce((sum, p) => sum + (p.value || 0), 0) || 50000000;
-    const valueRatio = valA / valB;
-    const valueFactor = Math.pow(valueRatio, 0.18);
+        const valA = teamA.players.reduce((sum, p) => sum + (p.value || 0), 0) || 50000000;
+        const valB = teamB.players.reduce((sum, p) => sum + (p.value || 0), 0) || 50000000;
+        const valueRatio = valA / valB;
+        const valueFactor = Math.pow(valueRatio, 0.18);
 
-    const baseGoals = (state.recurrencesStats && state.recurrencesStats.avg_goals_wc) ? state.recurrencesStats.avg_goals_wc : CONFIG.baseGoalsWCFallback;
-    const baseLambda = baseGoals / 2;
+        const baseGoals = (state.recurrencesStats && state.recurrencesStats.avg_goals_wc) ? state.recurrencesStats.avg_goals_wc : CONFIG.baseGoalsWCFallback;
+        const baseLambda = baseGoals / 2;
 
-    let lambdaA = qualityRatioA * attDefRatioA * midRatioA * baseLambda * hostBonusA;
-    let lambdaB = qualityRatioB * attDefRatioB * midRatioB * baseLambda * hostBonusB;
+        let lambdaA_raw = qualityRatioA * attDefRatioA * midRatioA * baseLambda * hostBonusA;
+        let lambdaB_raw = qualityRatioB * attDefRatioB * midRatioB * baseLambda * hostBonusB;
 
-    // Financial scaling
-    lambdaA *= Math.sqrt(valueFactor);
-    lambdaB /= Math.sqrt(valueFactor);
+        lambdaA_raw *= Math.sqrt(valueFactor);
+        lambdaB_raw /= Math.sqrt(valueFactor);
 
-    // Cap lambda strictly to prevent mathematical underflow (Bug 1 Fix)
-    lambdaA = Math.min(8.0, Math.max(0.1, lambdaA));
-    lambdaB = Math.min(8.0, Math.max(0.1, lambdaB));
+        lambdaA = Math.min(8.0, Math.max(0.1, lambdaA_raw));
+        lambdaB = Math.min(8.0, Math.max(0.1, lambdaB_raw));
 
+        rho = CONFIG.dixonColesRho || -0.06;
+    }
+    
     const maxGoals = CONFIG.maxPoissonGoals;
     const distA = [];
     const distB = [];
@@ -160,16 +222,32 @@ export function calculateMatchOdds(teamACode, teamBCode) {
     let winB = 0;
     let draw = 0;
     let under25 = 0;
+    let noGoal = 0;
+    let maxScoreProb = -1;
+    let recScore = "1-1";
 
     for (let a = 0; a <= maxGoals; a++) {
         for (let b = 0; b <= maxGoals; b++) {
-            const prob = distA[a] * distB[b];
+            let tau = 1.0;
+            if (a === 0 && b === 0) tau = 1 - lambdaA * lambdaB * rho;
+            else if (a === 1 && b === 0) tau = 1 + lambdaB * rho;
+            else if (a === 0 && b === 1) tau = 1 + lambdaA * rho;
+            else if (a === 1 && b === 1) tau = 1 - rho;
+
+            const prob = distA[a] * distB[b] * tau;
             
             if (a > b) winA += prob;
             else if (a < b) winB += prob;
             else draw += prob;
 
             if (a + b < 2.5) under25 += prob;
+            if (a === 0 || b === 0) noGoal += prob;
+
+            // Track recommended score (highest probability score)
+            if (a <= 6 && b <= 6 && prob > maxScoreProb) {
+                maxScoreProb = prob;
+                recScore = `${a}-${b}`;
+            }
         }
     }
 
@@ -179,7 +257,7 @@ export function calculateMatchOdds(teamACode, teamBCode) {
     let recordPlayed = 0;
     if (state.h2hStats && state.h2hStats[teamA.name] && state.h2hStats[teamA.name][teamB.name]) {
         const rec = state.h2hStats[teamA.name][teamB.name];
-        if (rec.played >= 3) {
+        if (rec.played > 0) {
             winPctA = rec.win / rec.played;
             winPctB = rec.loss / rec.played;
             drawPct = rec.draw / rec.played;
@@ -189,39 +267,86 @@ export function calculateMatchOdds(teamACode, teamBCode) {
     }
 
     if (hasH2H) {
-        const h2hWeight = Math.min(recordPlayed, 8) * 0.02; // max weight: 16%
+        // Bayesian smoothing prior with K = 5 regularization
+        const K = 5;
+        const h2hWeight = (recordPlayed / (recordPlayed + K)) * CONFIG.h2hWeightMax;
         winA = winA * (1 - h2hWeight) + winPctA * h2hWeight;
         winB = winB * (1 - h2hWeight) + winPctB * h2hWeight;
         draw = draw * (1 - h2hWeight) + drawPct * h2hWeight;
     }
-
-    // Goal / No Goal probability calculation
-    const noGoalA = distA[0];
-    const noGoalB = distB[0];
-    const noGoal = noGoalA + noGoalB - (noGoalA * noGoalB);
-    const ggProb = 1 - noGoal;
 
     // Safe probability calculations summing to exactly 100% and preventing negatives (Bug 2 Fix)
     const totalProb = winA + winB + draw;
     const finalWinA = winA / totalProb;
     const finalWinB = winB / totalProb;
     const finalDraw = draw / totalProb;
+    const finalUnder25 = under25 / totalProb;
+    const finalOver25 = 1.0 - finalUnder25;
+    const finalNoGoal = noGoal / totalProb;
+    const finalGG = 1.0 - finalNoGoal;
 
-    let pctA = Math.round(finalWinA * 100);
-    let pctB = Math.round(finalWinB * 100);
-    let pctX = 100 - pctA - pctB;
+    // Model 1: Bradley-Terry Elo Rating
+    const startersA = teamA.players.filter(p => p.status === "starting");
+    const avgRatingA = startersA.reduce((sum, p) => sum + p.rating, 0) / (startersA.length || 1);
+    const eloScoreA = teamA.baseStrength * 0.4 + avgRatingA * 0.6;
 
-    if (pctX < 0) {
-        const diff = -pctX;
-        if (pctA > pctB) pctA -= diff;
-        else pctB -= diff;
-        pctX = 0;
-    }
+    const startersB = teamB.players.filter(p => p.status === "starting");
+    const avgRatingB = startersB.reduce((sum, p) => sum + p.rating, 0) / (startersB.length || 1);
+    const eloScoreB = teamB.baseStrength * 0.4 + avgRatingB * 0.6;
 
-    const pctUnder = Math.round(under25 * 100);
+    const probEloA = Math.pow(eloScoreA / eloScoreB, 4.0);
+    const winEloA = (probEloA / (probEloA + 1.0)) * 0.74; // 26% draw rate
+    const winEloB = 0.74 - winEloA;
+    const drawElo = 0.26;
+
+    // Model 2: Bradley-Terry Financial Value
+    const totalValA = teamA.players.reduce((sum, p) => sum + (p.value || 0), 0) || 50000000;
+    const totalValB = teamB.players.reduce((sum, p) => sum + (p.value || 0), 0) || 50000000;
+    const valScoreA = Math.pow(totalValA, 0.25);
+    const valScoreB = Math.pow(totalValB, 0.25);
+
+    const probValA = Math.pow(valScoreA / valScoreB, 3.5);
+    const winValA = (probValA / (probValA + 1.0)) * 0.74; // 26% draw rate
+    const winValB = 0.74 - winValA;
+    const drawVal = 0.26;
+
+    // Consensus (Merged) probabilities
+    const winConsensusA = (finalWinA + winEloA + winValA) / 3;
+    const drawConsensus = (finalDraw + drawElo + drawVal) / 3;
+    const winConsensusB = (finalWinB + winEloB + winValB) / 3;
+
+    // Helper for formatting percentages that sum to 100%
+    const formatPct = (pA, pDraw, pB) => {
+        let roundedA = Math.round(pA * 100);
+        let roundedB = Math.round(pB * 100);
+        let roundedX = 100 - roundedA - roundedB;
+        if (roundedX < 0) {
+            const diff = -roundedX;
+            if (roundedA > roundedB) roundedA -= diff;
+            else roundedB -= diff;
+            roundedX = 0;
+        }
+        return { pctA: roundedA, pctX: roundedX, pctB: roundedB };
+    };
+
+    const modelPoisson = formatPct(finalWinA, finalDraw, finalWinB);
+    const modelElo = formatPct(winEloA, drawElo, winEloB);
+    const modelValue = formatPct(winValA, drawVal, winValB);
+    const modelConsensus = formatPct(winConsensusA, drawConsensus, winConsensusB);
+
+    // Use consensus probabilities for all subsequent logic
+    const blendedWinA = winConsensusA;
+    const blendedWinB = winConsensusB;
+    const blendedDraw = drawConsensus;
+
+    let pctA = modelConsensus.pctA;
+    let pctB = modelConsensus.pctB;
+    let pctX = modelConsensus.pctX;
+
+    const pctUnder = Math.round(finalUnder25 * 100);
     const pctOver = 100 - pctUnder;
 
-    const pctGG = Math.round(ggProb * 100);
+    const pctGG = Math.round(finalGG * 100);
     const pctNG = 100 - pctGG;
 
     // Odds calculations (Minimum 1% probability to prevent Division by Zero or quota 1000+)
@@ -288,15 +413,15 @@ export function calculateMatchOdds(teamACode, teamBCode) {
         };
     };
 
-    const bookieA = getBookieOddAndEV(finalWinA, "1");
-    const bookieX = getBookieOddAndEV(finalDraw, "X");
-    const bookieB = getBookieOddAndEV(finalWinB, "2");
+    const bookieA = getBookieOddAndEV(blendedWinA, "1");
+    const bookieX = getBookieOddAndEV(blendedDraw, "X");
+    const bookieB = getBookieOddAndEV(blendedWinB, "2");
     
-    const bookieUnder = getBookieOddAndEV(under25, "Under");
-    const bookieOver = getBookieOddAndEV(1.0 - under25, "Over");
+    const bookieUnder = getBookieOddAndEV(finalUnder25, "Under");
+    const bookieOver = getBookieOddAndEV(finalOver25, "Over");
     
-    const bookieGG = getBookieOddAndEV(ggProb, "GG");
-    const bookieNG = getBookieOddAndEV(noGoal, "NG");
+    const bookieGG = getBookieOddAndEV(finalGG, "GG");
+    const bookieNG = getBookieOddAndEV(finalNoGoal, "NG");
 
     const valueBets = [];
     if (bookieA.ev > 0.05) valueBets.push({ choice: "1", ev: bookieA.ev, bookieOdd: bookieA.odd });
@@ -325,6 +450,15 @@ export function calculateMatchOdds(teamACode, teamBCode) {
         xgB: lambdaB.toFixed(1),
         recChoice: recChoice,
         recOdd: recOdd.toFixed(2),
+        recScore: recScore,
+
+        // Model breakdowns
+        models: {
+            poisson: modelPoisson,
+            elo: modelElo,
+            value: modelValue,
+            consensus: modelConsensus
+        },
 
         // Bookmaker Odds
         bookieOddA: bookieA.odd,
@@ -677,7 +811,7 @@ export function samplePoisson(lambda) {
 }
 
 // 11. SIMULA UN SINGOLO MATCH (CON EVENTI MARCATORE/ASSIST & RE-CALCOLO CLASSIFICHE/TABELLONE)
-export function simulateMatch(matchId) {
+export function simulateMatch(matchId, shouldPropagate = true) {
     let isKnockout = false;
     let m = state.matches.find(x => x.id === matchId);
     if (!m) {
@@ -821,10 +955,12 @@ export function simulateMatch(matchId) {
     }
 
     // Aggiorna lo stato e propaga
-    if (!isKnockout) {
-        recalculateStandings();
-    } else {
-        recalculateKnockoutProgression();
+    if (shouldPropagate) {
+        if (!isKnockout) {
+            recalculateStandings();
+        } else {
+            recalculateKnockoutProgression();
+        }
     }
 }
 
@@ -832,7 +968,7 @@ export function simulateMatch(matchId) {
 export function simulateAllGroups() {
     state.matches.forEach(m => {
         if (m.scoreA === null || m.scoreB === null) {
-            simulateMatch(m.id);
+            simulateMatch(m.id, false);
         }
     });
     recalculateStandings();
@@ -848,8 +984,9 @@ export function simulateAllKnockouts() {
         const roundMatches = state.knockoutMatches.filter(m => m.round === rnd);
         roundMatches.forEach(m => {
             if (m.teamA && m.teamB && (m.scoreA === null || m.scoreB === null)) {
-                simulateMatch(m.id);
+                simulateMatch(m.id, false);
             }
         });
+        recalculateKnockoutProgression();
     });
 }

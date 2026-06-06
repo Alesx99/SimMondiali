@@ -43,17 +43,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // 2. Fetch stats datasets robustly via safe helper
-    const [svRes, h2hRes, recRes, sbRes] = await Promise.all([
+    const [svRes, h2hRes, recRes, sbRes, gbdtRes] = await Promise.all([
         safeFetchJson('data/stats/squad_values.json', {}),
         safeFetchJson('data/stats/h2h_stats.json', {}),
         safeFetchJson('data/stats/recurrences.json', { avg_goals_wc: 2.65, knockout_draw_rate: 0.28, exact_scores: [] }),
-        safeFetchJson('data/stats/statsbomb_aggregated.json', {})
+        safeFetchJson('data/stats/statsbomb_aggregated.json', {}),
+        safeFetchJson('data/stats/gbdt_baselines.json', {})
     ]);
 
     state.squadValuesStats = svRes;
     state.h2hStats = h2hRes;
     state.recurrencesStats = recRes;
     state.statsbombStats = sbRes;
+    state.gbdtBaselines = gbdtRes;
 
     // 3. Load state from LocalStorage cache
     const hasCachedState = loadLocalState();

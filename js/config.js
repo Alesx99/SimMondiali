@@ -14,5 +14,6 @@ export const CONFIG = {
     maxOddValue: 100.00,         // Maximum capped odds
     minOddValue: 1.01,           // Minimum capped odds
     minProbForOdds: 1,           // 1% minimum probability to avoid division by zero or extreme odds
-    h2hWeightMax: 0.16           // Maximum weight for H2H history (up to 16%)
+    h2hWeightMax: 0.16,          // Maximum weight for H2H history (up to 16%)
+    dixonColesRho: -0.06         // Correlation factor to adjust for low-scoring draws
 };

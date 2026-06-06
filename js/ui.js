@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { CONFIG, GROUP_STAGE_DATES } from './config.js';
-import { calculateMatchOdds, getTeamDepartments } from './engine.js';
+import { calculateMatchOdds, getTeamDepartments, simulateMatch } from './engine.js';
 
 // 1. POPOLA FILTRI DATE
 export function populateDateFilters() {
@@ -105,6 +105,45 @@ export function renderMatches() {
         const scorersHtmlA = formatEventsList(teamAEvents);
         const scorersHtmlB = formatEventsList(teamBEvents);
 
+        // Calculate values dynamically for display explanations and badge classifications before template layout
+        const startersA = teamA.players.filter(p => p.status === "starting");
+        const startersB = teamB.players.filter(p => p.status === "starting");
+        const squadValA = teamA.players.reduce((sum, p) => sum + (p.value || 0), 0) || 50000000;
+        const squadValB = teamB.players.reduce((sum, p) => sum + (p.value || 0), 0) || 50000000;
+        const valDiffM = Math.abs((squadValA - squadValB) / 1000000).toFixed(0);
+        const avgRatingA = startersA.reduce((sum, p) => sum + p.rating, 0) / (startersA.length || 1);
+        const avgRatingB = startersB.reduce((sum, p) => sum + p.rating, 0) / (startersB.length || 1);
+        const eloA = teamA.baseStrength * 0.4 + avgRatingA * 0.6;
+        const eloB = teamB.baseStrength * 0.4 + avgRatingB * 0.6;
+        const eloDiff = Math.abs(eloA - eloB).toFixed(0);
+
+        // Agreement classification
+        const getHighestOutcome = (model) => {
+            if (model.pctA > model.pctB && model.pctA > model.pctX) return "1";
+            if (model.pctB > model.pctA && model.pctB > model.pctX) return "2";
+            return "X";
+        };
+        const outPoisson = getHighestOutcome(oddsData.models.poisson);
+        const outElo = getHighestOutcome(oddsData.models.elo);
+        const outValue = getHighestOutcome(oddsData.models.value);
+        
+        let consensusTypeClass = "divergente";
+        let consensusTypeText = "Divergenza: Nessun accordo tra i modelli statistici";
+        
+        if (outPoisson === outElo && outPoisson === outValue) {
+            consensusTypeClass = "forte";
+            const outcomeLabel = outPoisson === "1" ? teamA.name : (outPoisson === "2" ? teamB.name : "Pareggio");
+            consensusTypeText = `Consenso Forte: 3/3 concordano su Vittoria ${outcomeLabel}`;
+        } else if (outPoisson === outElo || outPoisson === outValue) {
+            consensusTypeClass = "parziale";
+            const outcomeLabel = outPoisson === "1" ? teamA.name : (outPoisson === "2" ? teamB.name : "Pareggio");
+            consensusTypeText = `Consenso Parziale: 2/3 concordano su Vittoria ${outcomeLabel}`;
+        } else if (outElo === outValue) {
+            consensusTypeClass = "parziale";
+            const outcomeLabel = outElo === "1" ? teamA.name : (outElo === "2" ? teamB.name : "Pareggio");
+            consensusTypeText = `Consenso Parziale: 2/3 concordano su Vittoria ${outcomeLabel}`;
+        }
+
         card.innerHTML = `
             <div class="match-meta">
                 <span><i class="fa-solid fa-clock"></i> ${m.date}</span>
@@ -192,9 +231,12 @@ export function renderMatches() {
 
             <div class="card-footer-actions">
                 <span class="recommended-bet-badge">
-                    <i class="fa-solid fa-lightbulb"></i> Consigliato: <strong>${oddsData.recChoice} @ ${oddsData.recOdd}</strong>
+                    <i class="fa-solid fa-lightbulb"></i> Consigliato: <strong>${oddsData.recChoice} @ ${oddsData.recOdd}</strong> (Risultato esatto: <strong>${oddsData.recScore}</strong>)
                 </span>
                 <div class="match-actions-group" style="display: flex; gap: 8px;">
+                    <button class="btn-toggle-consensus secondary-btn" data-match-id="${m.id}" style="padding: 6px 12px; font-size: 11px;">
+                        <i class="fa-solid fa-chevron-down"></i> Analisi Multimodello
+                    </button>
                     <button class="btn-simulate-match secondary-btn" data-match-id="${m.id}" style="padding: 6px 12px; font-size: 11px;">
                         <i class="fa-solid fa-dice"></i> Simula
                     </button>
@@ -203,35 +245,53 @@ export function renderMatches() {
                     </button>
                 </div>
             </div>
+
+            <!-- Detailed Multi-Model Consensus Collapsible Section -->
+            <div class="match-consensus-details" data-match-id="${m.id}">
+                <span class="consensus-badge ${consensusTypeClass}">
+                    <i class="fa-solid fa-square-poll-vertical"></i> ${consensusTypeText}
+                </span>
+                <table class="consensus-table">
+                    <thead>
+                        <tr>
+                            <th>Modello Statistico</th>
+                            <th>1 (%)</th>
+                            <th>X (%)</th>
+                            <th>2 (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Poisson (xG & Lineup)</td>
+                            <td>${oddsData.models.poisson.pctA}%</td>
+                            <td>${oddsData.models.poisson.pctX}%</td>
+                            <td>${oddsData.models.poisson.pctB}%</td>
+                        </tr>
+                        <tr>
+                            <td>ELO (Forza Storica)</td>
+                            <td>${oddsData.models.elo.pctA}%</td>
+                            <td>${oddsData.models.elo.pctX}%</td>
+                            <td>${oddsData.models.elo.pctB}%</td>
+                        </tr>
+                        <tr>
+                            <td>Valore (Transfermarkt)</td>
+                            <td>${oddsData.models.value.pctA}%</td>
+                            <td>${oddsData.models.value.pctX}%</td>
+                            <td>${oddsData.models.value.pctB}%</td>
+                        </tr>
+                        <tr class="consensus-row">
+                            <td>Consenso Blended (Ensemble)</td>
+                            <td>${oddsData.models.consensus.pctA}%</td>
+                            <td>${oddsData.models.consensus.pctX}%</td>
+                            <td>${oddsData.models.consensus.pctB}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="font-size: 10px; color: var(--text-muted); line-height: 1.4; border-top: 1px dashed var(--border-color); padding-top: 6px; margin-top: 6px;">
+                    <i class="fa-solid fa-circle-info"></i> ${squadValA > squadValB ? teamA.name : teamB.name} ha un valore rosa superiore di <strong>${valDiffM}M &euro;</strong>. ${eloA > eloB ? teamA.name : teamB.name} ha un rendimento ELO superiore di <strong>${eloDiff} pt</strong>.
+                </div>
+            </div>
         `;
-
-        // Direct input change listener
-        const scoreAInput = card.querySelector(".team-a-score");
-        const scoreBInput = card.querySelector(".team-b-score");
-
-        const handleScoreChange = () => {
-            const valA = scoreAInput.value;
-            const valB = scoreBInput.value;
-
-            if (valA !== "" && valB !== "") {
-                const parsedA = parseInt(valA);
-                const parsedB = parseInt(valB);
-                m.scoreA = isNaN(parsedA) || parsedA < 0 ? 0 : parsedA;
-                m.scoreB = isNaN(parsedB) || parsedB < 0 ? 0 : parsedB;
-                scoreAInput.value = m.scoreA;
-                scoreBInput.value = m.scoreB;
-            } else {
-                m.scoreA = null;
-                m.scoreB = null;
-                state.tournamentEvents = state.tournamentEvents.filter(evt => evt.matchId !== m.id);
-            }
-            
-            const event = new CustomEvent("scoreChanged");
-            document.dispatchEvent(event);
-        };
-
-        scoreAInput.addEventListener("input", handleScoreChange);
-        scoreBInput.addEventListener("input", handleScoreChange);
 
         container.appendChild(card);
     });
@@ -300,7 +360,6 @@ export function renderStandings() {
 export function renderBracket() {
     const container = document.getElementById("bracket-container");
     if (!container) return;
-    container.innerHTML = "";
 
     const rounds = [
         { code: "32", label: "Sedicesimi (Round of 32)" },
@@ -310,36 +369,89 @@ export function renderBracket() {
         { code: "2", label: "Finale" }
     ];
 
-    rounds.forEach((rnd, rIdx) => {
-        const col = document.createElement("div");
-        col.className = `bracket-round-column round-${rnd.code}`;
-        
-        const header = document.createElement("div");
-        header.className = "bracket-round-header";
-        header.textContent = rnd.label;
-        col.appendChild(header);
+    // Preserve overall active element info
+    let activeMatchId = null;
+    let activeFieldType = null;
+    let activeSelectionStart = null;
+    let activeSelectionEnd = null;
+    const activeEl = document.activeElement;
+    if (activeEl && container.contains(activeEl)) {
+        const node = activeEl.closest(".bracket-match-node");
+        if (node) {
+            activeMatchId = parseInt(node.dataset.matchId);
+            if (activeEl.classList.contains("team-a-score")) {
+                activeFieldType = "score-a";
+            } else if (activeEl.classList.contains("team-b-score")) {
+                activeFieldType = "score-b";
+            } else if (activeEl.classList.contains("br-pen-radio")) {
+                activeFieldType = activeEl.value === "A" ? "pen-a" : "pen-b";
+            }
+            if (activeEl.tagName === "INPUT") {
+                try {
+                    activeSelectionStart = activeEl.selectionStart;
+                    activeSelectionEnd = activeEl.selectionEnd;
+                } catch (e) {
+                    // ignore
+                }
+            }
+        }
+    }
+
+    rounds.forEach((rnd) => {
+        let col = container.querySelector(`.bracket-round-column.round-${rnd.code}`);
+        if (!col) {
+            col = document.createElement("div");
+            col.className = `bracket-round-column round-${rnd.code}`;
+            
+            const header = document.createElement("div");
+            header.className = "bracket-round-header";
+            header.textContent = rnd.label;
+            col.appendChild(header);
+            
+            container.appendChild(col);
+        }
 
         const roundMatches = state.knockoutMatches.filter(m => m.round === rnd.code);
         
-        roundMatches.forEach((m, mIdx) => {
-            const node = document.createElement("div");
-            
+        roundMatches.forEach((m) => {
+            let node = col.querySelector(`.bracket-match-node[data-match-id="${m.id}"]`);
+            if (!node) {
+                node = document.createElement("div");
+                node.dataset.matchId = m.id;
+                col.appendChild(node);
+            }
+
+            // Build state signature to check if we need to update
+            const teamA = m.teamA ? state.TEAMS_DB[m.teamA] : null;
+            const teamB = m.teamB ? state.TEAMS_DB[m.teamB] : null;
+            const matchStateObj = {
+                teamA: teamA ? teamA.code : "",
+                teamB: teamB ? teamB.code : "",
+                scoreA: m.scoreA,
+                scoreB: m.scoreB,
+                penaltiesWinner: m.penaltiesWinner
+            };
+            const matchStateStr = JSON.stringify(matchStateObj);
+
+            if (node.dataset.renderedState === matchStateStr) {
+                // No changes, skip innerHTML update
+                return;
+            }
+
+            // Update node
             if (!m.teamA && !m.teamB) {
                 node.className = "bracket-match-node empty";
-                node.dataset.matchId = m.id;
                 node.innerHTML = `<div style="text-align: center; font-size: 10px; color: var(--text-muted);">In attesa dei gironi...</div>`;
             } else {
                 node.className = "bracket-match-node";
-                node.dataset.matchId = m.id;
                 
-                const teamA = m.teamA ? state.TEAMS_DB[m.teamA] : { name: "TBD", flag: "🏳️", code: "" };
-                const teamB = m.teamB ? state.TEAMS_DB[m.teamB] : { name: "TBD", flag: "🏳️", code: "" };
+                const displayTeamA = teamA || { name: "TBD", flag: "🏳️", code: "" };
+                const displayTeamB = teamB || { name: "TBD", flag: "🏳️", code: "" };
 
                 let oddsHtml = "";
+                let popoverHtml = "";
                 if (m.teamA && m.teamB) {
                     const oddsData = calculateMatchOdds(m.teamA, m.teamB);
-                    
-                    // Map recommended odds to bookmaker mock odds
                     let bookieRecOdd = oddsData.recOdd;
                     if (oddsData.recChoice === "1") bookieRecOdd = oddsData.bookieOddA;
                     else if (oddsData.recChoice === "X") bookieRecOdd = oddsData.bookieOddX;
@@ -351,10 +463,53 @@ export function renderBracket() {
 
                     oddsHtml = `
                         <div class="br-node-footer">
-                            <span class="br-rec-odd">Consigliato: <strong>${oddsData.recChoice}</strong></span>
+                            <span class="br-rec-odd">Consigliato: <strong>${oddsData.recChoice}</strong> (Score: <strong>${oddsData.recScore}</strong>)</span>
                             <span class="stat-highlight br-add-odds-trigger" style="font-size: 9px; cursor: pointer; color: var(--accent-blue);" data-match-id="${m.id}" data-choice="${oddsData.recChoice}" data-odds="${bookieRecOdd}">
                                 Quota: ${bookieRecOdd} <i class="fa-solid fa-cart-plus"></i>
                             </span>
+                        </div>
+                    `;
+
+                    popoverHtml = `
+                        <div class="bracket-popover" data-match-id="${m.id}">
+                            <div class="bracket-popover-arrow"></div>
+                            <h4><i class="fa-solid fa-square-poll-vertical"></i> Consenso Multimodello</h4>
+                            <table class="consensus-table" style="margin-bottom: 0;">
+                                <thead>
+                                    <tr>
+                                        <th>Modello</th>
+                                        <th>1 (%)</th>
+                                        <th>X (%)</th>
+                                        <th>2 (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Poisson</td>
+                                        <td>${oddsData.models.poisson.pctA}</td>
+                                        <td>${oddsData.models.poisson.pctX}</td>
+                                        <td>${oddsData.models.poisson.pctB}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ELO</td>
+                                        <td>${oddsData.models.elo.pctA}</td>
+                                        <td>${oddsData.models.elo.pctX}</td>
+                                        <td>${oddsData.models.elo.pctB}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Valore</td>
+                                        <td>${oddsData.models.value.pctA}</td>
+                                        <td>${oddsData.models.value.pctX}</td>
+                                        <td>${oddsData.models.value.pctB}</td>
+                                    </tr>
+                                    <tr class="consensus-row">
+                                        <td>Consenso</td>
+                                        <td>${oddsData.models.consensus.pctA}</td>
+                                        <td>${oddsData.models.consensus.pctX}</td>
+                                        <td>${oddsData.models.consensus.pctB}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     `;
                 }
@@ -369,7 +524,6 @@ export function renderBracket() {
                     }
                 }
 
-                // Scorers lists inside bracket nodes
                 const matchEvents = state.tournamentEvents ? state.tournamentEvents.filter(evt => evt.matchId === m.id) : [];
                 const teamAEvents = matchEvents.filter(evt => evt.team === m.teamA);
                 const teamBEvents = matchEvents.filter(evt => evt.team === m.teamB);
@@ -382,7 +536,8 @@ export function renderBracket() {
                     <div class="br-match-meta" style="display: flex; justify-content: space-between;">
                         <span>Gara #${m.matchNumber}</span>
                         ${m.teamA && m.teamB ? `
-                        <div style="display: flex; gap: 8px;">
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span class="br-toggle-consensus" style="cursor:pointer; color: var(--accent-emerald);" data-match-id="${m.id}" title="Analisi Multimodello"><i class="fa-solid fa-square-poll-vertical"></i></span>
                             <span class="br-simulate-trigger" style="cursor:pointer; color: var(--accent-color);" data-match-id="${m.id}"><i class="fa-solid fa-dice"></i> Simula</span>
                             <span class="br-lineup-trigger" style="cursor:pointer;" data-match-id="${m.id}"><i class="fa-solid fa-users-gear"></i> Lineup</span>
                         </div>
@@ -391,8 +546,8 @@ export function renderBracket() {
                     
                     <div class="br-team-row ${teamAClass}">
                         <div class="br-team-info">
-                            <span>${teamA.flag}</span>
-                            <span title="${teamA.name}">${teamA.name}</span>
+                            <span>${displayTeamA.flag}</span>
+                            <span title="${displayTeamA.name}">${displayTeamA.name}</span>
                             ${scNamesA ? `<small class="br-scorers-small" style="display:block; font-size: 8px; color: var(--text-muted);">${scNamesA}</small>` : ''}
                         </div>
                         <div class="br-score-inputs">
@@ -400,7 +555,6 @@ export function renderBracket() {
                         </div>
                     </div>
 
-                    <!-- Penalty Selector for Draws -->
                     ${m.scoreA !== null && m.scoreB !== null && m.scoreA === m.scoreB ? `
                         <div class="penalty-checkbox-wrapper">
                             <span>Rigori vinti da:</span>
@@ -415,8 +569,8 @@ export function renderBracket() {
 
                     <div class="br-team-row ${teamBClass}">
                         <div class="br-team-info">
-                            <span>${teamB.flag}</span>
-                            <span title="${teamB.name}">${teamB.name}</span>
+                            <span>${displayTeamB.flag}</span>
+                            <span title="${displayTeamB.name}">${displayTeamB.name}</span>
                             ${scNamesB ? `<small class="br-scorers-small" style="display:block; font-size: 8px; color: var(--text-muted);">${scNamesB}</small>` : ''}
                         </div>
                         <div class="br-score-inputs">
@@ -425,49 +579,40 @@ export function renderBracket() {
                     </div>
                     
                     ${oddsHtml}
+                    ${popoverHtml}
                 `;
-
-                // Handle score changes directly
-                const scoreAInput = node.querySelector(".team-a-score");
-                const scoreBInput = node.querySelector(".team-b-score");
-
-                const handleKnockoutScoreChange = () => {
-                    const valA = scoreAInput.value;
-                    const valB = scoreBInput.value;
-
-                    if (valA !== "" && valB !== "") {
-                        const parsedA = parseInt(valA);
-                        const parsedB = parseInt(valB);
-                        m.scoreA = isNaN(parsedA) || parsedA < 0 ? 0 : parsedA;
-                        m.scoreB = isNaN(parsedB) || parsedB < 0 ? 0 : parsedB;
-                        scoreAInput.value = m.scoreA;
-                        scoreBInput.value = m.scoreB;
-                        
-                        if (m.scoreA === m.scoreB && !m.penaltiesWinner) {
-                            m.penaltiesWinner = "A";
-                        }
-                    } else {
-                        m.scoreA = null;
-                        m.scoreB = null;
-                        m.penaltiesWinner = null;
-                        state.tournamentEvents = state.tournamentEvents.filter(evt => evt.matchId !== m.id);
-                    }
-                    
-                    const event = new CustomEvent("knockoutScoreChanged");
-                    document.dispatchEvent(event);
-                };
-
-                if (scoreAInput && scoreBInput) {
-                    scoreAInput.addEventListener("input", handleKnockoutScoreChange);
-                    scoreBInput.addEventListener("input", handleKnockoutScoreChange);
-                }
             }
 
-            col.appendChild(node);
+            node.dataset.renderedState = matchStateStr;
         });
-
-        container.appendChild(col);
     });
+
+    // Restore focus if needed
+    if (activeMatchId !== null && activeFieldType !== null) {
+        const targetNode = container.querySelector(`.bracket-match-node[data-match-id="${activeMatchId}"]`);
+        if (targetNode) {
+            let targetEl = null;
+            if (activeFieldType === "score-a") {
+                targetEl = targetNode.querySelector(".team-a-score");
+            } else if (activeFieldType === "score-b") {
+                targetEl = targetNode.querySelector(".team-b-score");
+            } else if (activeFieldType === "pen-a") {
+                targetEl = targetNode.querySelector('.br-pen-radio[value="A"]');
+            } else if (activeFieldType === "pen-b") {
+                targetEl = targetNode.querySelector('.br-pen-radio[value="B"]');
+            }
+            if (targetEl) {
+                targetEl.focus();
+                if (activeSelectionStart !== null && activeSelectionEnd !== null) {
+                    try {
+                        targetEl.setSelectionRange(activeSelectionStart, activeSelectionEnd);
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+            }
+        }
+    }
 }
 
 // 5. RENDERING TAB ANALYTICS & INFORTUNI
@@ -662,30 +807,21 @@ export function renderH2HAndStatsBomb() {
 
         let timelineHtml = "";
         record.matches.forEach(m => {
+            // Array structure: [date, tournament, score, is_t1_home, shootout_winner_code]
             let shootoutInfo = "";
-            if (m.shootout_winner) {
-                shootoutInfo = ` <span class="badge medium">Rigori vinti da: ${m.shootout_winner}</span>`;
+            if (m[4] === 1) {
+                shootoutInfo = ` <span class="badge medium">Rigori vinti da: ${teamAName}</span>`;
+            } else if (m[4] === 2) {
+                shootoutInfo = ` <span class="badge medium">Rigori vinti da: ${teamBName}</span>`;
             }
 
-            // Dynamically format score as Team A vs Team B
-            let displayScore = m.score;
-            if (m.home_team && m.away_team) {
-                const parts = m.score.split('-');
-                if (parts.length === 2) {
-                    const homeScore = parts[0];
-                    const awayScore = parts[1];
-                    if (m.home_team === teamAName) {
-                        displayScore = `${homeScore}-${awayScore}`;
-                    } else {
-                        displayScore = `${awayScore}-${homeScore}`;
-                    }
-                }
-            }
+            // Score is already formatted from teamAName (t1) perspective: score_t1 - score_t2
+            let displayScore = m[2];
 
             timelineHtml += `
                 <div class="timeline-row">
-                    <span class="timeline-date">${m.date}</span>
-                    <span class="timeline-tour">${m.tournament}</span>
+                    <span class="timeline-date">${m[0]}</span>
+                    <span class="timeline-tour">${m[1]}</span>
                     <span class="timeline-score stat-highlight">${displayScore}</span>
                     ${shootoutInfo}
                 </div>
@@ -1209,3 +1345,876 @@ export function drawRadarChart(containerId, teamAName, teamBName) {
         </div>
     `;
 }
+
+export function openMonteCarlo() {
+    const modal = document.getElementById("montecarlo-modal");
+    if (!modal) return;
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+    
+    // Reset modal UI fields
+    document.getElementById("mc-progress-section").style.display = "none";
+    document.getElementById("mc-results-section").style.display = "none";
+    document.getElementById("mc-progress-bar").style.width = "0%";
+    document.getElementById("mc-progress-pct").textContent = "0%";
+    document.getElementById("btn-run-mc").disabled = false;
+    document.getElementById("btn-run-mc").innerHTML = `<i class="fa-solid fa-play"></i> Avvia Simulazione`;
+
+    // Render historical convergence chart and super aggregator on opening
+    setTimeout(() => {
+        renderSuperAggregator();
+        renderConvergenceChart();
+    }, 100);
+}
+
+export function closeMonteCarlo() {
+    const modal = document.getElementById("montecarlo-modal");
+    if (modal) {
+        modal.classList.remove("active");
+        modal.setAttribute("aria-hidden", "true");
+    }
+}
+
+export function updateMonteCarloProgress(doneCount, pct, elapsed, remaining) {
+    document.getElementById("mc-progress-section").style.display = "block";
+    document.getElementById("mc-progress-bar").style.width = `${pct}%`;
+    document.getElementById("mc-progress-pct").textContent = `${pct}%`;
+    document.getElementById("mc-progress-status").textContent = `Simulati ${doneCount.toLocaleString('it-IT')} tornei...`;
+    document.getElementById("mc-elapsed-time").textContent = `Tempo trascorso: ${elapsed}s`;
+    document.getElementById("mc-remaining-time").textContent = remaining > 0 ? `Tempo stimato: ${remaining}s` : `Tempo stimato: completato`;
+}
+
+export function showMonteCarloResults(results) {
+    document.getElementById("mc-results-section").style.display = "block";
+    document.getElementById("btn-run-mc").disabled = false;
+    document.getElementById("btn-run-mc").innerHTML = `<i class="fa-solid fa-rotate"></i> Simula Nuovamente`;
+
+    // 0. Consensus Table
+    const consensusBody = document.getElementById("mc-consensus-body");
+    consensusBody.innerHTML = "";
+    results.consensus.slice(0, 10).forEach((t, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>#${idx + 1}</td>
+            <td style="font-weight: 600; color: var(--text-main);">${t.name}</td>
+            <td style="text-align: right;">${t.pctPoisson}%</td>
+            <td style="text-align: right;">${t.pctElo}%</td>
+            <td style="text-align: right;">${t.pctValue}%</td>
+            <td style="text-align: right; font-weight: 700;"><span class="badge ${idx === 0 ? 'high' : (idx < 5 ? 'medium' : 'low')}">${t.pctConsensus}%</span></td>
+        `;
+        consensusBody.appendChild(tr);
+    });
+
+    // 1. Winners Table
+    const winnersBody = document.getElementById("mc-winners-body");
+    winnersBody.innerHTML = "";
+    results.winners.slice(0, 10).forEach((t, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>#${idx + 1}</td>
+            <td style="font-weight: 600; color: var(--accent-color);">${t.name}</td>
+            <td style="text-align: right; font-weight: 700;">${t.count.toLocaleString('it-IT')}</td>
+            <td style="text-align: right;"><span class="badge ${idx === 0 ? 'high' : (idx < 5 ? 'medium' : 'low')}">${t.pct}%</span></td>
+        `;
+        winnersBody.appendChild(tr);
+    });
+
+    // 1b. Semifinalists Table (Top 4 Frequencies)
+    const semisBody = document.getElementById("mc-semis-body");
+    if (semisBody && results.semifinalists) {
+        semisBody.innerHTML = "";
+        results.semifinalists.slice(0, 10).forEach((t, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>#${idx + 1}</td>
+                <td style="font-weight: 600; color: var(--accent-emerald, #10b981);">${t.name}</td>
+                <td style="text-align: right; font-weight: 700;">${t.count.toLocaleString('it-IT')}</td>
+                <td style="text-align: right;"><span class="badge ${idx === 0 ? 'high' : (idx < 5 ? 'medium' : 'low')}">${t.pct}%</span></td>
+            `;
+            semisBody.appendChild(tr);
+        });
+    }
+
+    // 2. Matchups Table
+    const matchupsBody = document.getElementById("mc-matchups-body");
+    matchupsBody.innerHTML = "";
+    results.matchups.slice(0, 10).forEach((m, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>#${idx + 1}</td>
+            <td style="font-weight: 500;">${m.name}</td>
+            <td style="text-align: right; font-weight: 700;">${m.count.toLocaleString('it-IT')}</td>
+            <td style="text-align: right;"><span class="badge medium">${m.pct}%</span></td>
+        `;
+        matchupsBody.appendChild(tr);
+    });
+
+    // 3. Exact Scores Table
+    const scoresBody = document.getElementById("mc-scores-body");
+    scoresBody.innerHTML = "";
+    results.scores.slice(0, 10).forEach((s, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>#${idx + 1}</td>
+            <td style="font-weight: 500; font-family: monospace; font-size: 13px;">${s.name}</td>
+            <td style="text-align: right; font-weight: 700;">${s.count.toLocaleString('it-IT')}</td>
+            <td style="text-align: right;"><span class="badge medium">${s.pct}%</span></td>
+        `;
+        scoresBody.appendChild(tr);
+    });
+
+    // 4. Inferences & Analytical text
+    const inferenceDiv = document.getElementById("mc-inference-text");
+    const topConsensus = results.consensus[0];
+    const topWinner = results.winners[0];
+    const topMatchup = results.matchups[0];
+    const topScore = results.scores[0];
+
+    // Calculate penalty shootout percentage
+    const penaltyPct = results.scores
+        .filter(s => s.name.includes("dcr"))
+        .reduce((sum, s) => sum + parseFloat(s.pct), 0)
+        .toFixed(2);
+
+    inferenceDiv.innerHTML = `
+        <p style="margin-bottom: 10px;">Analisi di convergenza su <strong>${results.total.toLocaleString('it-IT')}</strong> simulazioni multimodello:</p>
+        <ul style="padding-left: 15px; margin-bottom: 10px; list-style-type: square;">
+            <li style="margin-bottom: 5px;"><strong>Consenso Unito</strong>: La nazionale con il consenso più solido tra tutti i modelli è il <strong>${topConsensus.name}</strong> con una probabilità media del <strong>${topConsensus.pctConsensus}%</strong> (Poisson: ${topConsensus.pctPoisson}%, ELO: ${topConsensus.pctElo}%, Finanziario: ${topConsensus.pctValue}%).</li>
+            <li style="margin-bottom: 5px;"><strong>Confronto Modelli</strong>: Nel modello finanziario basato su Transfermarkt, il fattore valore rosa sposta la probabilità a favore delle squadre più ricche, mentre il modello storico ELO premia la continuità di rendimento recente.</li>
+            <li style="margin-bottom: 5px;"><strong>Frequenza Finale</strong>: L'accoppiamento di finale più ricorrente nel modello Monte Carlo è <strong>${topMatchup.name}</strong> (${topMatchup.pct}%).</li>
+            <li style="margin-bottom: 5px;"><strong>Risultato Esatto</strong>: Il punteggio esatto più frequente della finale è il <strong>${topScore.name}</strong> (${topScore.pct}% del campione).</li>
+            <li style="margin-bottom: 5px;">Il <strong>${penaltyPct}%</strong> di tutte le finali si è deciso alla lotteria dei calci di rigore dopo la parità supplementare.</li>
+        </ul>
+        <p style="font-style: italic; color: var(--text-muted); font-size: 11px; border-top: 1px dashed var(--border-color); padding-top: 8px; margin-top: 10px;">
+            Nota: La tabella di consenso fonde i tre modelli assegnando peso paritetico (1/3) a ciascuna metodologia predittiva per neutralizzare distorsioni statistiche singole.
+        </p>
+    `;
+}
+
+export function renderConvergenceChart() {
+    const container = document.getElementById("convergence-chart-container");
+    if (!container) return;
+
+    const history = state.simulationHistory || [];
+    if (history.length === 0) {
+        container.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); font-size: 12px; font-style: italic;">
+                Esegui delle simulazioni per iniziare a tracciare la convergenza delle probabilità...
+            </div>
+        `;
+        return;
+    }
+
+    // Chronological sort
+    const sortedHistory = [...history].sort((x, y) => x.timestamp - y.timestamp);
+
+    // 1. Identify the Top 5 teams based on the latest consensus results
+    const latestRun = sortedHistory[sortedHistory.length - 1];
+    const latestWinners = latestRun.winners || {};
+    const topTeams = Object.keys(latestWinners)
+        .sort((x, y) => latestWinners[y] - latestWinners[x])
+        .slice(0, 5);
+
+    if (topTeams.length === 0) {
+        container.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); font-size: 12px; font-style: italic;">
+                Nessun dato registrato nei run storici.
+            </div>
+        `;
+        return;
+    }
+
+    // 2. Compute cumulative values for each step
+    const steps = [];
+    let cumulativeN = 0;
+    const teamWins = {};
+    topTeams.forEach(t => teamWins[t] = 0);
+
+    sortedHistory.forEach(run => {
+        const N = run.iterations;
+        cumulativeN += N;
+        topTeams.forEach(t => {
+            const pct = run.winners[t] !== undefined ? run.winners[t] : 0;
+            teamWins[t] += N * (pct / 100);
+        });
+
+        const stepRates = {};
+        topTeams.forEach(t => {
+            stepRates[t] = (teamWins[t] / cumulativeN) * 100;
+        });
+
+        steps.push({
+            cumulativeN,
+            winRates: stepRates
+        });
+    });
+
+    // 3. Draw SVG Chart
+    const width = container.clientWidth || 800;
+    const height = 260;
+    const paddingLeft = 50;
+    const paddingRight = 30;
+    const paddingTop = 30;
+    const paddingBottom = 40;
+
+    const chartWidth = width - paddingLeft - paddingRight;
+    const chartHeight = height - paddingTop - paddingBottom;
+
+    // Find min/max values for Y axis (win rates)
+    let maxRate = 5;
+    let minRate = 0;
+    topTeams.forEach(t => {
+        steps.forEach(s => {
+            if (s.winRates[t] > maxRate) maxRate = s.winRates[t];
+        });
+    });
+    maxRate = Math.ceil(maxRate * 1.1); // add 10% breathing room
+
+    // Colors for top 5 teams (harmonious palette)
+    const colors = ["#10b981", "#3b82f6", "#f59e0b", "#f43f5e", "#a855f7"];
+    const teamColors = {};
+    topTeams.forEach((t, i) => teamColors[t] = colors[i]);
+
+    // Map helper coordinates
+    const getX = (stepIndex) => {
+        if (steps.length <= 1) return paddingLeft + chartWidth / 2;
+        return paddingLeft + (stepIndex / (steps.length - 1)) * chartWidth;
+    };
+
+    const getY = (rate) => {
+        return paddingTop + chartHeight - ((rate - minRate) / (maxRate - minRate)) * chartHeight;
+    };
+
+    // Build SVG Grid & Axes
+    let gridHtml = "";
+    // Y-axis grid lines (5 subdivisions)
+    for (let i = 0; i <= 4; i++) {
+        const val = minRate + (i / 4) * (maxRate - minRate);
+        const y = getY(val);
+        gridHtml += `
+            <line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" class="chart-grid-line" />
+            <text x="${paddingLeft - 8}" y="${y + 3}" class="chart-text" text-anchor="end">${val.toFixed(1)}%</text>
+        `;
+    }
+
+    // X-axis grid lines
+    steps.forEach((step, idx) => {
+        const x = getX(idx);
+        gridHtml += `
+            <line x1="${x}" y1="${paddingTop}" x2="${x}" y2="${paddingTop + chartHeight}" class="chart-grid-line" />
+            <text x="${x}" y="${paddingTop + chartHeight + 15}" class="chart-text" text-anchor="middle">N=${step.cumulativeN.toLocaleString('it-IT')}</text>
+        `;
+    });
+
+    // Axis Lines
+    let axisHtml = `
+        <line x1="${paddingLeft}" y1="${paddingTop}" x2="${paddingLeft}" y2="${paddingTop + chartHeight}" class="chart-axis-line" />
+        <line x1="${paddingLeft}" y1="${paddingTop + chartHeight}" x2="${width - paddingRight}" y2="${paddingTop + chartHeight}" class="chart-axis-line" />
+    `;
+
+    // Draw Lines for each team
+    let linesHtml = "";
+    topTeams.forEach(t => {
+        let pathD = "";
+        steps.forEach((s, idx) => {
+            const x = getX(idx);
+            const y = getY(s.winRates[t]);
+            pathD += (idx === 0 ? "M" : "L") + ` ${x} ${y}`;
+        });
+
+        // Add line
+        linesHtml += `
+            <path d="${pathD}" class="chart-line" stroke="${teamColors[t]}" stroke-dasharray="1000" stroke-dashoffset="1000">
+                <animate attributeName="stroke-dashoffset" values="1000;0" dur="1s" fill="freeze" />
+            </path>
+        `;
+
+        // Add interactive points
+        steps.forEach((s, idx) => {
+            const x = getX(idx);
+            const y = getY(s.winRates[t]);
+            linesHtml += `
+                <circle cx="${x}" cy="${y}" r="3.5" class="chart-point" stroke="${teamColors[t]}" data-team="${t}" data-rate="${s.winRates[t].toFixed(2)}" data-n="${s.cumulativeN}">
+                    <title>${t}: ${s.winRates[t].toFixed(2)}% (N Totale = ${s.cumulativeN.toLocaleString('it-IT')})</title>
+                </circle>
+            `;
+        });
+    });
+
+    // Build Legenda
+    let legendHtml = `
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; font-size: 11px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; background: rgba(0,0,0,0.2); padding: 8px 15px; border-radius: 0 0 6px 6px;">
+    `;
+    topTeams.forEach(t => {
+        legendHtml += `
+            <span style="display: flex; align-items: center; gap: 5px; font-weight: 500;">
+                <span style="width: 10px; height: 10px; background: ${teamColors[t]}; border-radius: 2px; display: inline-block;"></span>
+                <span>${t}</span>
+            </span>
+        `;
+    });
+    legendHtml += "</div>";
+
+    container.innerHTML = `
+        <svg width="100%" height="${height - 40}" viewBox="0 0 ${width} ${height - 40}" style="display: block; overflow: visible;">
+            ${gridHtml}
+            ${axisHtml}
+            ${linesHtml}
+        </svg>
+        ${legendHtml}
+    `;
+}
+
+export function renderSuperAggregator() {
+    const historySection = document.getElementById("mc-history-section");
+    if (!historySection) return;
+
+    const history = state.simulationHistory || [];
+    if (history.length === 0) {
+        historySection.style.display = "none";
+        return;
+    }
+
+    historySection.style.display = "block";
+
+    let totalN = 0;
+    let totalSemisN = 0;
+    const teamWeightedWins = {};
+    const teamWeightedSemis = {};
+
+    history.forEach(run => {
+        const N = run.iterations || 0;
+        totalN += N;
+
+        if (run.winners) {
+            Object.keys(run.winners).forEach(team => {
+                const pct = run.winners[team] || 0;
+                teamWeightedWins[team] = (teamWeightedWins[team] || 0) + (pct / 100) * N;
+            });
+        }
+
+        if (run.semis) {
+            totalSemisN += N;
+            Object.keys(run.semis).forEach(team => {
+                const pct = run.semis[team] || 0;
+                teamWeightedSemis[team] = (teamWeightedSemis[team] || 0) + (pct / 100) * N;
+            });
+        }
+    });
+
+    const formatLargeNumber = (n) => {
+        if (n >= 1000000000) {
+            return (n / 1000000000).toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 3 }) + " Miliardi";
+        }
+        if (n >= 1000000) {
+            return (n / 1000000).toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 3 }) + " Milioni";
+        }
+        return n.toLocaleString('it-IT');
+    };
+
+    // Update total badge
+    const totalSimsEl = document.getElementById("mc-total-historical-sims");
+    if (totalSimsEl) {
+        totalSimsEl.textContent = `Totale: ${formatLargeNumber(totalN)} simulazioni`;
+    }
+
+    // Process and sort winners
+    const aggregatedWinners = Object.keys(teamWeightedWins).map(team => {
+        const count = teamWeightedWins[team];
+        const pct = totalN > 0 ? (count / totalN) * 100 : 0;
+        return { name: team, count: Math.round(count), pct: pct.toFixed(3) };
+    }).sort((a, b) => parseFloat(b.pct) - parseFloat(a.pct));
+
+    // Process and sort semis
+    const aggregatedSemis = Object.keys(teamWeightedSemis).map(team => {
+        const count = teamWeightedSemis[team];
+        const pct = totalSemisN > 0 ? (count / totalSemisN) * 100 : 0;
+        return { name: team, count: Math.round(count), pct: pct.toFixed(3) };
+    }).sort((a, b) => parseFloat(b.pct) - parseFloat(a.pct));
+
+    // Render Winners Table
+    const winnersBody = document.getElementById("mc-historical-winners-body");
+    if (winnersBody) {
+        winnersBody.innerHTML = "";
+        aggregatedWinners.slice(0, 10).forEach((t, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>#${idx + 1}</td>
+                <td style="font-weight: 600; color: var(--accent-color);">${t.name}</td>
+                <td style="text-align: right; font-weight: 700;">${t.count.toLocaleString('it-IT')}</td>
+                <td style="text-align: right;"><span class="badge ${idx === 0 ? 'high' : (idx < 5 ? 'medium' : 'low')}">${t.pct}%</span></td>
+            `;
+            winnersBody.appendChild(tr);
+        });
+    }
+
+    // Render Semis Table
+    const semisBody = document.getElementById("mc-historical-semis-body");
+    if (semisBody) {
+        semisBody.innerHTML = "";
+        aggregatedSemis.slice(0, 10).forEach((t, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>#${idx + 1}</td>
+                <td style="font-weight: 600; color: var(--accent-emerald, #10b981);">${t.name}</td>
+                <td style="text-align: right; font-weight: 700;">${t.count.toLocaleString('it-IT')}</td>
+                <td style="text-align: right;"><span class="badge ${idx === 0 ? 'high' : (idx < 5 ? 'medium' : 'low')}">${t.pct}%</span></td>
+            `;
+            semisBody.appendChild(tr);
+        });
+    }
+}
+
+export function openAbmSimulation(matchId, callback) {
+    // Run the actual match simulation first
+    simulateMatch(matchId, true);
+    
+    // Find the match data
+    let isKnockout = false;
+    let m = state.matches.find(x => x.id === matchId);
+    if (!m) {
+        m = state.knockoutMatches.find(x => x.id === matchId);
+        isKnockout = true;
+    }
+    if (!m) {
+        if (callback) callback();
+        return;
+    }
+
+    const teamA = state.TEAMS_DB[m.teamA];
+    const teamB = state.TEAMS_DB[m.teamB];
+    if (!teamA || !teamB) {
+        if (callback) callback();
+        return;
+    }
+
+    // Find all goals/events generated for this match
+    const matchEvents = state.tournamentEvents ? state.tournamentEvents.filter(evt => evt.matchId === matchId) : [];
+
+    // Create dynamic overlay modal
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.style.background = "rgba(10, 15, 30, 0.9)";
+    overlay.style.backdropFilter = "blur(8px)";
+    overlay.style.display = "flex";
+    overlay.style.flexDirection = "column";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    overlay.style.zIndex = "10000";
+    overlay.style.color = "var(--text-main, #fff)";
+    overlay.style.fontFamily = "Outfit, Inter, sans-serif";
+
+    const container = document.createElement("div");
+    container.style.width = "90%";
+    container.style.maxWidth = "900px";
+    container.style.background = "var(--bg-card, #1e293b)";
+    container.style.borderRadius = "12px";
+    container.style.border = "1px solid var(--border-color, #334155)";
+    container.style.overflow = "hidden";
+    container.style.boxShadow = "0 20px 25px -5px rgba(0, 0, 0, 0.5)";
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+
+    // Header
+    const header = document.createElement("div");
+    header.style.padding = "15px 20px";
+    header.style.background = "linear-gradient(135deg, #1e3a8a, #0f172a)";
+    header.style.display = "flex";
+    header.style.justifyContent = "space-between";
+    header.style.alignItems = "center";
+    header.style.borderBottom = "1px solid var(--border-color, #334155)";
+
+    const scoreTitle = document.createElement("div");
+    scoreTitle.style.display = "flex";
+    scoreTitle.style.alignItems = "center";
+    scoreTitle.style.gap = "15px";
+    scoreTitle.style.fontSize = "18px";
+    scoreTitle.style.fontWeight = "600";
+
+    const scoreboard = document.createElement("span");
+    scoreboard.id = "abm-scoreboard";
+    scoreboard.style.background = "rgba(0,0,0,0.5)";
+    scoreboard.style.padding = "4px 12px";
+    scoreboard.style.borderRadius = "20px";
+    scoreboard.style.fontFamily = "monospace";
+    scoreboard.style.color = "var(--accent-color, #f97316)";
+    scoreboard.textContent = `0 - 0`;
+
+    scoreTitle.innerHTML = `
+        <span style="font-size:24px;">${teamA.flag}</span>
+        <span>${teamA.name}</span>
+    `;
+    scoreTitle.appendChild(scoreboard);
+    scoreTitle.innerHTML += `
+        <span>${teamB.name}</span>
+        <span style="font-size:24px;">${teamB.flag}</span>
+    `;
+
+    const clock = document.createElement("div");
+    clock.id = "abm-clock";
+    clock.style.fontSize = "20px";
+    clock.style.fontWeight = "700";
+    clock.style.color = "var(--accent-emerald, #10b981)";
+    clock.textContent = `0'`;
+
+    header.appendChild(scoreTitle);
+    header.appendChild(clock);
+
+    // Body (Canvas + Event Log)
+    const body = document.createElement("div");
+    body.style.display = "flex";
+    body.style.flexWrap = "wrap";
+    body.style.padding = "15px";
+    body.style.gap = "15px";
+    body.style.background = "#0f172a";
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 600;
+    canvas.height = 380;
+    canvas.style.background = "#14532d"; // Green field
+    canvas.style.borderRadius = "8px";
+    canvas.style.border = "2px solid #22c55e";
+    canvas.style.flex = "1 1 500px";
+
+    const logContainer = document.createElement("div");
+    logContainer.style.width = "220px";
+    logContainer.style.height = "380px";
+    logContainer.style.background = "rgba(0,0,0,0.4)";
+    logContainer.style.border = "1px solid var(--border-color, #334155)";
+    logContainer.style.borderRadius = "8px";
+    logContainer.style.padding = "10px";
+    logContainer.style.overflowY = "auto";
+    logContainer.style.display = "flex";
+    logContainer.style.flexDirection = "column";
+    logContainer.style.gap = "6px";
+    logContainer.style.fontSize = "12px";
+    logContainer.style.color = "#94a3b8";
+
+    const logTitle = document.createElement("div");
+    logTitle.style.fontWeight = "600";
+    logTitle.style.color = "#fff";
+    logTitle.style.borderBottom = "1px solid #334155";
+    logTitle.style.paddingBottom = "5px";
+    logTitle.style.marginBottom = "5px";
+    logTitle.textContent = "Log Eventi ABM (Beta)";
+    logContainer.appendChild(logTitle);
+
+    body.appendChild(canvas);
+    body.appendChild(logContainer);
+
+    // Footer
+    const footer = document.createElement("div");
+    footer.style.padding = "10px 20px";
+    footer.style.display = "flex";
+    footer.style.justifyContent = "space-between";
+    footer.style.alignItems = "center";
+    footer.style.background = "var(--bg-card, #1e293b)";
+    footer.style.borderTop = "1px solid var(--border-color, #334155)";
+
+    const skipBtn = document.createElement("button");
+    skipBtn.textContent = "Salta Simulazione";
+    skipBtn.style.background = "rgba(244, 63, 94, 0.2)";
+    skipBtn.style.border = "1px solid rgba(244, 63, 94, 0.4)";
+    skipBtn.style.color = "#f43f5e";
+    skipBtn.style.padding = "8px 16px";
+    skipBtn.style.borderRadius = "6px";
+    skipBtn.style.cursor = "pointer";
+    skipBtn.style.fontWeight = "600";
+    skipBtn.style.fontSize = "13px";
+
+    footer.appendChild(document.createElement("div")); // placeholder
+    footer.appendChild(skipBtn);
+
+    container.appendChild(header);
+    container.appendChild(body);
+    container.appendChild(footer);
+    overlay.appendChild(container);
+    document.body.appendChild(overlay);
+
+    // Initialize 22 Player Agents
+    const players = [];
+    const teamAColor = "#3b82f6"; // Blue
+    const teamBColor = "#ef4444"; // Red
+
+    // Helper for positions
+    function addTeamPlayers(teamCode, isLeft, color) {
+        const team = state.TEAMS_DB[teamCode];
+        const starters = team.players.filter(p => p.status === "starting").slice(0, 11);
+        
+        // Simple default coordinates scaled to canvas (600x380)
+        const baseCoords = [
+            { x: isLeft ? 50 : 550, y: 190 }, // GK
+            { x: isLeft ? 150 : 450, y: 80 },  // DF
+            { x: isLeft ? 150 : 450, y: 150 }, // DF
+            { x: isLeft ? 150 : 450, y: 230 }, // DF
+            { x: isLeft ? 150 : 450, y: 300 }, // DF
+            { x: isLeft ? 300 : 300, y: 100 }, // MF
+            { x: isLeft ? 280 : 320, y: 190 }, // MF
+            { x: isLeft ? 300 : 300, y: 280 }, // MF
+            { x: isLeft ? 450 : 150, y: 80 },  // FW
+            { x: isLeft ? 480 : 120, y: 190 }, // FW
+            { x: isLeft ? 450 : 150, y: 300 }  // FW
+        ];
+
+        starters.forEach((p, idx) => {
+            const coord = baseCoords[idx] || { x: 300, y: 190 };
+            players.push({
+                name: p.name,
+                pos: p.pos,
+                rating: p.rating,
+                isLeft,
+                color,
+                x: coord.x,
+                y: coord.y,
+                targetX: coord.x,
+                targetY: coord.y,
+                vx: 0,
+                vy: 0
+            });
+        });
+    }
+
+    addTeamPlayers(m.teamA, true, teamAColor);
+    addTeamPlayers(m.teamB, false, teamBColor);
+
+    // Ball state
+    const ball = {
+        x: 300,
+        y: 190,
+        targetX: 300,
+        targetY: 190,
+        vx: 0,
+        vy: 0,
+        owner: null
+    };
+
+    let minute = 0;
+    let isGameOver = false;
+    let frame = 0;
+    let scoreA = 0;
+    let scoreB = 0;
+    let gameLoopId = null;
+    let goalPauseTimer = 0;
+    let currentGoalEvent = null;
+
+    function addLog(text, color = "#fff") {
+        const item = document.createElement("div");
+        item.style.color = color;
+        item.style.padding = "2px 0";
+        item.innerHTML = text;
+        logContainer.appendChild(item);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    addLog("Fischio d'inizio! Partita avviata.", "var(--accent-emerald, #10b981)");
+
+    const ctx = canvas.getContext("2d");
+
+    function update() {
+        if (isGameOver) return;
+
+        if (goalPauseTimer > 0) {
+            goalPauseTimer--;
+            if (goalPauseTimer === 0) {
+                // Reset positions after goal
+                ball.x = 300;
+                ball.y = 190;
+                ball.owner = null;
+                players.forEach(p => {
+                    p.x = p.targetX;
+                    p.y = p.targetY;
+                });
+            }
+            return;
+        }
+
+        frame++;
+        if (frame % 8 === 0) {
+            minute++;
+            clock.textContent = `${minute}'`;
+            
+            // Check for pre-determined goals at this minute
+            const goalsThisMin = matchEvents.filter(e => e.minute === minute);
+            if (goalsThisMin.length > 0) {
+                const goal = goalsThisMin[0];
+                currentGoalEvent = goal;
+                goalPauseTimer = 60; // Pause for 2 seconds (60 frames)
+                
+                if (goal.team === m.teamA) {
+                    scoreA++;
+                    addLog(`⚽ <strong>GOOL!</strong> ${goal.scorer} segna per ${teamA.name}!`, "#3b82f6");
+                } else {
+                    scoreB++;
+                    addLog(`⚽ <strong>GOOL!</strong> ${goal.scorer} segna per ${teamB.name}!`, "#ef4444");
+                }
+                document.getElementById("abm-scoreboard").textContent = `${scoreA} - ${scoreB}`;
+            }
+
+            // Casual commentary log
+            if (minute % 15 === 0 && minute < 90 && goalsThisMin.length === 0) {
+                const actions = [
+                    "Fase tattica intensa a centrocampo.",
+                    "Ottimo recupero difensivo.",
+                    "Tiro dalla distanza parato con facilità.",
+                    "Azione insistita sulle fasce laterali.",
+                    "Fallo tattico a bloccare la ripartenza."
+                ];
+                const action = actions[Math.floor(Math.random() * actions.length)];
+                addLog(`${minute}' - ${action}`);
+            }
+
+            if (minute >= 90) {
+                isGameOver = true;
+                addLog(`Fischio finale! Partita conclusa.`, "var(--accent-color, #f97316)");
+                clock.textContent = "90'";
+                setTimeout(closeModal, 1500);
+            }
+        }
+
+        // Draw Soccer field lines
+        ctx.fillStyle = "#166534"; // green pitch
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Lines
+        ctx.strokeStyle = "rgba(255,255,255,0.6)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+
+        // Half line
+        ctx.beginPath();
+        ctx.moveTo(300, 10);
+        ctx.lineTo(300, 370);
+        ctx.stroke();
+
+        // Center circle
+        ctx.beginPath();
+        ctx.arc(300, 190, 50, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Goal areas
+        ctx.strokeRect(10, 110, 60, 160);
+        ctx.strokeRect(530, 110, 60, 160);
+
+        // Draw players
+        players.forEach(p => {
+            // Basic ABM behavior towards the ball or back to defend
+            let dx = ball.x - p.x;
+            let dy = ball.y - p.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 80 && !p.isGK) {
+                p.x += (dx / dist) * 2;
+                p.y += (dy / dist) * 2;
+            } else {
+                let tx = p.targetX - p.x;
+                let ty = p.targetY - p.y;
+                let tdist = Math.sqrt(tx * tx + ty * ty);
+                if (tdist > 5) {
+                    p.x += (tx / tdist) * 1.5;
+                    p.y += (ty / tdist) * 1.5;
+                }
+            }
+
+            // Draw player circle
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 7, 0, 2 * Math.PI);
+            ctx.fillStyle = p.color;
+            ctx.fill();
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Draw role indicator
+            ctx.fillStyle = "#fff";
+            ctx.font = "8px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText(p.pos, p.x, p.y + 3);
+        });
+
+        // Draw Ball
+        if (goalPauseTimer > 0 && currentGoalEvent) {
+            let targetGoalX = currentGoalEvent.team === m.teamA ? 580 : 20;
+            let targetGoalY = 190;
+            ball.x += (targetGoalX - ball.x) * 0.15;
+            ball.y += (targetGoalY - ball.y) * 0.15;
+
+            ctx.fillStyle = "rgba(0,0,0,0.6)";
+            ctx.fillRect(150, 140, 300, 100);
+            ctx.strokeStyle = "var(--accent-color, #f97316)";
+            ctx.strokeRect(150, 140, 300, 100);
+
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 24px Outfit";
+            ctx.textAlign = "center";
+            ctx.fillText("⚽ RETE!", 300, 185);
+            ctx.font = "14px Inter";
+            ctx.fillStyle = "rgba(255,255,255,0.8)";
+            ctx.fillText(currentGoalEvent.scorer, 300, 215);
+        } else {
+            let closestPlayer = null;
+            let minDist = Infinity;
+            players.forEach(p => {
+                let dx = p.x - ball.x;
+                let dy = p.y - ball.y;
+                let d = Math.sqrt(dx * dx + dy * dy);
+                if (d < minDist) {
+                    minDist = d;
+                    closestPlayer = p;
+                }
+            });
+
+            if (closestPlayer && minDist < 15) {
+                if (Math.random() < 0.08) {
+                    let teammates = players.filter(p => p.isLeft === closestPlayer.isLeft && p !== closestPlayer);
+                    let target = teammates[Math.floor(Math.random() * teammates.length)];
+                    ball.vx = (target.x - ball.x) * 0.08;
+                    ball.vy = (target.y - ball.y) * 0.08;
+                } else {
+                    ball.x = closestPlayer.x + (closestPlayer.isLeft ? 5 : -5);
+                    ball.y = closestPlayer.y;
+                    ball.vx = 0;
+                    ball.vy = 0;
+                }
+            } else {
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+                ball.vx *= 0.95;
+                ball.vy *= 0.95;
+
+                ball.x = Math.max(15, Math.min(585, ball.x));
+                ball.y = Math.max(15, Math.min(365, ball.y));
+            }
+        }
+
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = "#fbbf24";
+        ctx.fill();
+        ctx.strokeStyle = "#000";
+        ctx.stroke();
+    }
+
+    function loop() {
+        update();
+        if (!isGameOver) {
+            gameLoopId = requestAnimationFrame(loop);
+        }
+    }
+
+    function closeModal() {
+        if (gameLoopId) {
+            cancelAnimationFrame(gameLoopId);
+        }
+        overlay.remove();
+        if (callback) callback();
+    }
+
+    skipBtn.addEventListener("click", closeModal);
+
+    loop();
+}
+

@@ -167,8 +167,8 @@ def main():
     # ========================================
     # PART A: HISTORICAL H2H & RECURRENCES (results.csv & shootouts.csv)
     # ========================================
-    results_path = os.path.join(WORKSPACE, "archive", "results.csv")
-    shootouts_path = os.path.join(WORKSPACE, "archive", "shootouts.csv")
+    results_path = os.path.join(WORKSPACE, "archive-historical", "results.csv")
+    shootouts_path = os.path.join(WORKSPACE, "archive-historical", "shootouts.csv")
 
     print("\n[PART A] Processing historical matches...")
     if not os.path.exists(results_path):
@@ -244,17 +244,33 @@ def main():
             h2h[away_sim][home_sim]["gf"] += away_score
             h2h[away_sim][home_sim]["ga"] += home_score
             
-            # Log individual match for historical timeline
-            match_summary = {
-                "date": date_str,
-                "tournament": tournament,
-                "score": f"{home_score}-{away_score}",
-                "neutral": bool(row['neutral']),
-                "shootout_winner": sh_winner_sim
-            }
-            h2h[home_sim][away_sim]["matches"].append(match_summary)
-            # Reverted for the other side
-            h2h[away_sim][home_sim]["matches"].append(match_summary)
+            # Log individual match for historical timeline using compact arrays:
+            # [date, tournament, score_t1_t2, is_t1_home, shootout_winner_is_t1]
+            sw_code_home = None
+            if sh_winner_sim:
+                sw_code_home = 1 if sh_winner_sim == home_sim else 2
+                
+            match_summary_home = [
+                date_str,
+                tournament,
+                f"{home_score}-{away_score}",
+                True, # is_t1_home
+                sw_code_home
+            ]
+            h2h[home_sim][away_sim]["matches"].append(match_summary_home)
+            
+            sw_code_away = None
+            if sh_winner_sim:
+                sw_code_away = 1 if sh_winner_sim == away_sim else 2
+                
+            match_summary_away = [
+                date_str,
+                tournament,
+                f"{away_score}-{home_score}",
+                False, # is_t1_home
+                sw_code_away
+            ]
+            h2h[away_sim][home_sim]["matches"].append(match_summary_away)
             
             if home_score > away_score:
                 h2h[home_sim][away_sim]["win"] += 1
@@ -278,8 +294,8 @@ def main():
         h2h_compact[t1] = {}
         for t2, data in opponents.items():
             if data["played"] > 0:
-                # Keep latest 5 matches to avoid bloat
-                data["matches"] = sorted(data["matches"], key=lambda x: x["date"], reverse=True)[:5]
+                # Keep latest 5 matches to avoid bloat (sorted by index 0 which is the date)
+                data["matches"] = sorted(data["matches"], key=lambda x: x[0], reverse=True)[:5]
                 h2h_compact[t1][t2] = data
 
     # Calculate Recurrences (World Cup statistics)
@@ -324,9 +340,9 @@ def main():
         "exact_scores": exact_scores_pct
     }
 
-    # Write Part A outputs
+    # Write Part A outputs (minified for web performance)
     with open(os.path.join(OUTPUT_DIR, "h2h_stats.json"), 'w', encoding='utf-8') as f:
-        json.dump(h2h_compact, f, indent=2, ensure_ascii=False)
+        json.dump(h2h_compact, f, ensure_ascii=False)
     with open(os.path.join(OUTPUT_DIR, "recurrences.json"), 'w', encoding='utf-8') as f:
         json.dump(recurrences_data, f, indent=2, ensure_ascii=False)
     print("Part A completed and files written successfully.")
@@ -334,25 +350,29 @@ def main():
     # ========================================
     # PART B: SQUAD VALUATIONS (players.csv & players_data-2025_2026.csv)
     # ========================================
-    players_csv_path = os.path.join(WORKSPACE, "archive (1)", "players.csv")
-    players_2526_csv_path = os.path.join(WORKSPACE, "archive (3)", "players_data-2025_2026.csv")
+    players_csv_path = os.path.join(WORKSPACE, "archive-transfermarkt", "players.csv")
+    players_2526_csv_path = os.path.join(WORKSPACE, "archive-season", "players_data-2025_2026.csv")
 
     print("\n[PART B] Processing squad valuations...")
     
-    # Load valuations database from Transfermarkt
-    tm_players = []
+    # Load valuations database from Transfermarkt, grouped by citizenship to optimize performance
+    tm_by_country = {}
     if os.path.exists(players_csv_path):
         print(f"Loading valuations from {players_csv_path}...")
         df_p = pd.read_csv(players_csv_path)
         for _, row in df_p.iterrows():
-            tm_players.append({
+            country = str(row['country_of_citizenship'])
+            norm_c = normalize_name(country)
+            p_data = {
                 "name": str(row['name']),
                 "tokens": get_name_tokens(str(row['name'])),
-                "country": str(row['country_of_citizenship']),
                 "market_value": float(row['market_value_in_eur']) if not pd.isna(row['market_value_in_eur']) else 0,
                 "date_of_birth": str(row['date_of_birth']) if not pd.isna(row['date_of_birth']) else None
-            })
-        print(f"Loaded {len(tm_players)} players from Transfermarkt.")
+            }
+            if norm_c not in tm_by_country:
+                tm_by_country[norm_c] = []
+            tm_by_country[norm_c].append(p_data)
+        print(f"Loaded valuations for {len(tm_by_country)} countries from Transfermarkt.")
         
     # Match players and estimate valuations
     squad_values = {}
@@ -374,6 +394,25 @@ def main():
         ages = []
         player_values = []
         
+        # Determine likely English names in Transfermarkt for this country
+        ds_name = sim_to_dataset.get(t_name)
+        norm_ds_c = normalize_name(ds_name) if ds_name else None
+        norm_sim_c = normalize_name(t_name)
+        
+        target_players = []
+        if norm_ds_c and norm_ds_c in tm_by_country:
+            target_players.extend(tm_by_country[norm_ds_c])
+        if norm_sim_c and norm_sim_c in tm_by_country:
+            if norm_sim_c != norm_ds_c:
+                target_players.extend(tm_by_country[norm_sim_c])
+                
+        # If still empty, try partial key matching on countries
+        if not target_players:
+            for c_key, plist in tm_by_country.items():
+                if norm_sim_c in c_key or c_key in norm_sim_c:
+                    target_players.extend(plist)
+                    break
+        
         for p in t_info.get("players", []):
             total_players += 1
             p_name = p["name"]
@@ -381,9 +420,9 @@ def main():
             matched_val = 0
             matched_age = None
             
-            # Check matching in TM players
+            # Check matching in target country's TM players
             best_match = None
-            for tmp in tm_players:
+            for tmp in target_players:
                 if is_player_match_tokens(p_tokens, tmp["tokens"]):
                     if not best_match or tmp["market_value"] > best_match["market_value"]:
                         best_match = tmp
@@ -447,8 +486,8 @@ def main():
     # ========================================
     # PART C: STATSBOMB EVENTS AGGREGATION (data/events/ & data/matches/)
     # ========================================
-    matches_root = os.path.join(WORKSPACE, "archive (2)", "data", "matches")
-    events_root = os.path.join(WORKSPACE, "archive (2)", "data", "events")
+    matches_root = os.path.join(WORKSPACE, "archive-statsbomb", "data", "matches")
+    events_root = os.path.join(WORKSPACE, "archive-statsbomb", "data", "events")
 
     print("\n[PART C] Processing StatsBomb event data...")
     if not os.path.exists(matches_root) or not os.path.exists(events_root):
